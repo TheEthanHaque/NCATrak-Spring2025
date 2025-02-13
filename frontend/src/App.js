@@ -1,19 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import AOITracker from './AOITracker';
 
 function App() {
-    const [message, setMessage] = useState('Connecting to backend...');
-
-    useEffect(() => {
-        fetch('http://127.0.0.1:5000/api/test')
-            .then((response) => response.json())
-            .then((data) => setMessage(data.message))
-            .catch((error) => setMessage('Failed to connect to backend.'));
-    }, []);
-
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>NCA-Trak System</h1>
-            <h3>{message}</h3>
+        <div className="App">
+            <h1>NCATrak Spring 2025 Interface</h1>
+            <AOITracker />
         </div>
     );
 }
