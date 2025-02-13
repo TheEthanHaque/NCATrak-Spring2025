@@ -4,11 +4,12 @@ function App() {
   const [message, setMessage] = useState('Connecting to backend...');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/test')
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch((err) => setMessage('Failed to connect to backend.'));
+    fetch('http://127.0.0.1:5000/api/test')
+        .then(response => response.json())
+        .then(data => setMessage(data.message))
+        .catch(error => console.error('Failed to connect to backend:', error));
   }, []);
+
 
   return (
     <div style={{ textAlign: 'center', marginTop: '20%' }}>
