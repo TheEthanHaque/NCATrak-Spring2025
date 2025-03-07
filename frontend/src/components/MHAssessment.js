@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
-const MHBasicInterface = () => {
+const MHAssessment = () => {
   const [formData, setFormData] = useState({
-    patientId: "",
     patientName: "",
-    dateOfBirth: "",
+    age: "",
+    assessmentDate: "",
+    symptoms: "",
     diagnosis: "",
-    medications: "",
+    treatmentPlan: "",
   });
 
   const handleChange = (e) => {
@@ -20,27 +21,31 @@ const MHBasicInterface = () => {
 
   return (
     <div className="container">
-      <h2>Mental Health Basic Information</h2>
+      <h2>Mental Health Assessment</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Patient ID:</label>
-          <input type="text" name="patientId" value={formData.patientId} onChange={handleChange} />
-        </div>
         <div>
           <label>Patient Name:</label>
           <input type="text" name="patientName" value={formData.patientName} onChange={handleChange} />
         </div>
         <div>
-          <label>Date of Birth:</label>
-          <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} />
+          <label>Age:</label>
+          <input type="number" name="age" value={formData.age} onChange={handleChange} />
         </div>
         <div>
-          <label>Primary Diagnosis:</label>
+          <label>Assessment Date:</label>
+          <input type="date" name="assessmentDate" value={formData.assessmentDate} onChange={handleChange} />
+        </div>
+        <div>
+          <label>Symptoms:</label>
+          <input type="text" name="symptoms" value={formData.symptoms} onChange={handleChange} />
+        </div>
+        <div>
+          <label>Diagnosis:</label>
           <input type="text" name="diagnosis" value={formData.diagnosis} onChange={handleChange} />
         </div>
         <div>
-          <label>Current Medications:</label>
-          <input type="text" name="medications" value={formData.medications} onChange={handleChange} />
+          <label>Treatment Plan:</label>
+          <input type="text" name="treatmentPlan" value={formData.treatmentPlan} onChange={handleChange} />
         </div>
         <button type="submit">Submit</button>
       </form>
@@ -48,4 +53,4 @@ const MHBasicInterface = () => {
   );
 };
 
-export default MHBasicInterface;
+export default MHAssessment;
