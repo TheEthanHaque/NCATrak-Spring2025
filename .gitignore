@@ -1,4 +1,5 @@
 .venv/
+.myenv/
 /app/database/database.ini
 __pycache__/
 data.csv
