@@ -52,18 +52,6 @@ pip install tkcalendar psycopg2-binary faker faker-education sv_ttk
 brew install postgresql@14
 brew services start postgresql@14
 
-6️⃣ Create Database and User
-
-Open the PostgreSQL command line interface:
-
-psql -d postgres
-
-Then run the following commands:
-
-CREATE DATABASE ncatrak;
-CREATE USER ethan WITH PASSWORD 'securepassword';
-ALTER ROLE ethan CREATEDB;
-\q
 
 7️⃣ Run Setup Wizard
 
@@ -84,12 +72,10 @@ Then choose [1] Complete Install and generate 100 entries.
 
 🖥️ Running the Application
 
-8️⃣ Run the Python App
+8️⃣ Generate Prisma Client
 
-cd app
-python app.py
+npx prisma generate
 
-At this point, the Tkinter interface should appear.
 
 🌐 Frontend Setup (React)
 
