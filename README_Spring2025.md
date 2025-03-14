@@ -56,7 +56,7 @@ brew services start postgresql@14
 
 Open the PostgreSQL command line interface:
 
-psql -U postgres
+psql -d postgres
 
 Then run the following commands:
 

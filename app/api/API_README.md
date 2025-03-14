@@ -1,60 +1,4 @@
-# Child Advocacy Center API
-
-This API provides a modern interface to the Child Advocacy Center database, making it easy to create, read, update, and delete data related to cases, people, mental health assessments, and victim advocacy services.
-
-## Features
-
-- RESTful API built with Express.js
-- Database access using Prisma ORM
-- Endpoints for all major entities:
-  - Cases
-  - People
-  - Agencies
-  - Employees
-  - Mental Health Assessments and Treatment
-  - Victim Advocacy Services
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v14 or higher)
-- PostgreSQL database
-
-### Installation
-
-1. Clone the repository
-```bash
-git clone <repository-url>
-cd cac-api
-```
-
-2. Install dependencies
-```bash
-npm install
-```
-
-3. Configure the database connection
-  
-Create a `.env` file in the root directory with your PostgreSQL connection string:
-```
-DATABASE_URL="postgresql://username:password@localhost:5432/cac_database?schema=public"
-```
-
-4. Generate Prisma client
-```bash
-npx prisma generate
-```
-
-5. Start the server
-```bash
-npm start
-```
-
-The API will be available at `http://localhost:3000`.
-
 ## API Endpoints
-
 ### Cases
 
 - `GET /api/cases` - Get all cases
@@ -156,6 +100,3 @@ The API returns appropriate status codes for different situations:
 
 Error responses include a message explaining the error.
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
