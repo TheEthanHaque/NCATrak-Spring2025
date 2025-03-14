@@ -4,6 +4,8 @@ from rich import print
 from rich.prompt import Prompt
 
 from database.create_tables import main as create_tables
+from database.create_database import main as create_database
+from database.create_user import main as create_user
 from database.populate_database import main as populate_database
 from generator.data_generator import main as data_generator
 
@@ -62,13 +64,21 @@ if n == 1:
                 Prompt.ask("[yellow]Enter password\n")]
         file.write(f"host={data[0]}\ndatabase={data[1]}\nuser={data[2]}\npassword={data[3]}")
     print("[green]Database.ini file has been created.")
+    env_file_path = os.path.join(cwd, "api", "database.ini")
+    with open(env_file_path, "w") as env_file:
+        env_file.write(f'DATABASE_URL="postgresql://{data[2]}:{data[3]}@{data[0]}:5432/{data[1]}?schema=public"')
+    print("[green].env file has been created.")
+    create_database(data)
+    print(f"[green]The database \"{data[1]}\" has been created.")
+    create_user(data)
+    print(f"[green]The user \"{data[2]}\" has been created for the database \"{data[1]}\.")
     create_tables()
     print("[green]Database tables created.")
     data_generator()
     print("[green]Database tables generated.")
     populate_database()
     print("[green]Database tables populated.")
-    print("[green][bold]Installation complete. Please run app.py to use the program.")
+    print("[green][bold]Installation complete. Database has been populated.")
 
 # Add New Generated Data
 elif n == 2:
