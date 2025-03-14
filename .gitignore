@@ -1,6 +1,4 @@
-.venv/
-.myenv/
-/app/database/database.ini
+database.ini
 __pycache__/
 data.csv
 .idea/
@@ -114,6 +112,7 @@ celerybeat.pid
 .env
 .venv
 env/
+myenv/
 venv/
 ENV/
 env.bak/
@@ -136,3 +135,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+node_modules/
