@@ -64,7 +64,7 @@ if n == 1:
                 Prompt.ask("[yellow]Enter password\n")]
         file.write(f"host={data[0]}\ndatabase={data[1]}\nuser={data[2]}\npassword={data[3]}")
     print("[green]Database.ini file has been created.")
-    env_file_path = os.path.join(cwd, "api", "database.ini")
+    env_file_path = os.path.join(cwd, "api", ".env")
     with open(env_file_path, "w") as env_file:
         env_file.write(f'DATABASE_URL="postgresql://{data[2]}:{data[3]}@{data[0]}:5432/{data[1]}?schema=public"')
     print("[green].env file has been created.")
