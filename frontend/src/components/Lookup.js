@@ -1,84 +1,75 @@
-import React, { useState } from "react";
+import React from "react";
+import "./Lookup.css";
 
-const Lookup = () => {
-  const [searchParams, setSearchParams] = useState({
-    caseId: "",
-    firstName: "",
-    lastName: "",
-    dob: "",
-  });
-  const [results, setResults] = useState([]);
-  const [selectedRecord, setSelectedRecord] = useState(null);
-
-  // Handle input changes
-  const handleChange = (e) => {
-    setSearchParams({ ...searchParams, [e.target.name]: e.target.value });
-  };
-
-  // Perform database search
-  const handleSearch = () => {
-    fetch(`http://localhost:5000/api/search`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(searchParams),
-    })
-      .then((response) => response.json())
-      .then((data) => setResults(data))
-      .catch((error) => console.error("Error fetching data:", error));
-  };
-
-  // Fetch full record details
-  const viewDetails = (caseId) => {
-    fetch(`http://localhost:5000/api/get-record/${caseId}`)
-      .then((response) => response.json())
-      .then((data) => setSelectedRecord(data))
-      .catch((error) => console.error("Error fetching details:", error));
-  };
-
+function Lookup() {
   return (
-    <div className="container">
-      <h2>Lookup Records</h2>
+    <div className="lookup-container">
+      <header className="lookup-header">
+        <h1>Lookup Records</h1>
+      </header>
 
-      <div>
-        <label>Case ID:</label>
-        <input type="text" name="caseId" value={searchParams.caseId} onChange={handleChange} />
+      <form className="lookup-form">
+        <div className="form-row">
+          <label htmlFor="caseId">Case ID</label>
+          <input
+            type="text"
+            id="caseId"
+            name="caseId"
+            placeholder="Enter case ID"
+          />
+        </div>
+        <div className="form-row">
+          <label htmlFor="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            placeholder="Enter first name"
+          />
+        </div>
+        <div className="form-row">
+          <label htmlFor="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            placeholder="Enter last name"
+          />
+        </div>
+        <div className="form-row">
+          <label htmlFor="dob">Date of Birth</label>
+          <input type="date" id="dob" name="dob" />
+        </div>
 
-        <label>First Name:</label>
-        <input type="text" name="firstName" value={searchParams.firstName} onChange={handleChange} />
+        <button type="submit" className="search-button">
+          Search
+        </button>
+      </form>
 
-        <label>Last Name:</label>
-        <input type="text" name="lastName" value={searchParams.lastName} onChange={handleChange} />
-
-        <label>Date of Birth:</label>
-        <input type="date" name="dob" value={searchParams.dob} onChange={handleChange} />
-
-        <button onClick={handleSearch}>Search</button>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Case ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Date of Birth</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          {results.map((record, index) => (
-            <tr key={index}>
-              <td>{record.caseId}</td>
-              <td>{record.firstName}</td>
-              <td>{record.lastName}</td>
-              <td>{record.dob}</td>
-              <td><button onClick={() => viewDetails(record.caseId)}>View</button></td>
+      <section className="lookup-section">
+        <h2>Search Results</h2>
+        <table className="lookup-table">
+          <thead>
+            <tr>
+              <th>Case ID</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Date of Birth</th>
+              <th>Details</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {/* Replace with dynamic data if needed */}
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center" }}>
+                No records found
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
     </div>
   );
-};
+}
 
 export default Lookup;
