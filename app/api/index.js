@@ -5,7 +5,7 @@ import peopleRouter from './routes/people.js';
 import agenciesRouter from './routes/agencies.js';
 import employeesRouter from './routes/employee.js';
 import mentalhealthRouter from './routes/mentalhealth.js';
-import victimsAdvocacyRouter from './routes/victimsadvocacy.js';
+import victimsAdvocacyRouter from './routes/victimadvocacy.js';
 
 const prisma = new PrismaClient();
 const app = express();
