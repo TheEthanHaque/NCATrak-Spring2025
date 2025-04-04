@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import AOITracker from './AOITracker';
+//import AOITracker from './AOITracker';
 import AOIEventViewer from './AOIEventViewer';
 import GeneralTab from './components/GeneralTab';  
 import MHBasicInterface from './components/MHBasicInterface';  
@@ -11,7 +11,8 @@ import TreatmentPlan from './components/TreatmentPlan';
 import VALogInterface from './components/VALogInterface';  
 import MHAssessment from './components/MHAssessment';  
 import Lookup from './components/Lookup';  
-import { AppBar, Toolbar, Typography, Button, Container, Box, Divider } from '@mui/material';
+import MHSection from './components/MHSection';
+import { AppBar, Toolbar, Typography, Button, Container, Box} from '@mui/material';
 import CaseSelector from './context/CaseSelector';
 import { CaseProvider, useCase } from './context/CaseContext';
 
@@ -22,27 +23,25 @@ function App() {
                 {/* Header */}
                 <AppBar position="static">
                     <Toolbar>
-                        <Typography variant="h5" sx={{ flexGrow: 0, mr: 3 }}>
-                            🛠️ NCATrak Spring 2025
-                        </Typography>
+                        <Typography variant="h5" sx={{ flexGrow: 0, mr: 3 }}>NCATrak Spring 2025</Typography>
                         
-                        {/* Case Selector in Navigation */}
                         <CaseSelector />
-                        
-                        <Divider orientation="vertical" flexItem sx={{ mx: 1, bgcolor: 'rgba(255,255,255,0.3)' }} />
                         
                         <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'auto' }}>
                             <Button color="inherit" component={Link} to="/">Home</Button>
-                            <Button color="inherit" component={Link} to="/lookup">Lookup</Button> 
-                            <Button color="inherit" component={Link} to="/general">General Info</Button> 
-                            <Button color="inherit" component={Link} to="/mh-basic">MH Basic</Button> 
-                            <Button color="inherit" component={Link} to="/people">People</Button>
-                            <Button color="inherit" component={Link} to="/case-notes">Case Notes</Button>  
-                            <Button color="inherit" component={Link} to="/assessment">Assessment</Button>
-                            <Button color="inherit" component={Link} to="/mh-assessment">MH Assessment</Button> 
-                            <Button color="inherit" component={Link} to="/treatment">Treatment Plan</Button> 
-                            <Button color="inherit" component={Link} to="/va-logs">VA Logs</Button>
-                            <Button color="inherit" component={Link} to="/aoi-events">AOI Events</Button>
+                            <Button color="inherit" component={Link} to="/CaseGeneral">General</Button> 
+                            <Button color="inherit" component={Link} to="/CasePeople">People</Button>
+                            <Button color="inherit" component={Link} to="/CaseMDT">MDT</Button>
+                            <Button color="inherit" component={Link} to="/CasePresenting">Presenting</Button>
+                            <Button color="inherit" component={Link} to="/CaseCPS">CPS</Button>
+                            <Button color="inherit" component={Link} to="/CaseLE">LE</Button>
+                            <Button color="inherit" component={Link} to="/CaseMedical">Medical</Button>
+                            <Button color="inherit" component={Link} to="/CaseFI">FI</Button>
+                            <Button color="inherit" component={Link} to="/CaseMH">MH</Button>
+                            <Button color="inherit" component={Link} to="/CaseVA">VA</Button>
+                            <Button color="inherit" component={Link} to="/CaseProsecution">Prosecution</Button>
+                            <Button color="inherit" component={Link} to="/CaseReport">Report</Button>
+                            <Button color="inherit" component={Link} to="/CaseAttachments">Case Attachments</Button>
                         </Box>
                     </Toolbar>
                 </AppBar>
@@ -50,21 +49,38 @@ function App() {
                 {/* Main Content */}
                 <Container maxWidth="md" sx={{ mt: 4 }}>
                     <CurrentCaseInfo />
-                    <AOITracker />
 
                     {/* Routes */}
                     <Routes>
-                        <Route path="/" element={<Typography variant="h6">🏠 Home: NCATrak Spring 2025!</Typography>} />
-                        <Route path="/lookup" element={<Lookup />} />  
-                        <Route path="/general" element={<GeneralTab />} />
-                        <Route path="/mh-basic" element={<MHBasicInterface />} />
-                        <Route path="/people" element={<PeopleInterface />} />
+                        <Route path="/" element={<Typography variant="h6">Home: NCATrak Spring 2025!</Typography>} />
+                        <Route path="/CaseGeneral" element={<GeneralTab />} />
+                        <Route path="/CasePeople" element={<PeopleInterface />} />
+                        <Route path="/CaseMDT" element={<Typography variant="h6">MDT Component (Under Development)</Typography>} />
+                        <Route path="/CasePresenting" element={<Typography variant="h6">Presenting Component (Under Development)</Typography>} />
+                        <Route path="/CaseCPS" element={<Typography variant="h6">CPS Component (Under Development)</Typography>} />
+                        <Route path="/CaseLE" element={<Typography variant="h6">LE Component (Under Development)</Typography>} />
+                        <Route path="/CaseMedical" element={<Typography variant="h6">Medical Component (Under Development)</Typography>} />
+                        <Route path="/CaseFI" element={<Typography variant="h6">FI Component (Under Development)</Typography>} />
+                        <Route path="/CaseProsecution" element={<Typography variant="h6">FI Component (Under Development)</Typography>} />
+                        <Route path="/CaseReport" element={<Typography variant="h6">FI Component (Under Development)</Typography>} />
+                        <Route path="/CaseAttachments" element={<Typography variant="h6">FI Component (Under Development)</Typography>} />
+
+                        
+                        
+                        {/* MH Section with sub-navigation */}
+                        <Route path="/CaseMh/*" element={<MHSection />} />
+                        
+                        <Route path="/CaseVA/*" element={<VALogInterface />} />
+                        
+                        {/* Legacy routes - can be accessed directly but not from navigation */}
                         <Route path="/case-notes" element={<CaseNotes />} />
+                        <Route path="/lookup" element={<Lookup />} />  
                         <Route path="/assessment" element={<AssessmentInterface />} />
                         <Route path="/mh-assessment" element={<MHAssessment />} />
                         <Route path="/treatment" element={<TreatmentPlan />} />
+                        <Route path="/mh-basic" element={<MHBasicInterface />} />
                         <Route path="/va-logs" element={<VALogInterface />} />
-                        <Route path="/aoi-events" element={<AOIEventViewer />} />
+                        <Route path="/aoi" element={<AOIEventViewer />} />
                     </Routes>
                 </Container>
             </Router>
