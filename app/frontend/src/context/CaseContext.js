@@ -8,11 +8,13 @@ export const useCase = () => useContext(CaseContext);
 
 // Sample case data
 const sampleCases = [
-  { id: 'case1', name: 'Case One', number: 'CAC-2025-001' },
-  { id: 'case2', name: 'Case Two', number: 'CAC-2025-002' },
-  { id: 'case3', name: 'Case Three', number: 'CAC-2025-003' },
-  { id: 'case4', name: 'Case Four', number: 'CAC-2025-004' },
-];
+    { id: 'create-new', name: 'Create New Case(s)', number: '', isAction: true },
+    { id: 'case1', name: 'Case One', number: 'CAC-2025-001' },
+    { id: 'case2', name: 'Case Two', number: 'CAC-2025-002' },
+    { id: 'case3', name: 'Case Three', number: 'CAC-2025-003' },
+    { id: 'case4', name: 'Case Four', number: 'CAC-2025-004' },
+    
+  ];
 
 // Case provider component
 export const CaseProvider = ({ children }) => {

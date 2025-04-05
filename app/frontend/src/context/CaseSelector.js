@@ -1,13 +1,22 @@
 import React from 'react';
 import { FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 import { useCase } from './CaseContext';
+import { useNavigate } from 'react-router-dom';
 
 // Case selector component
 const CaseSelector = () => {
   const { currentCase, setCurrentCase, cases } = useCase();
+  const navigate = useNavigate();
   
   const handleChange = (event) => {
-    setCurrentCase(event.target.value);
+    const selectedValue = event.target.value;
+    
+    // Check if the selected option is "Create New Case(s)"
+    if (selectedValue === 'create-new') {
+      navigate('/NewCase');
+    } else {
+      setCurrentCase(selectedValue);
+    }
   };
   
   return (
@@ -37,8 +46,12 @@ const CaseSelector = () => {
           }}
         >
           {cases.map(caseItem => (
-            <MenuItem key={caseItem.id} value={caseItem.id}>
-              {caseItem.name} ({caseItem.number})
+            <MenuItem 
+              key={caseItem.id} 
+              value={caseItem.id}
+              sx={caseItem.isAction ? { fontWeight: 'bold', color: 'primary.main' } : {}}
+            >
+              {caseItem.isAction ? caseItem.name : `${caseItem.name} (${caseItem.number})`}
             </MenuItem>
           ))}
         </Select>

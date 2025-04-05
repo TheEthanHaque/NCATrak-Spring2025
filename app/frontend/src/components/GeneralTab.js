@@ -31,12 +31,6 @@ function GeneralTab() {
                   <button type="button" className="gt-edit-button">
                     Edit
                   </button>
-                  <button type="button" className="gt-refer-button">
-                    Refer
-                  </button>
-                  <button type="button" className="gt-na-button">
-                    N/A
-                  </button>
                 </td>
                 <td>MDT</td>
                 <td>07/03/2015</td>
@@ -50,12 +44,6 @@ function GeneralTab() {
                 <td>
                   <button type="button" className="gt-edit-button">
                     Edit
-                  </button>
-                  <button type="button" className="gt-refer-button">
-                    Refer
-                  </button>
-                  <button type="button" className="gt-na-button">
-                    N/A
                   </button>
                 </td>
                 <td>MH</td>
