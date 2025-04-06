@@ -16,9 +16,7 @@ import {
   Grid,
   Container,
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Lookup from './Lookup';
@@ -38,6 +36,19 @@ const NewCase = () => {
   // Close lookup modal
   const handleCloseLookupModal = () => {
     setLookupModalOpen(false);
+  };
+  
+  // Handle person selection from lookup
+  const handlePersonSelect = (person) => {
+    // Update form with selected person's data
+    setFormData(prev => ({
+      ...prev,
+      firstName: person.firstName || '',
+      lastName: person.lastName || '',
+      middleName: person.middleName || '',
+      // Add other fields as needed
+    }));
+    handleCloseLookupModal();
   };
   
   // Form state
@@ -2157,25 +2168,20 @@ const NewCase = () => {
         onClose={handleCloseLookupModal}
         fullWidth
         maxWidth="md"
+        PaperProps={{
+          sx: {
+            maxHeight: '80vh',
+            height: 'auto',
+            overflowY: 'visible'
+          }
+        }}
       >
-        <DialogTitle>
-          Lookup Person
-          <Button 
-            onClick={handleCloseLookupModal} 
-            color="inherit"
-            sx={{ position: 'absolute', right: 8, top: 8 }}
-          >
-            X
-          </Button>
-        </DialogTitle>
-        <DialogContent dividers>
-          <Lookup />
+        <DialogContent sx={{ p: 0 }}>
+          <Lookup 
+            onPersonSelect={handlePersonSelect} 
+            onClose={handleCloseLookupModal} 
+          />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseLookupModal} color="primary">
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
     </Container>
   );
