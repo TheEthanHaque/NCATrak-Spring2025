@@ -516,13 +516,6 @@ const NewCase = () => {
                 variant="outlined"
                 disabled={formData.unknownDateOfBirth}
                 InputLabelProps={{ shrink: true }}
-                InputProps={{
-                  endAdornment: (
-                    <Box component="span" sx={{ ml: 2 }}>
-                      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktY2FsZW5kYXIzIiB2aWV3Qm94PSIwIDAgMTYgMTYiPgogIDxwYXRoIGQ9Ik0xNCAwSDJhMiAyIDAgMCAwLTIgMnYxMmEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJWMmEyIDIgMCAwIDAtMi0yek0xIDMuODU3QzEgMy4zODQgMS40NDggMyAyIDNoMTJjLjU1MiAwIDEgLjM4NCAxIC44NTd2MTBDMTUgMTQuNjE2IDE0LjU1MiAxNSAxNCAxNUgyYy0uNTUyIDAtMS0uMzg0LTEtLjg1N1YzLjg1N3oiLz4KICA8cGF0aCBkPSJNNi41IDdoLTFhLjUuNSAwIDAgMC0uNS41djFhLjUuNSAwIDAgMCAuNS41aDFhLjUuNSAwIDAgMCAuNS0uNXYtMWEuNS41IDAgMCAwLS41LS41em0zIDBIOC41YS41LjUgMCAwIDAtLjUuNXYxYS41LjUgMCAwIDAgLjUuNWgxYS41LjUgMCAwIDAgLjUtLjV2LTFhLjUuNSAwIDAgMC0uNS0uNXptMSAzaC0xYS41LjUgMCAwIDAtLjUuNXYxYS41LjUgMCAwIDAgLjUuNWgxYS41LjUgMCAwIDAgLjUtLjV2LTFhLjUuNSAwIDAgMC0uNS0uNXptLTMgMEg4LjVhLjUuNSAwIDAgMC0uNS41djFhLjUuNSAwIDAgMCAuNS41aDFhLjUuNSAwIDAgMCAuNS0uNXYtMWEuNS41IDAgMCAwLS41LS41em0tMy40IDBIOC4xYS41LjUgMCAwIDAtLjUuNXYxYS41LjUgMCAwIDAgLjUuNWgxYS41LjUgMCAwIDAgLjUtLjV2LTFhLjUuNSAwIDAgMC0uNS0uNXoiLz4KPC9zdmc+" alt="calendar" />
-                    </Box>
-                  )
-                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -550,13 +543,6 @@ const NewCase = () => {
                 onChange={handleChange}
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
-                InputProps={{
-                  endAdornment: (
-                    <Box component="span" sx={{ ml: 2 }}>
-                      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktY2FsZW5kYXIzIiB2aWV3Qm94PSIwIDAgMTYgMTYiPgogIDxwYXRoIGQ9Ik0xNCAwSDJhMiAyIDAgMCAwLTIgMnYxMmEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJWMmEyIDIgMCAwIDAtMi0yek0xIDMuODU3QzEgMy4zODQgMS40NDggMyAyIDNoMTJjLjU1MiAwIDEgLjM4NCAxIC44NTd2MTBDMTUgMTQuNjE2IDE0LjU1MiAxNSAxNCAxNUgyYy0uNTUyIDAtMS0uMzg0LTEtLjg1N1YzLjg1N3oiLz4KICA8cGF0aCBkPSJNNi41IDdoLTFhLjUuNSAwIDAgMC0uNS41djFhLjUuNSAwIDAgMCAuNS41aDFhLjUuNSAwIDAgMCAuNS0uNXYtMWEuNS41IDAgMCAwLS41LS41em0zIDBIOC41YS41LjUgMCAwIDAtLjUuNXYxYS41LjUgMCAwIDAgLjUuNWgxYS41LjUgMCAwIDAgLjUtLjV2LTFhLjUuNSAwIDAgMC0uNS0uNXptMSAzaC0xYS41LjUgMCAwIDAtLjUuNXYxYS41LjUgMCAwIDAgLjUuNWgxYS41LjUgMCAwIDAgLjUtLjV2LTFhLjUuNSAwIDAgMC0uNS0uNXptLTMgMEg4LjVhLjUuNSAwIDAgMC0uNS41djFhLjUuNSAwIDAgMCAuNS41aDFhLjUuNSAwIDAgMCAuNS0uNXYtMWEuNS41IDAgMCAwLS41LS41em0tMy40IDBIOC4xYS41LjUgMCAwIDAtLjUuNXYxYS41LjUgMCAwIDAgLjUuNWgxYS41LjUgMCAwIDAgLjUtLjV2LTFhLjUuNSAwIDAgMC0uNS0uNXoiLz4KPC9zdmc+" alt="calendar" />
-                    </Box>
-                  )
-                }}
               />
             </Grid>
 
