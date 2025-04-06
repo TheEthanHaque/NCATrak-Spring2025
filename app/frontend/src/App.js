@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import AOIEventViewer from './AOIEventViewer';
+import GeneralTab from './components/GeneralTab';  
+import MHBasicInterface from './components/MHBasicInterface';  
+import PeopleInterface from './components/PeopleInterface';  
+import CaseNotes from './components/CaseNotes';  
+import AssessmentInterface from './components/AssessmentInterface';
+import TreatmentPlan from './components/TreatmentPlan';  
+import VALogInterface from './components/VALogInterface';  
+import MHAssessment from './components/MHAssessment';  
+import Lookup from './components/Lookup';  
+import MHSection from './components/MHSection';
+import NewCase from './components/NewCase';
 import { 
   AppBar, 
   Toolbar, 
@@ -18,7 +30,6 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import CaseSelector from './context/CaseSelector';
 import { CaseProvider, useCase } from './context/CaseContext';
-// Import other components as needed
 
 const AppLayout = () => {
   const location = useLocation();
@@ -152,7 +163,35 @@ const AppLayout = () => {
         {/* Routes */}
         <Routes>
           <Route path="/" element={<Typography variant="h6">Home: NCATrak Spring 2025!</Typography>} />
-          {/* Add all your routes here */}
+          <Route path="/CaseGeneral" element={<GeneralTab />} />
+          <Route path="/CasePeople" element={<PeopleInterface />} />
+          <Route path="/CaseMDT" element={<Typography variant="h6">MDT Component (Under Development)</Typography>} />
+          <Route path="/CasePresenting" element={<Typography variant="h6">Presenting Component (Under Development)</Typography>} />
+          <Route path="/CaseCPS" element={<Typography variant="h6">CPS Component (Under Development)</Typography>} />
+          <Route path="/CaseLE" element={<Typography variant="h6">LE Component (Under Development)</Typography>} />
+          <Route path="/CaseMedical" element={<Typography variant="h6">Medical Component (Under Development)</Typography>} />
+          <Route path="/CaseFI" element={<Typography variant="h6">FI Component (Under Development)</Typography>} />
+          <Route path="/CaseProsecution" element={<Typography variant="h6">Prosecution Component (Under Development)</Typography>} />
+          <Route path="/CaseReport" element={<Typography variant="h6">Report Component (Under Development)</Typography>} />
+          <Route path="/CaseAttachments" element={<Typography variant="h6">Case Attachments Component (Under Development)</Typography>} />
+
+          {/* Create New Case Route */}
+          <Route path="/NewCase" element={<NewCase />} />
+          
+          {/* MH Section with sub-navigation */}
+          <Route path="/CaseMH/*" element={<MHSection />} />
+          
+          <Route path="/CaseVA/*" element={<VALogInterface />} />
+          
+          {/* Legacy routes - can be accessed directly but not from navigation */}
+          <Route path="/case-notes" element={<CaseNotes />} />
+          <Route path="/lookup" element={<Lookup />} />  
+          <Route path="/assessment" element={<AssessmentInterface />} />
+          <Route path="/mh-assessment" element={<MHAssessment />} />
+          <Route path="/treatment" element={<TreatmentPlan />} />
+          <Route path="/mh-basic" element={<MHBasicInterface />} />
+          <Route path="/va-logs" element={<VALogInterface />} />
+          <Route path="/aoi" element={<AOIEventViewer />} />
         </Routes>
       </Container>
     </>
@@ -161,36 +200,36 @@ const AppLayout = () => {
 
 // Component to display current case information
 const CurrentCaseInfo = () => {
-    const { currentCase, cases } = useCase();
-    const selectedCase = cases.find(c => c.id === currentCase);
-    
-    return (
-        <Box sx={{ 
-            textAlign: 'center', 
-            mb: 4, 
-            p: 3, 
-            backgroundColor: '#f5f5f5', 
-            borderRadius: 2,
-            boxShadow: 1
-        }}>
-            <Typography variant="h4" gutterBottom>
-                {selectedCase?.name} {selectedCase?.number && `(${selectedCase?.number})`}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-                Currently viewing data for {selectedCase?.name}. Use the dropdown in the navigation bar to switch cases.
-            </Typography>
-        </Box>
-    );
+  const { currentCase, cases } = useCase();
+  const selectedCase = cases.find(c => c.id === currentCase);
+  
+  return (
+    <Box sx={{ 
+      textAlign: 'center', 
+      mb: 4, 
+      p: 3, 
+      backgroundColor: '#f5f5f5', 
+      borderRadius: 2,
+      boxShadow: 1
+    }}>
+      <Typography variant="h4" gutterBottom>
+        {selectedCase?.name} {selectedCase?.number && `(${selectedCase?.number})`}
+      </Typography>
+      <Typography variant="body1" color="text.secondary">
+        Currently viewing data for {selectedCase?.name}. Use the dropdown in the navigation bar to switch cases.
+      </Typography>
+    </Box>
+  );
 };
 
 function App() {
-    return (
-      <CaseProvider>
-        <Router>
-          <AppLayout />
-        </Router>
-      </CaseProvider>
-    );
-  }
+  return (
+    <CaseProvider>
+      <Router>
+        <AppLayout />
+      </Router>
+    </CaseProvider>
+  );
+}
 
 export default App;

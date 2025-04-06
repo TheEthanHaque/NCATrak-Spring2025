@@ -13,8 +13,6 @@ import {
   Paper,
   Checkbox,
   IconButton,
-  Pagination,
-  Grid
 } from "@mui/material";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
@@ -24,8 +22,7 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 
 function Lookup({ onPersonSelect, onClose }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(2); // Starting on page 2 as shown in the image
-  const [searchResults, setSearchResults] = useState([
+  const [searchResults] = useState([
     { id: 1, lastName: "Allen", firstName: "Barbara", middleName: "", alias: "" },
     { id: 2, lastName: "Allison", firstName: "Kevin", middleName: "", alias: "" },
     { id: 3, lastName: "Amore", firstName: "Shane", middleName: "", alias: "" },
@@ -56,13 +53,6 @@ function Lookup({ onPersonSelect, onClose }) {
     console.log("Viewing person:", person);
     // Handle viewing person details
   };
-
-  // Calculate pagination display
-  const itemsPerPage = 5;
-  const startItem = (page - 1) * itemsPerPage + 1;
-  const endItem = Math.min(page * itemsPerPage, 70); // Assuming 70 total items as shown in the image
-  const totalItems = 70;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   return (
     <Box sx={{ p: 2, overflow: "hidden" }}>
