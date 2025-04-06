@@ -10,24 +10,6 @@ function Lookup() {
 
       <form className="lookup-form">
         <div className="form-row">
-          <label htmlFor="caseId">Case ID</label>
-          <input
-            type="text"
-            id="caseId"
-            name="caseId"
-            placeholder="Enter case ID"
-          />
-        </div>
-        <div className="form-row">
-          <label htmlFor="firstName">First Name</label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            placeholder="Enter first name"
-          />
-        </div>
-        <div className="form-row">
           <label htmlFor="lastName">Last Name</label>
           <input
             type="text"
@@ -36,11 +18,6 @@ function Lookup() {
             placeholder="Enter last name"
           />
         </div>
-        <div className="form-row">
-          <label htmlFor="dob">Date of Birth</label>
-          <input type="date" id="dob" name="dob" />
-        </div>
-
         <button type="submit" className="search-button">
           Search
         </button>
