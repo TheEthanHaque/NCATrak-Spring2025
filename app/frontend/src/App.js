@@ -1,106 +1,163 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-//import AOITracker from './AOITracker';
-import AOIEventViewer from './AOIEventViewer';
-import GeneralTab from './components/GeneralTab';  
-import MHBasicInterface from './components/MHBasicInterface';  
-import PeopleInterface from './components/PeopleInterface';  
-import CaseNotes from './components/CaseNotes';  
-import AssessmentInterface from './components/AssessmentInterface';
-import TreatmentPlan from './components/TreatmentPlan';  
-import VALogInterface from './components/VALogInterface';  
-import MHAssessment from './components/MHAssessment';  
-import Lookup from './components/Lookup';  
-import MHSection from './components/MHSection';
-import NewCase from './components/NewCase';
-import { AppBar, Toolbar, Typography, Button, Container, Box} from '@mui/material';
+import { 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  Button, 
+  Container, 
+  Box, 
+  IconButton, 
+  Drawer, 
+  List, 
+  ListItem, 
+  ListItemText,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import CaseSelector from './context/CaseSelector';
 import { CaseProvider, useCase } from './context/CaseContext';
+// Import other components as needed
 
 const AppLayout = () => {
-    const location = useLocation();
-    const isNewCasePage = location.pathname === '/NewCase';
-    
-    return (
-        <>
-            {/* Header */}
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h5" sx={{ flexGrow: 0, mr: 3 }}>NCATrak Spring 2025</Typography>
-                    
-                    <CaseSelector />
-                    
-                    <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'auto' }}>
-                        <Button color="inherit" component={Link} to="/">Home</Button>
-                        <Button color="inherit" component={Link} to="/CaseGeneral">General</Button> 
-                        <Button color="inherit" component={Link} to="/CasePeople">People</Button>
-                        <Button color="inherit" component={Link} to="/CaseMDT">MDT</Button>
-                        <Button color="inherit" component={Link} to="/CasePresenting">Presenting</Button>
-                        <Button color="inherit" component={Link} to="/CaseCPS">CPS</Button>
-                        <Button color="inherit" component={Link} to="/CaseLE">LE</Button>
-                        <Button color="inherit" component={Link} to="/CaseMedical">Medical</Button>
-                        <Button color="inherit" component={Link} to="/CaseFI">FI</Button>
-                        <Button color="inherit" component={Link} to="/CaseMH">MH</Button>
-                        <Button color="inherit" component={Link} to="/CaseVA">VA</Button>
-                        <Button color="inherit" component={Link} to="/CaseProsecution">Prosecution</Button>
-                        <Button color="inherit" component={Link} to="/CaseReport">Report</Button>
-                        <Button color="inherit" component={Link} to="/CaseAttachments">Case Attachments</Button>
-                    </Box>
-                </Toolbar>
-            </AppBar>
+  const location = useLocation();
+  const isNewCasePage = location.pathname === '/NewCase';
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-            {/* Main Content */}
-            <Container maxWidth="md" sx={{ mt: 4 }}>
-                {/* Only show the CurrentCaseInfo if we're not on the NewCase page */}
-                {!isNewCasePage && <CurrentCaseInfo />}
+  // Navigation links
+  const navLinks = [
+    { title: "Home", path: "/" },
+    { title: "General", path: "/CaseGeneral" },
+    { title: "People", path: "/CasePeople" },
+    { title: "MDT", path: "/CaseMDT" },
+    { title: "Presenting", path: "/CasePresenting" },
+    { title: "CPS", path: "/CaseCPS" },
+    { title: "LE", path: "/CaseLE" },
+    { title: "Medical", path: "/CaseMedical" },
+    { title: "FI", path: "/CaseFI" },
+    { title: "MH", path: "/CaseMH" },
+    { title: "VA", path: "/CaseVA" },
+    { title: "Prosecution", path: "/CaseProsecution" },
+    { title: "Report", path: "/CaseReport" },
+    { title: "Case Attachments", path: "/CaseAttachments" }
+  ];
 
-                {/* Routes */}
-                <Routes>
-                    <Route path="/" element={<Typography variant="h6">Home: NCATrak Spring 2025!</Typography>} />
-                    <Route path="/CaseGeneral" element={<GeneralTab />} />
-                    <Route path="/CasePeople" element={<PeopleInterface />} />
-                    <Route path="/CaseMDT" element={<Typography variant="h6">MDT Component (Under Development)</Typography>} />
-                    <Route path="/CasePresenting" element={<Typography variant="h6">Presenting Component (Under Development)</Typography>} />
-                    <Route path="/CaseCPS" element={<Typography variant="h6">CPS Component (Under Development)</Typography>} />
-                    <Route path="/CaseLE" element={<Typography variant="h6">LE Component (Under Development)</Typography>} />
-                    <Route path="/CaseMedical" element={<Typography variant="h6">Medical Component (Under Development)</Typography>} />
-                    <Route path="/CaseFI" element={<Typography variant="h6">FI Component (Under Development)</Typography>} />
-                    <Route path="/CaseProsecution" element={<Typography variant="h6">FI Component (Under Development)</Typography>} />
-                    <Route path="/CaseReport" element={<Typography variant="h6">FI Component (Under Development)</Typography>} />
-                    <Route path="/CaseAttachments" element={<Typography variant="h6">FI Component (Under Development)</Typography>} />
+  const toggleDrawer = (open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setDrawerOpen(open);
+  };
 
-                    {/* Create New Case Route */}
-                    <Route path="/NewCase" element={<NewCase />} />
-                    
-                    {/* MH Section with sub-navigation */}
-                    <Route path="/CaseMh/*" element={<MHSection />} />
-                    
-                    <Route path="/CaseVA/*" element={<VALogInterface />} />
-                    
-                    {/* Legacy routes - can be accessed directly but not from navigation */}
-                    <Route path="/case-notes" element={<CaseNotes />} />
-                    <Route path="/lookup" element={<Lookup />} />  
-                    <Route path="/assessment" element={<AssessmentInterface />} />
-                    <Route path="/mh-assessment" element={<MHAssessment />} />
-                    <Route path="/treatment" element={<TreatmentPlan />} />
-                    <Route path="/mh-basic" element={<MHBasicInterface />} />
-                    <Route path="/va-logs" element={<VALogInterface />} />
-                    <Route path="/aoi" element={<AOIEventViewer />} />
-                </Routes>
-            </Container>
-        </>
-    );
+  const DrawerList = () => (
+    <Box
+      sx={{ width: 250 }}
+      role="presentation"
+      onClick={toggleDrawer(false)}
+      onKeyDown={toggleDrawer(false)}
+    >
+      <List>
+        {navLinks.map((link) => (
+          <ListItem 
+            button 
+            component={Link} 
+            to={link.path} 
+            key={link.title}
+            selected={location.pathname === link.path}
+          >
+            <ListItemText primary={link.title} />
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
+  return (
+    <>
+      {/* Header */}
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h5" sx={{ flexGrow: 0, mr: 3 }}>NCATrak Spring 2025</Typography>
+          
+          <CaseSelector />
+          
+          {isMobile ? (
+            <>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={toggleDrawer(true)}
+                sx={{ ml: 'auto' }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Drawer
+                anchor="right"
+                open={drawerOpen}
+                onClose={toggleDrawer(false)}
+              >
+                <DrawerList />
+              </Drawer>
+            </>
+          ) : (
+            <Box 
+              sx={{ 
+                flexGrow: 1, 
+                display: 'flex', 
+                overflowX: 'auto',
+                '&::-webkit-scrollbar': {
+                  height: '8px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  borderRadius: '4px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                }
+              }}
+            >
+              {navLinks.map((link) => (
+                <Button 
+                  key={link.title}
+                  color="inherit" 
+                  component={Link} 
+                  to={link.path}
+                  sx={{ 
+                    whiteSpace: 'nowrap',
+                    minWidth: 'auto',
+                    px: 1.5,
+                    '&.active': {
+                      bgcolor: 'rgba(255, 255, 255, 0.2)'
+                    }
+                  }}
+                >
+                  {link.title}
+                </Button>
+              ))}
+            </Box>
+          )}
+        </Toolbar>
+      </AppBar>
+
+      {/* Main Content */}
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        {/* Only show the CurrentCaseInfo if we're not on the NewCase page */}
+        {!isNewCasePage && <CurrentCaseInfo />}
+
+        {/* Routes */}
+        <Routes>
+          <Route path="/" element={<Typography variant="h6">Home: NCATrak Spring 2025!</Typography>} />
+          {/* Add all your routes here */}
+        </Routes>
+      </Container>
+    </>
+  );
 };
-
-function App() {
-    return (
-        <CaseProvider>
-            <Router>
-                <AppLayout />
-            </Router>
-        </CaseProvider>
-    );
-}
 
 // Component to display current case information
 const CurrentCaseInfo = () => {
@@ -125,5 +182,15 @@ const CurrentCaseInfo = () => {
         </Box>
     );
 };
+
+function App() {
+    return (
+      <CaseProvider>
+        <Router>
+          <AppLayout />
+        </Router>
+      </CaseProvider>
+    );
+  }
 
 export default App;
