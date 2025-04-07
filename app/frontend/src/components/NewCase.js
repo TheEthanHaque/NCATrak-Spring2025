@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -27,6 +27,11 @@ const NewCase = () => {
   
   // State for person lookup modal
   const [lookupModalOpen, setLookupModalOpen] = useState(false);
+  
+  // Effect to open the lookup modal when component mounts
+  useEffect(() => {
+    setLookupModalOpen(true);
+  }, []);
   
   // Open lookup modal
   const handleOpenLookupModal = () => {
