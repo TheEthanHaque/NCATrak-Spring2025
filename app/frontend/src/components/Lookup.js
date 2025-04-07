@@ -22,6 +22,7 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import { peopleApi } from "../services/api";
+import PersonProfile from "./PersonProfile"; 
 
 function Lookup({ onPersonSelect, onClose }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +30,11 @@ function Lookup({ onPersonSelect, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
-  const rowsPerPage = 10; // Changed from state to constant since it's not being changed
+  const rowsPerPage = 10;
+  
+  // Add states for PersonProfile dialog
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState(null);
   
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
@@ -59,16 +64,33 @@ function Lookup({ onPersonSelect, onClose }) {
 
   const handleSelect = (person) => {
     if (onPersonSelect) {
-      onPersonSelect(person);
-    }
-    if (onClose) {
-      onClose();
+      // Make sure we're passing all the data the NewCase form needs
+      const personData = {
+        person_id: person.person_id,
+        first_name: person.first_name,
+        middle_name: person.middle_name,
+        last_name: person.last_name,
+        date_of_birth: person.date_of_birth,
+        gender: person.gender,
+        prior_convictions: person.prior_convictions,
+        convicted_against_children: person.convicted_against_children,
+        sex_offender: person.sex_offender,
+        sex_predator: person.sex_predator
+      };
+      
+      onPersonSelect(personData);
     }
   };
 
-  const handleView = (person) => {
-    // You could implement a detailed view here, perhaps with another API call
-    console.log("Viewing person:", person);
+  const handleView = async (person) => {
+    try {
+      setSelectedPerson(person);
+ 
+      setViewDialogOpen(true);
+    } catch (err) {
+      console.error("Error viewing person details:", err);
+      setError("Failed to load person details. Please try again.");
+    }
   };
   
   // Pagination handlers
@@ -265,6 +287,13 @@ function Lookup({ onPersonSelect, onClose }) {
           </Typography>
         </Box>
       )}
+      
+      {/* Person Profile Dialog */}
+      <PersonProfile 
+        open={viewDialogOpen}
+        person={selectedPerson}
+        onClose={() => setViewDialogOpen(false)}
+      />
     </Box>
   );
 }

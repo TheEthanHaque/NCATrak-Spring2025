@@ -38,7 +38,7 @@ export const peopleApi = {
   }
 };
 
-// Create a named export for the API service
+// Named export for the API service
 const apiService = {
   people: peopleApi
 };

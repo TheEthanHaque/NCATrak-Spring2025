@@ -333,11 +333,48 @@ router.get('/search/:lastName', async (req, res, next) => {
         first_name: true,
         middle_name: true,
         last_name: true,
-        date_of_birth: true
+        suffix: true,
+        date_of_birth: true,
+        gender: true,
+        prior_convictions: true,
+        convicted_against_children: true,
+        sex_offender: true,
+        sex_predator: true
       }
     });
     
     res.json(people);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /api/people/:id
+ * @desc Get a person by id with detailed information
+ */
+router.get('/:id', async (req, res, next) => {
+  try {
+    const personId = parseInt(req.params.id);
+    const person = await req.prisma.person.findUnique({
+      where: { person_id: personId }
+    });
+    
+    if (!person) {
+      return res.status(404).json({ message: 'Person not found' });
+    }
+    
+    // Calculate nickname (could be stored in DB or derived)
+    const nickName = person.nick_name || person.first_name;
+    
+    // Create an enhanced person object with all the fields we want to display
+    const enhancedPerson = {
+      ...person,
+      nickName,
+      // You can add additional computed fields here if needed
+    };
+    
+    res.json(enhancedPerson);
   } catch (error) {
     next(error);
   }

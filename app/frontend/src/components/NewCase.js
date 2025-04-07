@@ -45,14 +45,29 @@ const NewCase = () => {
   
   // Handle person selection from lookup
   const handlePersonSelect = (person) => {
-    // Update form with selected person's data
+    console.log("Selected person from lookup:", person);
+    
+    let formattedDob = '';
+    if (person.date_of_birth) {
+      const date = new Date(person.date_of_birth);
+      formattedDob = date.toISOString().split('T')[0];
+    }
+
     setFormData(prev => ({
       ...prev,
-      firstName: person.firstName || '',
-      lastName: person.lastName || '',
-      middleName: person.middleName || '',
-      // Add other fields as needed
+      firstName: person.first_name || '',
+      middleName: person.middle_name || '',
+      lastName: person.last_name || '',
+      suffix: '', 
+      dateOfBirth: formattedDob,
+      gender: person.gender === 'M' ? 'Male' : person.gender === 'F' ? 'Female' : '',
+      prior_convictions: person.prior_convictions || false,
+      convicted_against_children: person.convicted_against_children || false,
+      sex_offender: person.sex_offender || false,
+      sex_predator: person.sex_predator || false,
     }));
+    
+    // Close the lookup modal
     handleCloseLookupModal();
   };
   
@@ -2188,6 +2203,9 @@ const NewCase = () => {
           />
         </DialogContent>
       </Dialog>
+
+      
+
     </Container>
   );
 };
