@@ -311,6 +311,38 @@ router.put('/case/:personId/:caseId', async (req, res, next) => {
   }
 });
 
+/**
+ * @route GET /api/people/search/:lastName
+ * @desc Search people by last name
+ */
+router.get('/search/:lastName', async (req, res, next) => {
+  try {
+    const lastName = req.params.lastName;
+    const people = await req.prisma.person.findMany({
+      where: { 
+        last_name: {
+          contains: lastName,
+          mode: 'insensitive'
+        }
+      },
+      orderBy: {
+        last_name: 'asc'
+      },
+      select: {
+        person_id: true,
+        first_name: true,
+        middle_name: true,
+        last_name: true,
+        date_of_birth: true
+      }
+    });
+    
+    res.json(people);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Helper function to calculate age from date of birth
 function calculateAge(dob) {
   const today = new Date();
