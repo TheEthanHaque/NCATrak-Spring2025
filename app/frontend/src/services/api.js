@@ -38,9 +38,23 @@ export const peopleApi = {
   }
 };
 
-// Named export for the API service
-const apiService = {
-  people: peopleApi
-};
+export const casesApi = {
+    // Get list of cases for dropdown
+    getCasesList: () => {
+      return fetchApi('/api/cases/list');
+    },
+    
+    // Get a case by ID
+    getCaseById: (caseId) => {
+      return fetchApi(`/api/cases/${caseId}`);
+    }
+  };
+  
+  // Update the named export for the API service
+  const apiService = {
+    people: peopleApi,
+    cases: casesApi
+  };
+
 
 export default apiService;

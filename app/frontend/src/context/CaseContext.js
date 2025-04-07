@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { casesApi } from '../services/api';
 
 // Create a context to manage the currently selected case
 export const CaseContext = createContext();
@@ -6,23 +7,50 @@ export const CaseContext = createContext();
 // Custom hook to use the case context
 export const useCase = () => useContext(CaseContext);
 
-// Sample case data
-const sampleCases = [
-    { id: 'create-new', name: 'Create New Case(s)', number: '', isAction: true },
-    { id: 'case1', name: 'Case One', number: 'CAC-2025-001' },
-    { id: 'case2', name: 'Case Two', number: 'CAC-2025-002' },
-    { id: 'case3', name: 'Case Three', number: 'CAC-2025-003' },
-    { id: 'case4', name: 'Case Four', number: 'CAC-2025-004' },
-    
-  ];
-
 // Case provider component
 export const CaseProvider = ({ children }) => {
-  const [currentCase, setCurrentCase] = useState('case1');
-  const [cases] = useState(sampleCases);
+  const [currentCase, setCurrentCase] = useState('');
+  const [cases, setCases] = useState([
+    { id: 'create-new', name: 'Create New Case(s)', number: '', isAction: true }
+  ]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch cases from the API when the component mounts
+  useEffect(() => {
+    const fetchCases = async () => {
+      try {
+        setLoading(true);
+        const casesList = await casesApi.getCasesList();
+        
+        // Add the "Create New Case" option with the real cases
+        const allCases = [
+          { id: 'create-new', name: 'Create New Case(s)', number: '', isAction: true },
+          ...casesList
+        ];
+        
+        setCases(allCases);
+        
+        // Set the first real case as the default selected case only if we don't have a selection yet
+        if (casesList.length > 0 && !currentCase) {
+          setCurrentCase(casesList[0].id);
+        }
+        
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch cases:', err);
+        setError('Failed to load cases. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchCases();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array, with linter rule disabled
   
   return (
-    <CaseContext.Provider value={{ currentCase, setCurrentCase, cases }}>
+    <CaseContext.Provider value={{ currentCase, setCurrentCase, cases, loading, error }}>
       {children}
     </CaseContext.Provider>
   );

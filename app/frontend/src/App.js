@@ -25,7 +25,8 @@ import {
   ListItem, 
   ListItemText,
   useMediaQuery,
-  useTheme
+  useTheme,
+  CircularProgress
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CaseSelector from './context/CaseSelector';
@@ -200,8 +201,60 @@ const AppLayout = () => {
 
 // Component to display current case information
 const CurrentCaseInfo = () => {
-  const { currentCase, cases } = useCase();
+  const { currentCase, cases, loading, error } = useCase();
+  
+  if (loading) {
+    return (
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        p: 3, 
+        backgroundColor: '#f5f5f5', 
+        borderRadius: 2,
+        boxShadow: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <CircularProgress size={30} sx={{ mr: 2 }} />
+        <Typography variant="h6">Loading case information...</Typography>
+      </Box>
+    );
+  }
+  
+  if (error) {
+    return (
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        p: 3, 
+        backgroundColor: '#ffeded', 
+        borderRadius: 2,
+        boxShadow: 1
+      }}>
+        <Typography variant="h6" color="error">Error loading case information</Typography>
+        <Typography variant="body1">Please try refreshing the page</Typography>
+      </Box>
+    );
+  }
+  
   const selectedCase = cases.find(c => c.id === currentCase);
+  
+  if (!selectedCase) {
+    return (
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        p: 3, 
+        backgroundColor: '#f5f5f5', 
+        borderRadius: 2,
+        boxShadow: 1
+      }}>
+        <Typography variant="h6">No case selected</Typography>
+        <Typography variant="body1">Please select a case from the dropdown menu</Typography>
+      </Box>
+    );
+  }
   
   return (
     <Box sx={{ 
@@ -213,10 +266,13 @@ const CurrentCaseInfo = () => {
       boxShadow: 1
     }}>
       <Typography variant="h4" gutterBottom>
-        {selectedCase?.name} {selectedCase?.number && `(${selectedCase?.number})`}
+        {selectedCase.name} 
+      </Typography>
+      <Typography variant="h6" color="text.secondary" gutterBottom>
+        Case {selectedCase.number} - {selectedCase.cacName}
       </Typography>
       <Typography variant="body1" color="text.secondary">
-        Currently viewing data for {selectedCase?.name}. Use the dropdown in the navigation bar to switch cases.
+        Currently viewing data for this case. Use the dropdown in the navigation bar to switch cases.
       </Typography>
     </Box>
   );

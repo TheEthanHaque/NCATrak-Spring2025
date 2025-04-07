@@ -22,12 +22,99 @@ router.get('/', async (req, res, next) => {
 });
 
 /**
+ * @route GET /api/cases/list
+ * @desc Get a simplified list of cases for dropdown with primary person information
+ */
+router.get('/list', async (req, res, next) => {
+  try {
+    console.log("Fetching cases list with person information for dropdown");
+    
+    const cases = await req.prisma.cac_case.findMany({
+      select: {
+        case_id: true,
+        case_number: true,
+        cac_id: true,
+        case_person: {
+          take: 1, // Take just the first person associated with each case
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                last_name: true
+              }
+            },
+            role_id: true
+          },
+          orderBy: {
+            role_id: 'asc' // Try to get the primary victim/client first
+          }
+        },
+        child_advocacy_center: {
+          select: {
+            cac_name: true
+          }
+        }
+      },
+      orderBy: {
+        case_id: 'desc'
+      },
+      take: 20 // Limit to recent 20 cases
+    });
+    
+    console.log(`Retrieved ${cases.length} cases from database`);
+    
+    // Format the response for the dropdown
+    const formattedCases = cases.map(c => {
+      // Extract person info if available
+      const person = c.case_person?.[0]?.person;
+      let displayName = 'Unknown Person';
+      
+      if (person) {
+        displayName = `${person.last_name || ''}, ${person.first_name || ''}`;
+      }
+      
+      return {
+        id: c.case_id.toString(),
+        name: displayName,
+        number: c.case_number || `#${c.case_id}`,
+        cacName: c.child_advocacy_center?.cac_name || `CAC ID: ${c.cac_id}`
+      };
+    });
+    
+    res.json(formattedCases);
+  } catch (error) {
+    console.error('Error fetching cases list:', error);
+    next(error);
+  }
+});
+
+/**
  * @route GET /api/cases/:id
- * @desc Get a case by id
+ * @desc Get a case by ID
  */
 router.get('/:id', async (req, res, next) => {
   try {
-    const caseId = parseInt(req.params.id);
+    // Check if id parameter exists
+    if (!req.params.id) {
+      return res.status(400).json({ message: 'Case ID is required' });
+    }
+    
+    // Parse the id parameter with better error handling
+    let caseId;
+    try {
+      caseId = parseInt(req.params.id, 10);
+      
+      // Check if parsing resulted in a valid number
+      if (isNaN(caseId)) {
+        return res.status(400).json({ message: 'Invalid case ID format' });
+      }
+    } catch (parseError) {
+      console.error('Error parsing case ID:', parseError);
+      return res.status(400).json({ message: 'Invalid case ID format' });
+    }
+    
+    console.log(`Looking up case with ID: ${caseId}`);
+    
     const caseData = await req.prisma.cac_case.findUnique({
       where: { case_id: caseId },
       include: {
@@ -45,17 +132,15 @@ router.get('/:id', async (req, res, next) => {
     });
 
     if (!caseData) {
-      // If not found by ID, get default case
-      const defaultCase = await req.prisma.cac_case.findFirst();
-      return res.json(defaultCase);
+      return res.status(404).json({ message: 'Case not found' });
     }
 
     res.json(caseData);
   } catch (error) {
+    console.error('Error fetching case by ID:', error);
     next(error);
   }
 });
-
 /**
  * @route POST /api/cases
  * @desc Create a new case
@@ -130,5 +215,7 @@ router.delete('/:id', async (req, res, next) => {
     next(error);
   }
 });
+
+
 
 export default router;
