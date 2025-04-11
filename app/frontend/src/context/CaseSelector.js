@@ -72,9 +72,6 @@ const CaseSelector = () => {
                     <Typography component="span" sx={{ ml: 1, color: 'text.secondary', fontSize: '0.9em' }}>
                       {caseItem.number}
                     </Typography>
-                    <Typography component="div" sx={{ fontSize: '0.8em', color: 'text.secondary' }}>
-                      {caseItem.cacName}
-                    </Typography>
                   </Box>
                 )}
               </MenuItem>

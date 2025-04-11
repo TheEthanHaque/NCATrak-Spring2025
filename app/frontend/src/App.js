@@ -269,7 +269,7 @@ const CurrentCaseInfo = () => {
         {selectedCase.name} 
       </Typography>
       <Typography variant="h6" color="text.secondary" gutterBottom>
-        Case {selectedCase.number} - {selectedCase.cacName}
+        Case {selectedCase.number}
       </Typography>
       <Typography variant="body1" color="text.secondary">
         Currently viewing data for this case. Use the dropdown in the navigation bar to switch cases.

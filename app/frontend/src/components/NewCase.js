@@ -1946,11 +1946,7 @@ const NewCase = () => {
                         displayEmpty
                         renderValue={(selected) => selected || ' '}
                         sx={{ '& .MuiSelect-select': { display: 'flex', alignItems: 'center' } }}
-                        endAdornment={
-                          <Box component="span" sx={{ position: 'absolute', right: 32, top: '50%', transform: 'translateY(-50%)' }}>
-                            <span>▼</span>
-                          </Box>
-                        }
+                        
                       >
                         <MenuItem value="">Select Agency</MenuItem>
                         <MenuItem value="agency1">Agency 1</MenuItem>
@@ -1981,11 +1977,7 @@ const NewCase = () => {
                         displayEmpty
                         renderValue={(selected) => selected || ' '}
                         sx={{ '& .MuiSelect-select': { display: 'flex', alignItems: 'center' } }}
-                        endAdornment={
-                          <Box component="span" sx={{ position: 'absolute', right: 32, top: '50%', transform: 'translateY(-50%)' }}>
-                            <span>▼</span>
-                          </Box>
-                        }
+                        
                       >
                         <MenuItem value="">Select Person</MenuItem>
                         <MenuItem value="person1">Person 1</MenuItem>
@@ -2044,11 +2036,7 @@ const NewCase = () => {
                         displayEmpty
                         renderValue={(selected) => selected || ' '}
                         sx={{ '& .MuiSelect-select': { display: 'flex', alignItems: 'center' } }}
-                        endAdornment={
-                          <Box component="span" sx={{ position: 'absolute', right: 32, top: '50%', transform: 'translateY(-50%)' }}>
-                            <span>▼</span>
-                          </Box>
-                        }
+                        
                       >
                         <MenuItem value="">Select Location</MenuItem>
                         <MenuItem value="location1">Location 1</MenuItem>
@@ -2150,11 +2138,7 @@ const NewCase = () => {
                         displayEmpty
                         renderValue={(selected) => selected || ' '}
                         sx={{ '& .MuiSelect-select': { display: 'flex', alignItems: 'center' } }}
-                        endAdornment={
-                          <Box component="span" sx={{ position: 'absolute', right: 32, top: '50%', transform: 'translateY(-50%)' }}>
-                            <span>▼</span>
-                          </Box>
-                        }
+                        
                       >
                         <MenuItem value="">Select Meeting</MenuItem>
                         <MenuItem value="meeting1">Meeting 1</MenuItem>
