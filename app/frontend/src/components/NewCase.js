@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Lookup from './Lookup';
+import ConfirmationModal from './ConfirmationModal';
 
 const NewCase = () => {
   console.log("NewCase component is rendering");
@@ -27,6 +28,13 @@ const NewCase = () => {
   
   // State for person lookup modal
   const [lookupModalOpen, setLookupModalOpen] = useState(false);
+
+  // Add state for the original person data (for comparison)
+  const [originalPersonData, setOriginalPersonData] = useState(null);
+
+  // Add state for confirmation modal
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [pendingChanges, setPendingChanges] = useState(null);
   
   // Effect to open the lookup modal when component mounts
   useEffect(() => {
@@ -53,8 +61,8 @@ const NewCase = () => {
       formattedDob = date.toISOString().split('T')[0];
     }
 
-    setFormData(prev => ({
-      ...prev,
+    const personData = {
+      person_id: person.person_id,
       firstName: person.first_name || '',
       middleName: person.middle_name || '',
       lastName: person.last_name || '',
@@ -65,6 +73,14 @@ const NewCase = () => {
       convicted_against_children: person.convicted_against_children || false,
       sex_offender: person.sex_offender || false,
       sex_predator: person.sex_predator || false,
+    };
+    
+    // Store the original data for later comparison
+    setOriginalPersonData(personData);
+    
+    setFormData(prev => ({
+      ...prev,
+      ...personData
     }));
     
     // Close the lookup modal
@@ -252,10 +268,23 @@ const NewCase = () => {
   // Handle text field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Update form data as before
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+    
+    // Check if this is a change to person data and we have original data to compare
+    if (originalPersonData && 
+        (name === 'firstName' || name === 'middleName' || name === 'lastName' || 
+         name === 'suffix' || name === 'dateOfBirth' || name === 'gender')) {
+      // Compare with original data
+      if (originalPersonData[name] !== value) {
+        console.log(`Person data changed: ${name} from "${originalPersonData[name]}" to "${value}"`);
+        // We'll check for showing the modal during form submission
+      }
+    }
   };
 
   // Handle radio button changes
@@ -279,11 +308,95 @@ const NewCase = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add API call here to submit the data
     
-    // Navigate to the case view page after saving
-    navigate('/');
+    // Check if person data has been changed
+    if (originalPersonData && originalPersonData.person_id) {
+      const personDataChanged = 
+        originalPersonData.firstName !== formData.firstName ||
+        originalPersonData.middleName !== formData.middleName ||
+        originalPersonData.lastName !== formData.lastName ||
+        originalPersonData.suffix !== formData.suffix ||
+        originalPersonData.dateOfBirth !== formData.dateOfBirth ||
+        originalPersonData.gender !== formData.gender;
+      
+      if (personDataChanged) {
+        // Store the changes for use in confirmation
+        setPendingChanges({
+          person_id: originalPersonData.person_id,
+          first_name: formData.firstName,
+          middle_name: formData.middleName,
+          last_name: formData.lastName,
+          suffix: formData.suffix,
+          date_of_birth: formData.dateOfBirth,
+          gender: formData.gender === 'Male' ? 'M' : formData.gender === 'Female' ? 'F' : null
+        });
+        
+        // Show confirmation modal
+        setConfirmModalOpen(true);
+        return; // Stop here and wait for confirmation
+      }
+    }
+    
+    // No changes to person data or no person selected, proceed normally
+    submitForm();
+  };
+
+  // Function to handle actual form submission
+  const submitForm = async () => {
+    console.log('Form submitted:', formData);
+    
+    // Add API call here to submit the data
+    try {
+      // If we have pending changes to a person, update them in the database
+      if (pendingChanges) {
+        await updatePersonInDatabase(pendingChanges);
+      }
+      
+      // Continue with regular form submission
+      // ...your existing submission code...
+      
+      // Navigate to the case view page after saving
+      navigate('/');
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      // Handle error (show message to user, etc.)
+    }
+  };
+
+  // Function to update person in database
+  const updatePersonInDatabase = async (personData) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/people/${personData.person_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(personData),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to update person: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Person updated successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('Error updating person:', error);
+      throw error;
+    }
+  };
+
+  // Handle confirmation
+  const handleConfirmChanges = () => {
+    setConfirmModalOpen(false);
+    submitForm();
+  };
+
+  // Handle cancellation
+  const handleCancelChanges = () => {
+    setConfirmModalOpen(false);
+    setPendingChanges(null);
   };
 
   // Handle checkbox changes for gender identity
@@ -2165,6 +2278,14 @@ const NewCase = () => {
           </Box>
         </Box>
       </Paper>
+
+      <ConfirmationModal
+        open={confirmModalOpen}
+        title="Update Person Information"
+        message={`You are attempting to change the information of a person already in NCATrak. This will change the person's information on all cases in NCATrak. Are you sure you want to do this?`}
+        onConfirm={handleConfirmChanges}
+        onCancel={handleCancelChanges}
+      />
       
       {/* Lookup Person Modal */}
       <Dialog

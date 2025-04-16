@@ -35,6 +35,14 @@ export const peopleApi = {
   // Get a person by ID
   getPersonById: (personId) => {
     return fetchApi(`/api/people/${personId}`);
+  },
+  
+  // Update a person
+  updatePerson: (personId, personData) => {
+    return fetchApi(`/api/people/${personId}`, {
+      method: 'PUT',
+      body: JSON.stringify(personData)
+    });
   }
 };
 

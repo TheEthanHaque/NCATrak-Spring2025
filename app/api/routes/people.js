@@ -29,19 +29,38 @@ router.get('/', async (req, res, next) => {
  * @route GET /api/people/:id
  * @desc Get a person by id
  */
-router.get('/:id', async (req, res, next) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const personId = parseInt(req.params.id);
-    const person = await req.prisma.person.findUnique({
-      where: { person_id: personId }
+    
+    // Log the update for debugging
+    console.log(`Updating person ${personId} with data:`, req.body);
+    
+    const updatedPerson = await req.prisma.person.update({
+      where: { person_id: personId },
+      data: {
+        first_name: req.body.first_name,
+        middle_name: req.body.middle_name || null,
+        last_name: req.body.last_name,
+        suffix: req.body.suffix || null,
+        date_of_birth: req.body.date_of_birth ? new Date(req.body.date_of_birth) : null,
+        gender: req.body.gender,
+        religion_id: req.body.religion_id,
+        language_id: req.body.language_id,
+        prior_convictions: req.body.prior_convictions,
+        convicted_against_children: req.body.convicted_against_children,
+        sex_offender: req.body.sex_offender,
+        sex_predator: req.body.sex_predator,
+        race_id: req.body.race_id
+      }
     });
     
-    if (!person) {
-      return res.status(404).json({ message: 'Person not found' });
-    }
+    // Log success
+    console.log(`Successfully updated person ${personId}`);
     
-    res.json(person);
+    res.json(updatedPerson);
   } catch (error) {
+    console.error(`Error updating person:`, error);
     next(error);
   }
 });
