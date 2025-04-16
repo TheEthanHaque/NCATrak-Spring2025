@@ -50,7 +50,7 @@ const SearchPerson = () => {
   
   // State for person profile dialog
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [selectedPerson] = useState(null);
 
   // Handle input change
   const handleInputChange = (e) => {
@@ -156,12 +156,6 @@ const SearchPerson = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Handle view person details
-  const handleViewPerson = (person) => {
-    setSelectedPerson(person);
-    setViewDialogOpen(true);
   };
 
   // Handle clicking on a person name
