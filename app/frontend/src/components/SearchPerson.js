@@ -27,6 +27,7 @@ import ResetIcon from '@mui/icons-material/Refresh';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
 import PersonProfile from './PersonProfile';
+import { peopleApi } from '../services/api';
 
 const SearchPerson = () => {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ const SearchPerson = () => {
   
   // State for person profile dialog
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [selectedPerson] = useState(null);
+  const [selectedPerson, setSelectedPerson] = useState(null);
 
   // Handle input change
   const handleInputChange = (e) => {
@@ -73,12 +74,40 @@ const SearchPerson = () => {
     setSearchResults([]);
   };
 
+  // Helper function to map role_id to human-readable role
+  const getPersonRole = (roleId) => {
+    const roles = {
+      1: 'Primary Victim',
+      2: 'Parent/Guardian',
+      3: 'Sibling',
+      4: 'Alleged Perpetrator',
+      5: 'Witness',
+      // Add more roles as needed
+    };
+    return roles[roleId] || 'Unknown Role';
+  };
+
+  // Handle view dialog for person details
+  const handleViewPerson = async (person) => {
+    try {
+      setLoading(true);
+      // Fetch detailed person information by ID
+      const personDetails = await peopleApi.getPersonById(person.id);
+      setSelectedPerson(personDetails);
+      setViewDialogOpen(true);
+    } catch (err) {
+      console.error("Error fetching person details:", err);
+      setError("Failed to load person details. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Handle search
   const handleSearch = async () => {
-    // Validate at least one search criteria is provided
-    if (!searchCriteria.lastName && !searchCriteria.firstName && 
-        !searchCriteria.dateOfBirth && !searchCriteria.ssn && !searchCriteria.phoneNumber) {
-      setError("Please enter at least one search criteria");
+    // Validate at least last name is provided
+    if (!searchCriteria.lastName) {
+      setError("Please enter at least a last name to search");
       return;
     }
     
@@ -86,69 +115,49 @@ const SearchPerson = () => {
     setError(null);
     
     try {
-      // In a real implementation, this would be an API call to search for people
-      // For now, we'll simulate with mock data based on the search criteria
+      // Use the existing lastName search endpoint
+      const results = await peopleApi.searchByLastName(searchCriteria.lastName.trim());
       
-      // MOCK DATA - replace with actual API call in production
-      await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API delay
+      // Filter results if other criteria are provided
+      let filteredResults = [...results];
       
-      const mockResults = [
-        {
-          id: '1',
-          firstName: 'John',
-          lastName: 'Smith',
-          alias: 'Johnny',
-          caseId: '101',
-          caseNumber: 'CA-2025-001',
-          role: 'Primary Victim',
-          dateOfBirth: '1985-04-12',
-          ssn: '123-45-6789'
-        },
-        {
-          id: '2',
-          firstName: 'Sarah',
-          lastName: 'Johnson',
-          alias: 'Sare',
-          caseId: '102',
-          caseNumber: 'CA-2025-002',
-          role: 'Parent/Guardian',
-          dateOfBirth: '1970-09-23',
-          ssn: '987-65-4321'
-        },
-        {
-          id: '3',
-          firstName: 'Michael',
-          lastName: 'Williams',
-          alias: 'Mike',
-          caseId: '103',
-          caseNumber: 'CA-2025-003',
-          role: 'Alleged Perpetrator',
-          dateOfBirth: '1982-11-30',
-          ssn: '456-78-9012'
-        }
-      ];
+      if (searchCriteria.firstName) {
+        filteredResults = filteredResults.filter(person => 
+          person.first_name?.toLowerCase().includes(searchCriteria.firstName.toLowerCase())
+        );
+      }
       
-      // Filter results based on search criteria (case insensitive)
-      const filteredResults = mockResults.filter(person => {
-        const lastNameMatch = !searchCriteria.lastName || 
-          person.lastName.toLowerCase().includes(searchCriteria.lastName.toLowerCase());
+      if (searchCriteria.dateOfBirth) {
+        filteredResults = filteredResults.filter(person => 
+          person.date_of_birth?.includes(searchCriteria.dateOfBirth)
+        );
+      }
+      
+      if (searchCriteria.ssn) {
+        filteredResults = filteredResults.filter(person => 
+          person.ssn?.includes(searchCriteria.ssn)
+        );
+      }
+      
+      // Format the results for display
+      const formattedResults = filteredResults.map(person => {
+        // Find case information if available
+        const caseInfo = person.case_person?.[0];
         
-        const firstNameMatch = !searchCriteria.firstName || 
-          person.firstName.toLowerCase().includes(searchCriteria.firstName.toLowerCase());
-        
-        // Date matching (simple includes for the string representation)
-        const dobMatch = !searchCriteria.dateOfBirth || 
-          person.dateOfBirth.includes(searchCriteria.dateOfBirth);
-        
-        const ssnMatch = !searchCriteria.ssn || 
-          person.ssn.includes(searchCriteria.ssn);
-        
-        // We don't have phone numbers in mock data, but would check it if we did
-        
-        return lastNameMatch && firstNameMatch && dobMatch && ssnMatch;
+        return {
+          id: person.person_id.toString(),
+          firstName: person.first_name || '',
+          lastName: person.last_name || '',
+          alias: person.nick_name || '',
+          caseId: caseInfo?.case_id?.toString() || '',
+          caseNumber: caseInfo?.cac_case?.case_number || '',
+          role: getPersonRole(caseInfo?.role_id),
+          dateOfBirth: person.date_of_birth || '',
+          ssn: person.ssn || ''
+        };
       });
       
-      setSearchResults(filteredResults);
+      setSearchResults(formattedResults);
       setPage(0); // Reset to first page
     } catch (err) {
       setError("Failed to search for people. Please try again.");
@@ -167,6 +176,11 @@ const SearchPerson = () => {
 
   // Handle clicking on a case
   const handleCaseClick = (caseId, caseNumber) => {
+    if (!caseId) {
+      console.log("No case ID available for this person");
+      return;
+    }
+    
     console.log(`Navigating to case ${caseNumber} (ID: ${caseId})`);
     // Set the current case in context
     setCurrentCase(caseId);
@@ -191,6 +205,14 @@ const SearchPerson = () => {
   const totalItems = searchResults.length;
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
+  // Format date for display (convert ISO to MM/DD/YYYY)
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString; // Return original if invalid
+    return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
+  };
+
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h5" gutterBottom>
@@ -211,6 +233,7 @@ const SearchPerson = () => {
               value={searchCriteria.lastName}
               onChange={handleInputChange}
               variant="outlined"
+              required
             />
           </Grid>
           
@@ -297,7 +320,7 @@ const SearchPerson = () => {
         
         <TableContainer sx={{ maxHeight: 400, mb: 2 }}>
           <Table stickyHeader>
-                          <TableHead>
+            <TableHead>
               <TableRow>
                 <TableCell>Person's Name</TableCell>
                 <TableCell>Alias</TableCell>
@@ -305,12 +328,13 @@ const SearchPerson = () => {
                 <TableCell>Role on Case</TableCell>
                 <TableCell>Date of Birth</TableCell>
                 <TableCell>SSN</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
+                  <TableCell colSpan={7} align="center">
                     <CircularProgress size={40} sx={{ my: 2 }} />
                     <Typography variant="body2" display="block">
                       Searching...
@@ -338,25 +362,38 @@ const SearchPerson = () => {
                     </TableCell>
                     <TableCell>{person.alias || ''}</TableCell>
                     <TableCell>
-                      <Link
-                        component="button"
-                        variant="body2"
-                        onClick={() => handleCaseClick(person.caseId, person.caseNumber)}
-                        underline="hover"
-                        color="primary"
-                        sx={{ cursor: 'pointer' }}
-                      >
-                        {person.caseNumber}
-                      </Link>
+                      {person.caseId ? (
+                        <Link
+                          component="button"
+                          variant="body2"
+                          onClick={() => handleCaseClick(person.caseId, person.caseNumber)}
+                          underline="hover"
+                          color="primary"
+                          sx={{ cursor: 'pointer' }}
+                        >
+                          {person.caseNumber || person.caseId}
+                        </Link>
+                      ) : (
+                        'No case assigned'
+                      )}
                     </TableCell>
-                    <TableCell>{person.role}</TableCell>
-                    <TableCell>{person.dateOfBirth}</TableCell>
-                    <TableCell>{person.ssn}</TableCell>
+                    <TableCell>{person.role || 'N/A'}</TableCell>
+                    <TableCell>{formatDate(person.dateOfBirth)}</TableCell>
+                    <TableCell>{person.ssn || ''}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleViewPerson(person)}
+                      >
+                        View
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
+                  <TableCell colSpan={7} align="center">
                     {searchCriteria.lastName || searchCriteria.firstName || 
                      searchCriteria.dateOfBirth || searchCriteria.ssn || 
                      searchCriteria.phoneNumber ? 
@@ -435,13 +472,11 @@ const SearchPerson = () => {
       </Paper>
       
       {/* Person Profile Dialog */}
-      {selectedPerson && (
-        <PersonProfile 
-          open={viewDialogOpen}
-          person={selectedPerson}
-          onClose={() => setViewDialogOpen(false)}
-        />
-      )}
+      <PersonProfile 
+        open={viewDialogOpen}
+        person={selectedPerson}
+        onClose={() => setViewDialogOpen(false)}
+      />
     </Box>
   );
 };
