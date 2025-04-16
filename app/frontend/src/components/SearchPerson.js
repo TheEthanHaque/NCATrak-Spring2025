@@ -328,13 +328,12 @@ const SearchPerson = () => {
                 <TableCell>Role on Case</TableCell>
                 <TableCell>Date of Birth</TableCell>
                 <TableCell>SSN</TableCell>
-                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={6} align="center">
                     <CircularProgress size={40} sx={{ my: 2 }} />
                     <Typography variant="body2" display="block">
                       Searching...
@@ -380,20 +379,11 @@ const SearchPerson = () => {
                     <TableCell>{person.role || 'N/A'}</TableCell>
                     <TableCell>{formatDate(person.dateOfBirth)}</TableCell>
                     <TableCell>{person.ssn || ''}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => handleViewPerson(person)}
-                      >
-                        View
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={6} align="center">
                     {searchCriteria.lastName || searchCriteria.firstName || 
                      searchCriteria.dateOfBirth || searchCriteria.ssn || 
                      searchCriteria.phoneNumber ? 
