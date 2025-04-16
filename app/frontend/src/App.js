@@ -12,6 +12,7 @@ import MHAssessment from './components/MHAssessment';
 import Lookup from './components/Lookup';  
 import MHSection from './components/MHSection';
 import NewCase from './components/NewCase';
+import PersonBio from './components/PersonBio';
 import { 
   AppBar, 
   Toolbar, 
@@ -36,6 +37,7 @@ import SearchPerson from './components/SearchPerson';
 const AppLayout = () => {
   const location = useLocation();
   const isNewCasePage = location.pathname === '/NewCase';
+  const isSearchPage = location.pathname === '/SearchCase';
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -159,8 +161,8 @@ const AppLayout = () => {
 
       {/* Main Content */}
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        {/* Only show the CurrentCaseInfo if we're not on the NewCase page */}
-        {!isNewCasePage && <CurrentCaseInfo />}
+        {/* When not to show new case info*/}
+        {!isNewCasePage && !isSearchPage && <CurrentCaseInfo />}
 
         {/* Routes */}
         <Routes>
@@ -187,6 +189,9 @@ const AppLayout = () => {
 
           {/* Search Case Route */}
           <Route path="/SearchCase" element={<SearchPerson />} />
+
+          {/* Add the new PersonBio route */}
+          <Route path="/PersonBio" element={<PersonBio />} />
           
           {/* Legacy routes - can be accessed directly but not from navigation */}
           <Route path="/case-notes" element={<CaseNotes />} />

@@ -15,6 +15,7 @@ import {
   CircularProgress,
   Alert,
   Grid,
+  Link
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
@@ -24,10 +25,12 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import SearchIcon from '@mui/icons-material/Search';
 import ResetIcon from '@mui/icons-material/Refresh';
 import { useNavigate } from 'react-router-dom';
+import { useCase } from '../context/CaseContext';
 import PersonProfile from './PersonProfile';
 
 const SearchPerson = () => {
   const navigate = useNavigate();
+  const { setCurrentCase } = useCase();
   
   // State for search criteria
   const [searchCriteria, setSearchCriteria] = useState({
@@ -95,6 +98,7 @@ const SearchPerson = () => {
           firstName: 'John',
           lastName: 'Smith',
           alias: 'Johnny',
+          caseId: '101',
           caseNumber: 'CA-2025-001',
           role: 'Primary Victim',
           dateOfBirth: '1985-04-12',
@@ -105,6 +109,7 @@ const SearchPerson = () => {
           firstName: 'Sarah',
           lastName: 'Johnson',
           alias: 'Sare',
+          caseId: '102',
           caseNumber: 'CA-2025-002',
           role: 'Parent/Guardian',
           dateOfBirth: '1970-09-23',
@@ -115,6 +120,7 @@ const SearchPerson = () => {
           firstName: 'Michael',
           lastName: 'Williams',
           alias: 'Mike',
+          caseId: '103',
           caseNumber: 'CA-2025-003',
           role: 'Alleged Perpetrator',
           dateOfBirth: '1982-11-30',
@@ -158,17 +164,21 @@ const SearchPerson = () => {
     setViewDialogOpen(true);
   };
 
-  // Handle select person
-  const handleSelectPerson = (person) => {
-    // In a real implementation, this would set the selected person and navigate to their details
-    console.log("Selected person:", person);
-    navigate('/CasePeople');
+  // Handle clicking on a person name
+  const handlePersonClick = (person) => {
+    // In a real implementation, this would navigate to a person bio page
+    console.log("Person clicked:", person);
+    navigate('/PersonBio');
   };
 
-  // Handle cancel
-//   const handleCancel = () => {
-//     navigate('/');
-//   };
+  // Handle clicking on a case
+  const handleCaseClick = (caseId, caseNumber) => {
+    console.log(`Navigating to case ${caseNumber} (ID: ${caseId})`);
+    // Set the current case in context
+    setCurrentCase(caseId);
+    // Navigate to the General tab
+    navigate('/CaseGeneral');
+  };
 
   // Pagination handlers
   const handleChangePage = (newPage) => {
@@ -293,9 +303,8 @@ const SearchPerson = () => {
         
         <TableContainer sx={{ maxHeight: 400, mb: 2 }}>
           <Table stickyHeader>
-            <TableHead>
+                          <TableHead>
               <TableRow>
-                <TableCell width={120}>Action</TableCell>
                 <TableCell>Person's Name</TableCell>
                 <TableCell>Alias</TableCell>
                 <TableCell>CAC Case</TableCell>
@@ -307,7 +316,7 @@ const SearchPerson = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={6} align="center">
                     <CircularProgress size={40} sx={{ my: 2 }} />
                     <Typography variant="body2" display="block">
                       Searching...
@@ -323,25 +332,29 @@ const SearchPerson = () => {
                     }}
                   >
                     <TableCell>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => handleSelectPerson(person)}
-                        sx={{ mr: 1 }}
+                      <Link
+                        component="button"
+                        variant="body2"
+                        onClick={() => handlePersonClick(person)}
+                        underline="hover"
+                        sx={{ cursor: 'pointer' }}
                       >
-                        Select
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => handleViewPerson(person)}
-                      >
-                        View
-                      </Button>
+                        {`${person.lastName}, ${person.firstName}`}
+                      </Link>
                     </TableCell>
-                    <TableCell>{`${person.lastName}, ${person.firstName}`}</TableCell>
                     <TableCell>{person.alias || ''}</TableCell>
-                    <TableCell>{person.caseNumber}</TableCell>
+                    <TableCell>
+                      <Link
+                        component="button"
+                        variant="body2"
+                        onClick={() => handleCaseClick(person.caseId, person.caseNumber)}
+                        underline="hover"
+                        color="primary"
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        {person.caseNumber}
+                      </Link>
+                    </TableCell>
                     <TableCell>{person.role}</TableCell>
                     <TableCell>{person.dateOfBirth}</TableCell>
                     <TableCell>{person.ssn}</TableCell>
@@ -349,7 +362,7 @@ const SearchPerson = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={6} align="center">
                     {searchCriteria.lastName || searchCriteria.firstName || 
                      searchCriteria.dateOfBirth || searchCriteria.ssn || 
                      searchCriteria.phoneNumber ? 
