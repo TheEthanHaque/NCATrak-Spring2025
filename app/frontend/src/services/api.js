@@ -43,30 +43,47 @@ export const peopleApi = {
       method: 'PUT',
       body: JSON.stringify(personData)
     });
+  },
+
+  // Advanced search with multiple criteria
+  advancedSearch: (criteria) => {
+    // Build query string from criteria
+    const queryParams = Object.entries(criteria)
+      .filter(([_, value]) => value) // Filter out empty values
+      .map(([key, value]) => {
+        // Handle date objects
+        if (value instanceof Date) {
+          return `${key}=${value.toISOString().split('T')[0]}`;
+        }
+        return `${key}=${encodeURIComponent(value)}`;
+      })
+      .join('&');
+    
+    return fetchApi(`/api/people/advanced-search?${queryParams}`);
   }
 };
 
 export const casesApi = {
-    // Get list of cases for dropdown
-    getCasesList: () => {
-      return fetchApi('/api/cases/list');
-    },
-    
-    // Get a case by ID
-    getCaseById: (caseId) => {
-      return fetchApi(`/api/cases/${caseId}`);
-    },
-    
-    searchCases: (searchTerm) => {
-      return fetchApi(`/api/case-search?term=${encodeURIComponent(searchTerm)}`);
-    }
-  };
+  // Get list of cases for dropdown
+  getCasesList: () => {
+    return fetchApi('/api/cases/list');
+  },
   
-  // Update the named export for the API service
-  const apiService = {
-    people: peopleApi,
-    cases: casesApi
-  };
+  // Get a case by ID
+  getCaseById: (caseId) => {
+    return fetchApi(`/api/cases/${caseId}`);
+  },
+  
+  // Search cases by term
+  searchCases: (searchTerm) => {
+    return fetchApi(`/api/case-search?term=${encodeURIComponent(searchTerm)}`);
+  }
+};
 
+// Export the combined API service
+const apiService = {
+  people: peopleApi,
+  cases: casesApi
+};
 
 export default apiService;
