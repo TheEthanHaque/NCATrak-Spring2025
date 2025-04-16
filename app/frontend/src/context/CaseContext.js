@@ -11,7 +11,8 @@ export const useCase = () => useContext(CaseContext);
 export const CaseProvider = ({ children }) => {
   const [currentCase, setCurrentCase] = useState('');
   const [cases, setCases] = useState([
-    { id: 'create-new', name: 'Create New Case(s)', number: '', isAction: true }
+    { id: 'create-new', name: 'Create New Case(s)', number: '', isAction: true },
+    { id: 'search-case', name: 'Search Case', number: '', isAction: true }
   ]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,9 +24,10 @@ export const CaseProvider = ({ children }) => {
         setLoading(true);
         const casesList = await casesApi.getCasesList();
         
-        // Add the "Create New Case" option with the real cases
+        // Add the "Create New Case" and "Search Case" options with the real cases
         const allCases = [
           { id: 'create-new', name: 'Create New Case(s)', number: '', isAction: true },
+          { id: 'search-case', name: 'Search Case', number: '', isAction: true },
           ...casesList
         ];
         

@@ -55,6 +55,10 @@ export const casesApi = {
     // Get a case by ID
     getCaseById: (caseId) => {
       return fetchApi(`/api/cases/${caseId}`);
+    },
+    
+    searchCases: (searchTerm) => {
+      return fetchApi(`/api/case-search?term=${encodeURIComponent(searchTerm)}`);
     }
   };
   

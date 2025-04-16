@@ -6,6 +6,7 @@ import agenciesRouter from './routes/agencies.js';
 import employeesRouter from './routes/employee.js';
 import mentalhealthRouter from './routes/mentalhealth.js';
 import victimsAdvocacyRouter from './routes/victimadvocacy.js';
+import caseSearchRoutes from './routes/case-search.js';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -46,6 +47,7 @@ app.use('/api/agencies', agenciesRouter);
 app.use('/api/employees', employeesRouter);
 app.use('/api/mentalhealth', mentalhealthRouter);
 app.use('/api/va', victimsAdvocacyRouter);
+app.use('/api/case-search', caseSearchRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

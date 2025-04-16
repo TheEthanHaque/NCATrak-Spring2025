@@ -14,7 +14,12 @@ const CaseSelector = () => {
     // Check if the selected option is "Create New Case(s)"
     if (selectedValue === 'create-new') {
       navigate('/NewCase');
-    } else {
+    } 
+    // Check if the selected option is "Search Case"
+    else if (selectedValue === 'search-case') {
+      navigate('/SearchCase');
+    } 
+    else {
       setCurrentCase(selectedValue);
     }
   };

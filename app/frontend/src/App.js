@@ -31,6 +31,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import CaseSelector from './context/CaseSelector';
 import { CaseProvider, useCase } from './context/CaseContext';
+import SearchPerson from './components/SearchPerson';
 
 const AppLayout = () => {
   const location = useLocation();
@@ -183,6 +184,9 @@ const AppLayout = () => {
           <Route path="/CaseMH/*" element={<MHSection />} />
           
           <Route path="/CaseVA/*" element={<VALogInterface />} />
+
+          {/* Search Case Route */}
+          <Route path="/SearchCase" element={<SearchPerson />} />
           
           {/* Legacy routes - can be accessed directly but not from navigation */}
           <Route path="/case-notes" element={<CaseNotes />} />
