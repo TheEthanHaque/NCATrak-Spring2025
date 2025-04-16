@@ -1,0 +1,13 @@
+id,cac_id,case_id,case_mh_session_id,attribute_group_description,attributes,attribute_value
+22850,8,114616934,40361415,Suicidal Ideation,Not Suicidal,67
+2227122,8,114616934,40361415,Client Mood,Euphoric,66
+2769296,8,114616934,40361415,Client Mood,Depressed,87
+1406919,8,114616934,40361415,Client Mood,Other,10
+3006683,3,716338529,8954512,Client Mood,Depressed,94
+2525856,3,716338529,8954512,Client Affect,Stabile,35
+6206869,5,936854373,92927978,Client Affect,Apathetic,71
+4460005,3,716338529,8954512,Client Affect,Exaggerated,54
+2695378,8,114616934,40361415,Client Affect,Labile,75
+8623152,5,936854373,92927978,Homicidal Ideation,Homicidal Ideation,18
+3859860,3,716338529,8954512,Client Mood,Other,13
+8587495,10,44505313,22945385,Client Affect,Pleasant,60

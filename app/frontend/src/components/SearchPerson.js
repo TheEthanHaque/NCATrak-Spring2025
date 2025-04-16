@@ -87,21 +87,6 @@ const SearchPerson = () => {
     return roles[roleId] || 'Unknown Role';
   };
 
-  // Handle view dialog for person details
-  const handleViewPerson = async (person) => {
-    try {
-      setLoading(true);
-      // Fetch detailed person information by ID
-      const personDetails = await peopleApi.getPersonById(person.id);
-      setSelectedPerson(personDetails);
-      setViewDialogOpen(true);
-    } catch (err) {
-      console.error("Error fetching person details:", err);
-      setError("Failed to load person details. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Handle search
   const handleSearch = async () => {

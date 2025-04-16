@@ -1,0 +1,101 @@
+person_id,case_id,cac_id,age,age_unit,address_line_1,address_line_2,city,state_abbr,zip,cell_phone_number,home_phone_number,work_phone_number,custody,education_level_id,income_level_id,marital_status_id,relationship_id,role_id,same_household,school_or_employer,victim_status_id
+338422190,343193008,7,32,year,126 Chambers Turnpike,,Gonzalezbury,OR,91565,(214)457-6684,(821)515-5707,(786)309-1339,True,,,,,,False,Land,50123922
+813838702,398836978,10,60,year,274 Case Trace,,Port Manuelbury,ME,78044,(952)527-5549,(879)798-0563,(187)843-0635,True,,,,,,True,Network engineer,90080265
+338422190,164403394,7,32,year,900 Maria Flat Apt. 681,,West Vanessa,NH,76676,(580)939-3613,(661)674-5742,(953)524-7043,True,,,,,,False,Radio producer,32033922
+431879505,276320732,5,34,year,467 Jessica Ville Apt. 928,,New Denise,NJ,02076,(897)912-4577,(448)593-4240,(009)052-9840,True,,,,,,True,Special effects artist,92406978
+367808489,52915337,3,90,year,3889 Howell Oval Apt. 283,,Gracebury,GA,66123,(553)745-6046,(004)600-9861,(223)744-5151,False,,,,,,False,Speech and language therapist,70139021
+813838702,44505313,10,60,year,600 Pearson Isle Suite 746,,Williamsmouth,OK,77017,(997)902-0976,(556)072-2997,(918)478-2694,True,,,,,,False,Social researcher,52976614
+813838702,520035623,10,60,year,33298 Benjamin Station Suite 825,,Chasefort,MN,30761,(815)791-8556,(002)684-9274,(789)966-6444,False,,,,,,True,"Geologist, wellsite",48220614
+431879505,66212999,5,34,year,12466 Brittany Corner Suite 201,,East Karen,WI,48773,(695)568-6606,(708)265-1158,(338)403-9957,True,,,,,,False,Legal executive,24743696
+338422190,722182043,7,32,year,3830 Cooper Orchard Suite 525,,Lake Tammy,OK,71043,(507)954-5101,(876)132-3190,(611)076-2886,False,,,,,,False,Pension scheme manager,95350098
+367808489,264118866,3,90,year,59750 Heather Club Apt. 342,,New Rebeccaport,NV,38282,(116)608-9265,(339)609-1848,(542)481-6912,True,,,,,,False,Forensic psychologist,11132087
+109064883,265298111,8,95,year,7299 Payne Village Suite 816,,North Bryan,OR,48503,(296)501-2401,(040)190-1787,(821)841-0412,True,,,,,,True,Printmaker,12636425
+813838702,995103138,10,60,year,6313 Mills Place,,Brewerstad,ND,30839,(328)669-2010,(065)644-1624,(919)923-1748,False,,,,,,True,Licensed conveyancer,21331632
+813838702,648312076,10,60,year,2463 Hernandez Rapid,,New George,TN,48243,(898)493-6670,(166)158-0122,(566)714-6524,False,,,,,,True,"Teacher, early years/pre",95041646
+338422190,908173659,7,32,year,2575 Mccullough Mountains Suite 638,,Allenborough,LA,14061,(395)197-7934,(305)503-4381,(059)508-3151,True,,,,,,False,Merchant navy officer,65460383
+367808489,909321095,3,90,year,7934 Smith Ways Apt. 862,,Alanmouth,LA,46792,(469)118-1549,(413)305-2191,(693)065-9761,True,,,,,,False,"Teacher, secondary school",21949555
+109064883,2331197,8,95,year,5651 Joseph Grove,,Robertfurt,IA,28454,(513)540-8044,(152)223-6202,(406)317-5148,False,,,,,,False,"Administrator, Civil Service",93397268
+109064883,851682460,8,95,year,22286 Roberto Corners,,Alanland,MT,62947,(261)608-8899,(685)820-3979,(297)338-9032,True,,,,,,True,Clinical psychologist,90271818
+431879505,265966708,5,34,year,1466 White Gardens Suite 522,,New Theresaview,RI,51305,(034)614-8575,(675)118-2815,(158)614-2351,False,,,,,,True,"Librarian, academic",85034726
+338422190,275772717,7,32,year,91783 Sabrina Pike,,Erikaport,NM,66653,(036)964-7613,(773)866-9185,(166)405-1027,False,,,,,,True,Geographical information systems officer,87660131
+431879505,318107261,5,34,year,12528 Hubbard Circle Apt. 613,,East Amanda,KS,06134,(253)705-1739,(961)965-6990,(085)890-9638,True,,,,,,False,Glass blower/designer,47864107
+338422190,715804488,7,32,year,602 Edwards Mall Apt. 481,,Odomfort,NC,69126,(213)046-5633,(793)805-1778,(360)745-5434,False,,,,,,False,Community development worker,40760425
+813838702,929433413,10,60,year,592 Schneider Point Apt. 347,,Jamesberg,VA,50535,(368)691-6339,(323)914-9446,(192)526-9927,False,,,,,,True,Soil scientist,81031769
+367808489,657808716,3,90,year,4416 Lorraine Landing Apt. 839,,South Vicki,SD,35685,(834)685-1181,(835)552-1283,(843)264-8489,False,,,,,,False,"Accountant, chartered",54274168
+338422190,358203360,7,32,year,12452 Sutton Drive,,Smithmouth,ID,07002,(381)947-2826,(894)736-6416,(585)527-3345,False,,,,,,False,Licensed conveyancer,7179900
+813838702,411801816,10,60,year,88371 Harrison Manor Suite 313,,Lake Thomasmouth,ND,63156,(924)675-4614,(092)359-5395,(897)836-6506,False,,,,,,False,Sales promotion account executive,4184228
+338422190,701104914,7,32,year,9698 Hayes Manors Suite 417,,West Sarahburgh,NV,81741,(408)921-0307,(633)403-0386,(310)387-5926,True,,,,,,True,Special educational needs teacher,78839797
+109064883,284887297,8,95,year,64408 Ford Viaduct Suite 480,,Sheppardburgh,MD,09772,(365)784-2919,(436)097-9144,(297)131-8140,False,,,,,,False,Farm manager,47998945
+367808489,403743564,3,90,year,509 Ashley Lodge,,South Johnshire,MN,37645,(519)586-9102,(710)730-0786,(920)545-0565,False,,,,,,False,Politician's assistant,93588988
+367808489,621623678,3,90,year,799 Stevenson Orchard Suite 802,,Luistown,WY,53349,(071)877-5199,(811)597-2432,(174)058-7618,True,,,,,,False,Armed forces logistics/support/administrative officer,42726436
+813838702,993476474,10,60,year,1304 Fox Rapids,,East Timothyshire,MN,27187,(977)298-3235,(441)688-1600,(644)980-0430,False,,,,,,False,"Therapist, music",17606350
+431879505,999836742,5,34,year,8991 Caldwell Keys,,South Alejandro,AR,69659,(387)706-6416,(081)867-8149,(903)580-7567,False,,,,,,False,Commercial art gallery manager,80178674
+109064883,637838197,8,95,year,73166 Ian Points Apt. 268,,East Tammymouth,LA,72283,(184)811-3484,(297)377-7963,(517)565-5645,False,,,,,,False,Office manager,61847050
+813838702,152460203,10,60,year,897 Blair Canyon,,West Aaronstad,AK,58404,(875)441-5387,(551)280-7392,(860)161-8273,True,,,,,,True,"Embryologist, clinical",11853191
+109064883,357237875,8,95,year,39677 Tammy Underpass Suite 225,,Codytown,MD,65526,(703)735-5017,(988)991-7533,(531)927-6194,True,,,,,,True,Multimedia specialist,58121834
+338422190,167173508,7,32,year,5281 Susan Run Apt. 857,,Lake Sarah,AR,55301,(670)461-7485,(951)877-3771,(882)941-8343,False,,,,,,True,Colour technologist,51109387
+109064883,212529045,8,95,year,65145 Palmer Shore,,Lake Nicholechester,OK,57112,(956)414-9379,(779)452-6331,(828)316-9347,False,,,,,,True,Civil Service fast streamer,70882307
+109064883,341101066,8,95,year,36603 Hall Rest,,Lawsonfort,VA,34638,(593)063-2653,(616)860-6347,(480)221-5710,False,,,,,,True,Tax inspector,45303710
+431879505,827841424,5,34,year,910 Martin Spring,,South Zachary,MN,54245,(109)617-3217,(811)614-3670,(207)836-0086,False,,,,,,False,Set designer,15263254
+813838702,243227961,10,60,year,79624 Lewis Squares Apt. 112,,Jacquelinemouth,WV,02210,(699)708-2814,(587)956-8458,(883)321-9848,False,,,,,,True,Commercial art gallery manager,28476237
+431879505,728907598,5,34,year,0043 Brittany Ridges,,Port Eric,NJ,80844,(122)128-3357,(718)566-9558,(175)410-3293,True,,,,,,False,Professor Emeritus,26217543
+338422190,897679260,7,32,year,79381 Julie Land,,Douglasshire,VT,45054,(269)031-6976,(848)857-7117,(998)301-6277,False,,,,,,False,Retail merchandiser,80133613
+109064883,441308829,8,95,year,357 Kimberly Square,,New Joyhaven,LA,30210,(532)557-1708,(369)292-4656,(219)126-1325,False,,,,,,True,Publishing rights manager,64701895
+367808489,270314773,3,90,year,204 Cruz Views Apt. 720,,Acostaberg,NC,48922,(813)267-9130,(632)441-3066,(424)716-7493,True,,,,,,True,Comptroller,33322746
+338422190,596603663,7,32,year,7375 Parrish Bridge Suite 803,,Kimberlychester,IN,94716,(683)568-8817,(841)792-7993,(302)117-8457,True,,,,,,True,Nature conservation officer,79769369
+813838702,850030790,10,60,year,712 Ronald Garden Apt. 975,,Glendamouth,IA,57043,(667)952-5226,(128)258-8180,(607)569-7964,True,,,,,,True,"Psychologist, clinical",99124548
+109064883,423422980,8,95,year,73454 Erin Branch,,Lake Christopher,TN,12430,(920)780-3209,(303)697-3477,(215)154-3771,False,,,,,,True,English as a foreign language teacher,7056809
+338422190,940222838,7,32,year,25834 Lynch Lodge,,Lake Geoffreystad,CO,38703,(353)941-8450,(113)534-7238,(176)236-1257,True,,,,,,False,"Psychologist, occupational",41179089
+431879505,826006643,5,34,year,86743 Andrews Shore Apt. 542,,Amyhaven,NJ,04697,(355)135-5298,(162)147-6981,(835)704-3016,False,,,,,,False,Armed forces logistics/support/administrative officer,11766167
+338422190,954647554,7,32,year,44543 Nathan Green Suite 694,,Davischester,FL,56575,(105)560-9707,(866)458-4830,(957)994-8691,True,,,,,,False,Fish farm manager,86712404
+813838702,664361365,10,60,year,998 David Throughway Apt. 483,,West Theresaberg,ID,85182,(700)304-9219,(328)232-8101,(798)381-8420,True,,,,,,True,Research scientist (maths),77901178
+338422190,106462017,7,32,year,726 Hughes Squares,,Lake Michaelborough,SC,04657,(476)175-2764,(500)117-9701,(163)178-5107,False,,,,,,True,Fashion designer,18929217
+431879505,493869643,5,34,year,3625 Dawn Pines,,Escobarfurt,ID,53804,(472)686-4990,(183)951-6354,(463)838-1621,True,,,,,,False,Database administrator,69417819
+367808489,530585156,3,90,year,169 Sanchez Stravenue,,Hamiltonshire,TX,03610,(301)363-9341,(124)124-0983,(991)907-1512,False,,,,,,False,Podiatrist,26936561
+338422190,332428232,7,32,year,0093 Christian Crossing Apt. 718,,Brownshire,WV,73369,(768)789-3100,(593)741-9187,(063)735-6752,False,,,,,,False,Health physicist,23366802
+338422190,580754264,7,32,year,94762 Mccoy Mount Suite 531,,Simshaven,ME,46076,(933)860-9677,(507)990-9565,(361)040-8433,True,,,,,,False,Pathologist,78612993
+813838702,442498433,10,60,year,8630 Cheryl River,,Brandonborough,SC,44244,(184)850-1614,(714)103-9045,(506)540-3754,False,,,,,,False,Fast food restaurant manager,67422859
+431879505,564440764,5,34,year,620 Adams Mountain,,Lake Johnshire,VA,37074,(951)176-1005,(832)826-0039,(718)902-1905,True,,,,,,False,Educational psychologist,87934131
+109064883,683077164,8,95,year,9026 Price Plains,,West Christineport,KY,08618,(783)331-1702,(183)673-4206,(779)201-7605,True,,,,,,False,Petroleum engineer,84431686
+367808489,434514686,3,90,year,2955 Hamilton Roads,,Juanville,AZ,12298,(528)072-5843,(841)450-3381,(580)411-8981,True,,,,,,False,IT sales professional,51019672
+367808489,45685081,3,90,year,10406 Jose Tunnel Suite 483,,South Thomas,NH,01339,(400)201-3911,(183)634-1323,(967)106-8318,True,,,,,,True,Town planner,22205422
+813838702,577285211,10,60,year,3949 Amanda Causeway,,North Sydneyport,UT,22645,(441)928-2635,(283)133-1075,(970)265-1987,False,,,,,,False,Tourist information centre manager,4146221
+813838702,478086492,10,60,year,9677 Barbara Ridge,,Rebeccafort,KS,39409,(155)875-8159,(181)079-4273,(411)078-0490,False,,,,,,True,Publishing copy,74971820
+109064883,553745148,8,95,year,9366 Roy Ports Apt. 580,,Teresaland,MD,80502,(133)828-6424,(026)821-2732,(888)571-1298,False,,,,,,False,Art therapist,94426150
+109064883,136458423,8,95,year,7966 Kaylee Fall Apt. 336,,Nataliebury,OH,67020,(873)996-2080,(549)941-7847,(226)252-1356,True,,,,,,True,Training and development officer,94516496
+431879505,197866528,5,34,year,28037 Sarah View Suite 648,,Glennchester,MS,29747,(393)859-8991,(909)959-2021,(733)221-8760,True,,,,,,False,Pathologist,50444877
+431879505,448019812,5,34,year,676 Reyes Pine Suite 292,,Rangelstad,MO,06020,(986)961-0573,(180)491-7527,(198)763-6085,True,,,,,,False,Geophysicist/field seismologist,37201988
+431879505,56656159,5,34,year,1256 Jessica Wells Apt. 776,,Port Markville,CT,24236,(867)414-8234,(634)663-7794,(360)683-6801,False,,,,,,True,"Administrator, charities/voluntary organisations",9004990
+109064883,439684708,8,95,year,158 Ward Stravenue,,New Shelby,MD,61002,(788)098-0279,(257)288-1537,(743)672-2459,True,,,,,,True,Dentist,85974474
+109064883,917055481,8,95,year,043 Matthew Square,,Beckybury,MS,03389,(361)527-9126,(204)336-6322,(376)029-3953,False,,,,,,True,Pathologist,43927851
+109064883,751329688,8,95,year,78883 Rodriguez Island Suite 897,,Port Matthew,WV,44587,(637)880-9162,(523)253-3627,(881)003-2196,True,,,,,,True,"Exhibitions officer, museum/gallery",62434649
+367808489,871298126,3,90,year,222 Wendy Prairie Apt. 021,,New Jasonchester,CT,95113,(369)105-4031,(674)570-9017,(734)373-2922,False,,,,,,True,Volunteer coordinator,59406693
+109064883,394842486,8,95,year,252 Harper Rue,,West Walterton,MI,05263,(480)091-4771,(030)289-3613,(871)616-1026,True,,,,,,True,"Psychologist, sport and exercise",76599412
+109064883,439367929,8,95,year,4392 Brown Spurs,,Murphybury,OH,33577,(021)037-2567,(434)314-4266,(440)312-4321,False,,,,,,False,Airline pilot,71875989
+367808489,62887822,3,90,year,21419 Morris Camp,,East Ambermouth,FL,80634,(110)199-5294,(234)764-7350,(326)716-2211,True,,,,,,False,Chiropodist,3443825
+109064883,300923362,8,95,year,5651 Courtney Villages Apt. 415,,Justinberg,IA,71114,(524)358-5295,(074)710-5634,(850)028-9212,False,,,,,,True,Patent examiner,45349340
+338422190,418610141,7,32,year,3934 Novak Stream Apt. 588,,North Taylor,GA,79730,(695)153-4706,(586)962-9923,(000)963-4294,False,,,,,,True,Web designer,73957795
+367808489,426498871,3,90,year,564 Miranda Pike Apt. 365,,Lake Rubenberg,NH,65855,(391)387-1753,(645)566-7136,(616)624-5470,True,,,,,,True,"Surveyor, quantity",68322871
+813838702,965074331,10,60,year,879 Mcguire Radial Apt. 002,,Port Ryan,KS,11138,(015)186-1101,(231)930-7132,(884)744-1189,True,,,,,,False,Ophthalmologist,75151566
+338422190,206609676,7,32,year,1887 Wayne Groves Apt. 186,,East Amber,MI,64778,(797)045-6505,(286)174-7760,(011)403-7667,False,,,,,,True,Graphic designer,57448567
+367808489,716338529,3,90,year,799 Joseph Prairie,,Michaelton,WI,76408,(793)409-4676,(566)778-2022,(018)221-2259,False,,,,,,False,Theatre director,87384133
+367808489,515027202,3,90,year,25177 Martinez Forge,,East Jessica,OK,53357,(591)634-2656,(593)724-1303,(619)034-1235,False,,,,,,False,Academic librarian,39427410
+109064883,75716599,8,95,year,88913 Thornton Squares,,South Annshire,NV,31172,(258)383-4157,(710)468-1045,(146)824-5851,False,,,,,,False,"Programme researcher, broadcasting/film/video",96202588
+109064883,449361725,8,95,year,94335 Thomas Pass Apt. 869,,Rodriguezberg,NM,85591,(597)561-4750,(363)595-6551,(369)934-4076,False,,,,,,True,Airline pilot,47919279
+431879505,661824668,5,34,year,481 Bartlett Field Apt. 212,,Elizabethstad,NM,58377,(323)272-2022,(393)672-4007,(705)356-8852,True,,,,,,True,Fast food restaurant manager,41627368
+813838702,318990352,10,60,year,113 Hill Spring Apt. 508,,Wallacefurt,IN,85247,(192)537-4075,(545)817-0328,(267)155-7688,True,,,,,,True,Charity fundraiser,71008440
+431879505,394671759,5,34,year,7903 Michelle Curve,,Williamberg,DE,44097,(172)076-3561,(946)530-8759,(991)917-2200,False,,,,,,True,Air broker,50549380
+431879505,423780978,5,34,year,2721 Gray Causeway,,Brownside,OK,02174,(796)830-6177,(099)613-0546,(859)548-9133,True,,,,,,False,"Administrator, education",13808257
+338422190,509143623,7,32,year,3265 Moreno Spring Apt. 779,,Yeseniaport,WY,98436,(574)984-1145,(405)074-4572,(053)576-8040,False,,,,,,True,Local government officer,66855561
+109064883,585456842,8,95,year,9946 Pratt Common Apt. 928,,Mitchellland,DE,85716,(436)107-4261,(139)230-0550,(522)072-5415,False,,,,,,False,Transport planner,67455448
+431879505,449814401,5,34,year,235 Melissa Hill Suite 531,,New William,SD,59108,(316)627-1026,(949)905-8015,(176)350-3377,True,,,,,,False,"Engineer, production",68317834
+338422190,699467602,7,32,year,6347 Robert Shoals,,Pricehaven,UT,31554,(575)678-3526,(875)817-2252,(027)611-5450,False,,,,,,True,Corporate treasurer,53741138
+338422190,42079044,7,32,year,73984 Miller Land,,Maryfort,MN,03254,(168)143-4795,(718)501-0304,(737)080-5674,True,,,,,,False,Speech and language therapist,46738200
+109064883,726285730,8,95,year,65172 Sharon Burg,,Juliaport,RI,87443,(073)282-4812,(666)906-2155,(660)669-1423,True,,,,,,True,Sports coach,67667040
+367808489,160499481,3,90,year,7864 Williams Village,,Kennedytown,NC,67924,(599)571-5049,(510)853-6569,(798)574-7659,False,,,,,,False,Art gallery manager,87722690
+338422190,228440729,7,32,year,767 Darren Square,,New Michael,SD,07894,(252)621-9688,(455)524-0896,(672)993-4024,False,,,,,,False,Camera operator,21185724
+367808489,383880444,3,90,year,732 Morgan Bridge,,Andersonhaven,HI,80324,(188)318-1513,(773)094-1277,(971)320-6309,True,,,,,,True,Chartered certified accountant,72698419
+109064883,227498710,8,95,year,9072 Green Camp,,West Ricardoborough,SC,59068,(887)470-7365,(135)846-0228,(772)237-8798,True,,,,,,True,Records manager,94144191
+813838702,571924360,10,60,year,5895 Garcia Trafficway Apt. 616,,Gatesborough,NE,41685,(301)884-7424,(399)507-6778,(529)840-2028,True,,,,,,False,Interior and spatial designer,71711594
+109064883,114616934,8,95,year,230 Reyes Loaf,,Martinview,AZ,00750,(795)777-3624,(876)956-9194,(645)119-1552,True,,,,,,True,Mechanical engineer,19259085
+431879505,936854373,5,34,year,034 Margaret Views,,Lake Michael,CA,77606,(529)411-7222,(867)128-9104,(561)285-4621,True,,,,,,False,"Education officer, community",35909373
