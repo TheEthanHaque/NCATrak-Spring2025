@@ -14,7 +14,7 @@ def create(data):
         # Connect to the PostgreSQL server (connecting to 'postgres' database)
         connection = psycopg2.connect(
             dbname="postgres",  # Default database for administrative tasks
-            user=super_user,
+            user="postgres",
             password="",
             host=curr_host,
             port="5432"

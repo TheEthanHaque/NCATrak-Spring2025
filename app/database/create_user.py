@@ -16,7 +16,7 @@ def create_user(data):
         # First connect to postgres database to create user
         connection_postgres = psycopg2.connect(
             dbname="postgres",  
-            user=super_user,  
+            user="postgres",  
             password="",  
             host=curr_host,
             port="5432"
@@ -58,7 +58,7 @@ def create_user(data):
         # Now connect to the specific database to grant table privileges
         connection = psycopg2.connect(
             dbname=new_database,  
-            user=super_user,  
+            user="postgres",  
             password="",  
             host=curr_host,
             port="5432"
