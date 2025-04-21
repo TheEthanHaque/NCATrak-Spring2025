@@ -1,0 +1,301 @@
+person_id,case_id,cac_id,age,age_unit,address_line_1,address_line_2,city,state_abbr,zip,cell_phone_number,home_phone_number,work_phone_number,custody,education_level_id,income_level_id,marital_status_id,relationship_id,role_id,same_household,school_or_employer,victim_status_id
+945775172,233542099,1,12,year,6131 Barbara Mountains,,Rickstad,DE,77777,(192)839-9812,(121)891-5876,(726)947-6117,True,,,,,,False,Monroe School,86586451
+945775172,405330840,1,12,year,061 Mcpherson Crest Apt. 540,,Danielville,ME,03694,(398)840-2312,(433)760-9732,(542)106-0407,True,,,,,,True,Waverley Elementary,14023314
+945775172,581460674,1,12,year,1613 Bruce Curve Suite 747,,Kentfurt,NJ,98170,(503)849-8290,(343)443-5653,(022)264-9874,True,,,,,,True,C.S. Lewis Academy,77782838
+945775172,968986015,1,12,year,21103 Stewart Island Apt. 063,,West Jennifer,RI,92399,(333)744-2249,(992)044-1242,(917)293-7134,True,,,,,,False,Mary Bird Early Childhood Education Center,11650687
+389780941,712688036,9,14,year,35886 Angela Mill,,South Bradley,ND,28914,(430)618-6816,(700)850-9805,(347)114-9844,False,,,,,,False,Pineview Elementary,33095098
+945775172,3010300,1,12,year,5967 Michael Parks Suite 175,,Armstrongtown,OH,77091,(211)984-4961,(760)415-1756,(293)840-4111,False,,,,,,False,Candlewood Elementary,94059487
+11659829,570140771,7,70,year,3239 Powell Viaduct,,Mitchellshire,NH,67879,(311)101-6616,(509)579-6465,(177)064-7231,True,,,,,,True,"Administrator, sports",39049182
+945775172,674991643,1,12,year,2918 Burnett Stream Suite 869,,New Ryanchester,AL,95417,(752)735-5303,(236)815-9245,(666)671-6696,True,,,,,,True,Hugh M Cummings High,22004109
+918426598,166397915,3,60,year,2103 David Flats Apt. 986,,Huffmanborough,IN,60939,(183)539-8224,(072)602-3276,(226)297-9349,False,,,,,,True,TEFL teacher,51534413
+918426598,622484332,3,60,year,9929 Williams Lock Suite 423,,Bradleyland,ND,73374,(432)637-2594,(326)586-6858,(319)508-6112,False,,,,,,True,Chiropractor,58712431
+389780941,983998083,9,14,year,78032 Chris Brooks Suite 829,,East Lisa,MI,13335,(657)956-0989,(224)739-0172,(997)136-8629,False,,,,,,True,Belton Elementary,79602507
+945775172,970853287,1,12,year,951 Lawrence View Suite 203,,Hamptonport,LA,02720,(685)790-7356,(481)007-0619,(808)314-0898,True,,,,,,True,Starks High School,16405755
+945775172,8259321,1,12,year,1063 Powell Ridge,,West Carolynchester,NV,46402,(063)541-9943,(687)272-9822,(984)501-2770,False,,,,,,False,Xenia Preschool,70666553
+389780941,510478809,9,14,year,5704 Kara Way Suite 171,,Mayburgh,HI,69222,(084)217-6714,(299)536-6322,(533)406-7574,False,,,,,,False,Thomas Jefferson HS,62957762
+11659829,487388475,7,70,year,9103 Erin Tunnel Apt. 593,,Oscarton,MO,25104,(155)442-0773,(313)899-6875,(536)722-4108,False,,,,,,False,Advertising account planner,43805660
+918426598,440593041,3,60,year,930 Rocha Estate,,New Robertton,SD,45395,(656)889-1043,(438)743-9704,(648)707-6041,False,,,,,,False,Diagnostic radiographer,90240548
+389780941,871418667,9,14,year,85262 Miles Port Apt. 115,,North Jamesfurt,WY,23322,(974)599-7582,(953)094-0431,(218)713-6848,True,,,,,,False,Stanley-Boyd High,26486267
+389780941,865268431,9,14,year,7859 Baker Spring,,West Natalie,MA,87290,(450)216-6846,(173)742-0015,(727)200-6548,False,,,,,,True,GRUNDY CO. HIGH,49194069
+945775172,783441316,1,12,year,41359 Dunn Land,,Matthewfort,NM,41733,(918)494-8378,(110)241-0390,(960)962-7076,False,,,,,,False,Milwaukie High School,68930852
+918426598,278885990,3,60,year,0552 Alexandra Meadow,,East Joseph,CA,72779,(570)790-9098,(822)704-1065,(090)300-5128,False,,,,,,True,Special educational needs teacher,51504195
+858669965,386819889,8,58,year,80909 Stafford Keys Apt. 596,,Lake Rebeccashire,NC,56589,(073)212-4777,(961)812-2020,(488)028-1625,True,,,,,,True,Estate agent,20612464
+389780941,193715922,9,14,year,3322 Johnson Way Apt. 956,,Hendricksfurt,DE,96667,(462)962-8349,(101)382-4538,(092)667-2038,False,,,,,,False,Montgomery County Area Technology Center,79757508
+389780941,825329260,9,14,year,040 Holmes Street Suite 618,,West Karen,CT,04873,(082)369-3800,(548)102-6174,(156)498-0452,True,,,,,,True,Monmouth County Career Center,44769657
+389780941,408633058,9,14,year,0398 Palmer Court,,Port Andrewbury,NE,78480,(868)977-9679,(619)929-3504,(678)466-5623,True,,,,,,False,Dike-New Hartford Junior High School,62573499
+945775172,613929680,1,12,year,99190 Evans Points,,Michaelborough,NC,07314,(442)082-1202,(438)031-8487,(104)565-2773,True,,,,,,True,Coopers Elementary,34059561
+389780941,980759153,9,14,year,911 Young Skyway Suite 293,,New Kennethville,MN,24792,(261)906-6280,(267)487-5315,(079)566-0175,False,,,,,,True,BAMBER VALLEY ELEMENTARY,64115435
+858669965,276829566,8,58,year,3202 Jennifer Mountains Suite 203,,Turnerfurt,OH,07744,(644)327-7874,(289)856-6831,(554)052-9421,False,,,,,,False,Biomedical engineer,97411293
+918426598,706277301,3,60,year,90933 Alexander Manors Suite 501,,North Samuelfort,NY,00502,(193)614-8510,(172)966-3534,(489)113-2758,True,,,,,,False,Chartered public finance accountant,55842531
+858669965,354753833,8,58,year,212 Cooper Mall Apt. 752,,Jenniferview,RI,79524,(815)919-1520,(190)021-7611,(678)409-9152,True,,,,,,True,"Pharmacist, community",17130888
+389780941,981350390,9,14,year,026 Ryan Ferry Suite 083,,Lake Julia,VT,02862,(903)966-2595,(584)102-4129,(564)413-7254,True,,,,,,True,Block Island School,36348191
+389780941,775393534,9,14,year,16292 Daniel Mountains,,South Jacob,UT,67666,(773)618-6206,(137)937-1695,(808)078-0304,False,,,,,,True,ZIMMERMAN HIGH SCHOOL,22694547
+945775172,544213209,1,12,year,2440 Curry Falls Apt. 870,,Lake Jeremymouth,CA,74526,(899)919-6253,(077)682-0482,(123)273-5128,False,,,,,,True,ELEMENTARY SCH AT VALPARAISO,42116021
+11659829,80057770,7,70,year,692 Emily Overpass Suite 278,,Garciatown,MT,30097,(440)928-3993,(960)769-6467,(840)066-5110,True,,,,,,False,Horticultural consultant,8682610
+389780941,413625231,9,14,year,858 Keith Forest Apt. 026,,New Matthew,MS,64829,(957)421-2908,(646)106-2360,(956)997-3603,True,,,,,,True,Caddo Career & Technical Center,36420675
+945775172,370204829,1,12,year,5789 Nolan Fall,,New Nicoleborough,IL,66119,(192)304-2511,(604)681-6053,(838)868-2290,True,,,,,,False,ST. JAMES MIDDLE,12799845
+858669965,664073229,8,58,year,49047 Vasquez Forge,,West Alexisside,MA,85543,(980)266-0544,(412)843-9122,(596)777-0154,True,,,,,,False,Food technologist,6173449
+11659829,539938373,7,70,year,33200 Michael Green,,Roberthaven,MN,35447,(614)885-5017,(959)756-3843,(185)985-3741,True,,,,,,False,Energy manager,70368197
+945775172,989573756,1,12,year,77446 Harrell Knolls Suite 295,,Lake Robertstad,MS,80717,(085)422-3816,(951)862-4505,(980)403-6019,True,,,,,,False,Washington Elementary,23299362
+858669965,100009067,8,58,year,4395 Samantha Village,,New Sandymouth,OR,88342,(949)926-2217,(531)462-7707,(324)442-7405,False,,,,,,True,Chief of Staff,41281467
+389780941,840658852,9,14,year,2004 Hester Cliffs,,Burkeborough,OR,40158,(424)671-7838,(241)000-1940,(292)068-2291,True,,,,,,True,Wheatland Middle School,30158466
+858669965,439439427,8,58,year,1865 Rose Square,,Port Amber,WV,04518,(833)952-0051,(338)177-7647,(612)332-3986,True,,,,,,False,"Social research officer, government",39928918
+11659829,71846235,7,70,year,551 Sarah Rapid Apt. 966,,New James,OR,72824,(181)701-8128,(346)265-1354,(229)919-0818,False,,,,,,False,Hospital pharmacist,40701921
+918426598,496155645,3,60,year,0702 Shelby Center Apt. 811,,Brooksland,CO,54846,(345)471-6775,(090)530-8029,(432)060-7253,True,,,,,,True,"Engineer, civil (contracting)",74375184
+389780941,218668431,9,14,year,411 Burnett Rue Suite 723,,Franciscoview,AL,51540,(959)217-4697,(547)332-4383,(958)981-8437,True,,,,,,False,Loring Flemming Elementary School,52542259
+11659829,288835017,7,70,year,579 Tony Views,,Ericahaven,IN,81363,(205)999-3445,(798)077-5115,(912)750-1923,True,,,,,,True,"Production assistant, radio",83993316
+858669965,616322916,8,58,year,25531 William Manors Apt. 708,,Emmachester,SC,27886,(500)477-6333,(984)630-2287,(911)315-3922,False,,,,,,False,Exercise physiologist,17265793
+389780941,487938230,9,14,year,308 Simmons Light,,North Dustin,LA,30077,(222)105-3284,(460)217-8894,(026)440-3201,True,,,,,,False,WAYMAN TISDALE FINE ARTS ACAD,50996847
+858669965,661437588,8,58,year,35380 Gallagher Hollow Apt. 999,,Lake Dennis,VT,89382,(304)545-5016,(824)662-4777,(681)157-8065,False,,,,,,True,Museum/gallery curator,9902986
+918426598,260522090,3,60,year,9955 Downs Forest,,New Malloryborough,NE,14673,(976)995-2659,(548)532-4677,(669)314-1592,False,,,,,,True,Chartered loss adjuster,24021237
+858669965,564310082,8,58,year,40712 Cummings Manor Suite 700,,Nelsonview,WA,53147,(721)697-8072,(745)456-2140,(524)829-5402,False,,,,,,False,"Administrator, charities/voluntary organisations",30847866
+858669965,240573214,8,58,year,159 Hayes Crossing Apt. 702,,East Philliptown,NM,29709,(777)722-7969,(834)014-8349,(691)568-5245,True,,,,,,False,"Teacher, English as a foreign language",5527094
+389780941,815931533,9,14,year,70624 Matthew Highway Suite 058,,North Lisa,DE,12938,(460)831-1675,(858)410-6621,(291)849-3516,True,,,,,,True,Sanford High School,47542550
+945775172,732455181,1,12,year,3101 Sean Stream,,Lake Lawrenceshire,CA,26287,(302)092-4237,(094)710-2851,(763)395-3760,True,,,,,,False,Orville H. Platt High School,33037621
+389780941,128001707,9,14,year,01718 Andrews Square Suite 729,,North John,MA,26335,(180)067-2707,(814)819-4185,(827)637-3129,False,,,,,,False,Southridge Tech Middle,18635713
+389780941,610983217,9,14,year,6913 Griffith Junction Suite 797,,Lake Lisa,VA,05051,(377)555-4198,(958)324-9743,(451)499-0829,False,,,,,,True,Shining Rock Classical Academy: CFA,28624534
+945775172,474950860,1,12,year,4871 Colleen Springs,,South Saraport,MT,96930,(248)924-7811,(023)986-4191,(279)542-0673,False,,,,,,True,Pumpkin Center Intermediate,60466292
+858669965,560140788,8,58,year,288 Roberts Causeway Apt. 943,,Turnerland,NJ,95957,(121)386-1043,(078)640-7213,(116)289-2134,False,,,,,,False,Agricultural engineer,29173363
+11659829,271058290,7,70,year,1288 Salas Loaf,,East Samuel,NC,61351,(893)151-1935,(900)599-9147,(260)620-4696,True,,,,,,False,Copy,81972178
+945775172,467022707,1,12,year,138 George Divide Apt. 455,,Thomasfurt,KY,76908,(764)651-8854,(244)115-9916,(991)080-9188,True,,,,,,True,Westport Junior/Senior High School,57726751
+945775172,983455840,1,12,year,273 Barnes Ferry,,Reidview,CT,56575,(246)520-7277,(445)036-1360,(476)765-2333,False,,,,,,True,Rachel Carson Elementary,76747979
+858669965,33811312,8,58,year,03936 Williams Mission Apt. 889,,Wilsonhaven,ME,28843,(137)686-2635,(190)039-3388,(959)802-9638,False,,,,,,True,Public house manager,5267820
+389780941,649062603,9,14,year,94795 Michael Manors,,Johnnyview,AK,91944,(653)808-0144,(460)936-9682,(150)109-0409,True,,,,,,False,Merrill Elementary School,17181757
+11659829,996600296,7,70,year,8867 Thomas Forks,,Merrittborough,NY,88412,(230)156-5793,(427)560-5992,(161)291-6995,False,,,,,,True,"Designer, industrial/product",33461595
+945775172,348706372,1,12,year,63546 Angela Springs,,Amandaberg,CT,88403,(874)395-8281,(829)295-8997,(247)465-0656,False,,,,,,False,Kelloggsville Early Childhood Learning Center,16528442
+918426598,273013669,3,60,year,0087 Matthew Vista Apt. 934,,Morrisside,TX,56316,(360)241-2859,(335)206-0554,(210)084-2300,False,,,,,,True,Financial planner,16201274
+858669965,203492826,8,58,year,819 Christopher Crossing Suite 160,,South Davidview,NJ,76401,(568)014-1994,(558)000-3627,(755)212-7206,True,,,,,,False,"Scientist, research (medical)",94788619
+858669965,525932783,8,58,year,584 James Orchard,,Port Tracymouth,NM,61335,(931)591-7483,(972)601-2187,(429)744-3529,False,,,,,,True,English as a second language teacher,93577538
+918426598,127771359,3,60,year,258 Lindsay Views Suite 951,,Joland,CO,52774,(505)710-7325,(931)514-1431,(635)329-8625,False,,,,,,True,Sales promotion account executive,82360223
+945775172,186018842,1,12,year,25227 Gonzalez Streets Apt. 181,,Fowlerton,ID,33919,(507)171-0073,(103)194-9780,(527)341-3732,True,,,,,,False,Mintie White Elementary,13418542
+945775172,817300381,1,12,year,33479 Brandon Lakes,,New Meganshire,UT,81398,(847)664-7466,(474)962-6687,(210)406-6614,True,,,,,,True,Toltecali High School,20760278
+918426598,176716091,3,60,year,86045 Miranda Extension,,Douglasside,KY,37348,(597)727-4801,(042)244-6060,(106)627-5519,True,,,,,,False,Occupational psychologist,21529530
+918426598,539894154,3,60,year,101 Romero River,,West Glendafort,ME,38484,(713)991-8968,(673)388-9785,(911)584-0908,False,,,,,,False,"Buyer, industrial",49109236
+11659829,65424929,7,70,year,5144 Cobb Meadow Suite 154,,West Katie,ID,16635,(394)246-1166,(549)757-7599,(642)045-0882,True,,,,,,False,Broadcast engineer,26211957
+858669965,917970341,8,58,year,0148 Maria Keys Suite 680,,Woodville,IL,44385,(670)547-3915,(873)538-8395,(132)630-0433,True,,,,,,True,Clinical cytogeneticist,16198543
+389780941,51823409,9,14,year,7177 Diaz Common Apt. 443,,Matthewshire,ID,72697,(871)713-7933,(875)410-1821,(850)438-3517,True,,,,,,True,Gaston Elementary,97521561
+858669965,657089811,8,58,year,327 Justin Place Suite 482,,North Stephanieburgh,GA,39859,(885)521-7735,(689)236-6254,(704)701-4723,False,,,,,,True,"Scientist, forensic",10550946
+11659829,829677108,7,70,year,60996 Ponce Lodge,,West Denise,KS,37122,(102)667-0363,(075)000-5682,(089)837-7362,True,,,,,,True,"Runner, broadcasting/film/video",298690
+858669965,580427539,8,58,year,310 Jacob Mountain,,Lake Stephaniechester,SC,37489,(369)836-0595,(323)824-3603,(496)100-4199,True,,,,,,False,Maintenance engineer,73097518
+11659829,535868579,7,70,year,858 Kristina Shoals,,Pattersontown,MI,16677,(838)299-2374,(658)992-9728,(383)666-0069,False,,,,,,True,Best boy,70242667
+858669965,688416511,8,58,year,713 Nancy Passage,,West Mariofort,MN,91888,(632)480-4816,(146)014-4468,(744)241-5545,True,,,,,,True,Banker,26532478
+11659829,288444318,7,70,year,2634 Matthew Garden,,Lake Carol,WV,54270,(131)609-9485,(025)021-6351,(585)389-2361,True,,,,,,True,"Accountant, chartered public finance",59883308
+11659829,538889721,7,70,year,4986 Nancy Highway,,Scotthaven,RI,58809,(501)899-5363,(977)281-6761,(854)980-1041,False,,,,,,True,Firefighter,39774913
+11659829,369658920,7,70,year,009 Samantha Islands Apt. 833,,Scottberg,MT,75338,(350)076-6380,(902)281-5434,(399)991-8968,False,,,,,,True,Secretary/administrator,85893115
+11659829,182243404,7,70,year,5338 Lopez Glen,,Johnshire,MN,18991,(378)939-7041,(030)192-1736,(709)558-4080,False,,,,,,True,Writer,18812990
+945775172,537298883,1,12,year,98736 Dawn Causeway Suite 303,,Nicholashaven,HI,40471,(982)687-3525,(119)468-7054,(080)762-9293,False,,,,,,True,Richard B Wilson Jr School,51710316
+389780941,256699509,9,14,year,4909 Blanchard Shoal Apt. 804,,South Joanbury,TN,90509,(834)966-9218,(176)648-4430,(172)193-4251,True,,,,,,True,Green Valley Elementary,24136704
+918426598,389597669,3,60,year,539 Teresa Mission Suite 813,,East Blake,WI,30216,(754)366-5706,(184)562-4635,(185)011-8479,True,,,,,,False,Conference centre manager,80825709
+389780941,367138138,9,14,year,0229 Andrew Hill,,Snyderland,MS,78210,(575)011-9982,(624)143-1462,(066)084-1453,False,,,,,,True,NEWARK VALLEY SENIOR HIGH SCHOOL,80809154
+858669965,268744907,8,58,year,988 Rodney Crescent,,Hartland,MN,96037,(678)454-2698,(223)105-0380,(678)867-0343,False,,,,,,True,Health promotion specialist,54583551
+11659829,872183410,7,70,year,693 Steven Unions Suite 445,,North Linda,GA,61967,(043)795-0966,(186)318-0030,(879)835-0933,True,,,,,,False,Health and safety adviser,11877538
+858669965,428177638,8,58,year,526 Robinson Crossing,,Ortegachester,SD,57561,(910)568-9852,(282)234-1429,(673)709-8256,False,,,,,,False,Telecommunications researcher,52903309
+11659829,315457188,7,70,year,256 Pennington Views,,North Arthur,OR,60594,(869)446-3904,(930)036-6260,(990)590-1274,True,,,,,,False,Research scientist (medical),33768933
+389780941,392817985,9,14,year,5168 Felicia Alley Apt. 071,,West James,MN,41013,(620)083-7853,(525)178-6685,(606)430-9844,True,,,,,,True,BAYFIELD PRIMARY SCHOOL,19313406
+918426598,223027505,3,60,year,282 Cunningham Drive Apt. 635,,Tuckertown,AR,51872,(520)537-2900,(839)620-2928,(816)228-0164,False,,,,,,True,Clinical molecular geneticist,95838288
+858669965,427393911,8,58,year,8022 Olivia Summit Suite 473,,Lake Stephanieberg,ME,07442,(571)519-0787,(019)360-9113,(401)687-8336,True,,,,,,False,Horticultural consultant,97455308
+858669965,439118832,8,58,year,03031 Corey Dale Suite 527,,Jimenezside,WA,93441,(073)226-6626,(021)402-4590,(091)742-7777,True,,,,,,True,"Psychologist, educational",6313108
+11659829,227260124,7,70,year,8768 Wagner Summit,,West Josephview,HI,43951,(181)667-6698,(483)718-6755,(923)795-3836,False,,,,,,True,Museum/gallery exhibitions officer,62731571
+858669965,323530133,8,58,year,28760 Kenneth Square,,Nancyport,MD,89019,(243)829-6992,(837)304-1344,(654)799-6240,False,,,,,,True,Press sub,27194592
+389780941,40127038,9,14,year,78853 Barry Springs,,Port Leahland,MA,08020,(771)692-9249,(989)017-6198,(487)022-0938,True,,,,,,False,KENDALL ELEMENTARY SCHOOL,53458631
+11659829,387545001,7,70,year,946 Becky Common Apt. 783,,Norrisborough,LA,54551,(290)658-9946,(692)272-3554,(047)895-7266,False,,,,,,True,Jewellery designer,25720843
+858669965,877939395,8,58,year,7526 Collins Stream,,Hallborough,ND,45758,(067)384-7491,(879)303-1810,(239)784-4242,True,,,,,,True,Media buyer,16713266
+858669965,455086560,8,58,year,367 Davis Estates,,Toddtown,VT,23499,(435)108-0439,(280)960-8799,(119)553-8651,False,,,,,,True,Civil Service fast streamer,17847977
+11659829,375641440,7,70,year,237 Timothy Ports,,Rachelbury,MA,06848,(673)476-4765,(492)926-7135,(573)239-5707,True,,,,,,False,Secondary school teacher,62364545
+858669965,114087563,8,58,year,5744 Miller Street Suite 578,,South Gerald,VA,96209,(950)476-2756,(792)784-0520,(283)146-0279,True,,,,,,False,Ranger/warden,13801585
+389780941,544147796,9,14,year,85195 Gary Fork Suite 654,,Whiteton,VA,70424,(312)171-2009,(254)611-9049,(326)303-0858,False,,,,,,True,FITZGERALD MIDDLE SCHOOL,60767749
+945775172,565537685,1,12,year,163 Tanya Manors Suite 665,,Alexisberg,HI,48939,(167)109-2264,(943)648-3693,(804)294-0526,False,,,,,,False,HILL CO J J A E P,55943147
+945775172,242998346,1,12,year,333 Laurie Manors,,Josephshire,KS,77689,(225)581-3836,(333)487-3890,(548)634-5868,True,,,,,,True,Kyrene del Pueblo Middle School,97716239
+858669965,9711382,8,58,year,879 Young Manors,,Port Paul,MT,01815,(298)268-9695,(845)999-1371,(780)803-7491,True,,,,,,True,Cytogeneticist,49837317
+389780941,20569435,9,14,year,81259 Barnes Expressway,,West Ryan,DE,40903,(868)946-6283,(783)870-0550,(427)894-5014,False,,,,,,True,Paramount Elementary,51706296
+11659829,373532182,7,70,year,452 Joel Loaf Suite 925,,Emilyborough,MD,67402,(274)793-5177,(293)878-1383,(251)978-4315,True,,,,,,False,"Engineer, manufacturing systems",74627249
+918426598,765834868,3,60,year,61860 Novak Grove,,Reedmouth,VT,20543,(103)487-4821,(179)948-5923,(013)757-6911,True,,,,,,True,Photographer,5579848
+389780941,333968505,9,14,year,980 Melissa Glen Suite 670,,South Jeremystad,SC,38625,(385)907-9718,(307)007-4283,(853)180-4515,True,,,,,,False,COEUR D'ALENE HIGH SCHOOL,96784680
+389780941,698595831,9,14,year,63667 Jackson Camp Suite 625,,South Cameronland,LA,81125,(320)230-8030,(941)902-0021,(534)780-6664,True,,,,,,True,Wisconsin Secure Program Facility,38424151
+858669965,160517121,8,58,year,4669 Stephanie Causeway Suite 125,,East Duane,MS,22140,(625)096-7682,(580)053-2505,(507)716-3166,True,,,,,,False,Speech and language therapist,25610056
+389780941,357435097,9,14,year,237 Laura Gateway Apt. 497,,Staceyberg,HI,91382,(965)037-9726,(655)948-7850,(807)587-1569,True,,,,,,True,Spaght Multimedia Magnet,64320963
+918426598,17627547,3,60,year,3487 Anthony Valleys,,Andrewborough,NJ,61052,(209)409-4215,(889)915-2167,(170)556-9038,True,,,,,,True,Research scientist (physical sciences),26275267
+918426598,485736868,3,60,year,5494 Matthew Square Suite 282,,Isabellaville,TX,69597,(530)561-9115,(515)449-9351,(447)216-9254,False,,,,,,False,Cartographer,88473445
+858669965,42764030,8,58,year,21459 Scott Points Apt. 588,,East Zacharyshire,OR,87083,(829)999-8087,(490)075-7979,(894)294-8456,True,,,,,,False,Geophysical data processor,16341957
+945775172,45125431,1,12,year,581 Wang Grove Apt. 779,,Johnview,MI,29860,(500)145-4370,(160)516-3220,(416)118-0386,False,,,,,,True,SEVERO E. COLBERG RAMIREZ,80274746
+918426598,281301146,3,60,year,9572 Terry Flats,,East Anaton,LA,51876,(587)651-5041,(887)622-3887,(755)506-6512,True,,,,,,True,Production engineer,51902705
+858669965,139090285,8,58,year,408 Johnson Lane,,Beardshire,HI,91850,(481)388-4116,(597)977-5270,(913)449-8398,True,,,,,,True,Clinical cytogeneticist,82134634
+918426598,655192906,3,60,year,015 Wright Lake Suite 745,,Port Chadmouth,NE,77536,(877)321-4975,(258)859-7753,(874)747-3256,True,,,,,,False,Horticultural consultant,29699100
+945775172,327050000,1,12,year,27509 Bryant Dam Apt. 753,,Michaelview,IN,88585,(049)763-1225,(541)263-4021,(644)283-3694,True,,,,,,True,Johnston Middle School,89272609
+389780941,811996530,9,14,year,496 Mills Plain Suite 971,,Reyesshire,CA,75590,(312)093-0973,(791)467-3253,(710)167-8858,False,,,,,,False,Plainwell High School,99846838
+389780941,911154824,9,14,year,89486 Molina Lakes Apt. 351,,Bradleymouth,MA,90519,(440)399-0884,(597)892-0230,(380)187-4054,False,,,,,,True,Northshore Elementary School,79221291
+11659829,40626892,7,70,year,873 Michael Viaduct,,South Michael,NE,41853,(395)526-9183,(358)456-5956,(782)131-0581,True,,,,,,False,Dentist,77258508
+945775172,32288940,1,12,year,64341 Stephen Row,,North Laurie,TX,81334,(825)534-5401,(709)763-5135,(322)443-6229,True,,,,,,True,THE COLLEGE AND CAREER ACADEMY AT PRUDEN,22938935
+389780941,858623805,9,14,year,68478 Phillips Mews Suite 895,,Victoriamouth,PA,79670,(274)216-1471,(377)116-8836,(715)923-1326,False,,,,,,False,Alpha: Jose Hernandez,50444367
+918426598,706739880,3,60,year,379 Weber Mission,,Maryshire,KY,80148,(312)528-0542,(384)279-5634,(249)446-2140,True,,,,,,False,Regulatory affairs officer,45399649
+918426598,947605128,3,60,year,52144 Sullivan Port Suite 253,,Markmouth,MI,71130,(721)857-0304,(281)336-0937,(388)781-3869,True,,,,,,False,Regulatory affairs officer,44496902
+918426598,271742001,3,60,year,8378 Brandon Fall,,Mcknightville,OK,75626,(869)440-0310,(136)641-3788,(597)809-1328,True,,,,,,True,Armed forces logistics/support/administrative officer,85721606
+918426598,521830434,3,60,year,75718 Jessica Rue,,Port David,NC,81073,(546)052-0872,(564)674-9326,(615)538-4308,True,,,,,,False,Estate agent,50582474
+858669965,477066880,8,58,year,76459 Rodriguez Valleys,,Ronaldland,NE,17091,(116)949-9904,(460)716-7479,(035)790-7011,False,,,,,,False,Community pharmacist,86348910
+945775172,527971269,1,12,year,89472 Singh Row,,East Jenniferborough,MN,16990,(419)870-9681,(537)293-1114,(680)120-5039,True,,,,,,True,Indian Trail Elementary School,11585027
+945775172,584805092,1,12,year,96189 Jamie Brook,,Jonathanborough,PA,46722,(809)001-2828,(590)727-6103,(749)238-9511,True,,,,,,True,Neah-Kah-Nie Middle School,72271564
+858669965,277875104,8,58,year,02579 Samuel Parkway Apt. 443,,South Bonnie,DE,32838,(180)100-9672,(766)106-9856,(871)970-0673,False,,,,,,True,"Programmer, applications",7698813
+945775172,553716443,1,12,year,909 Jimenez Orchard Apt. 102,,East Joshuamouth,CA,08566,(129)194-7490,(179)653-1365,(827)658-0826,False,,,,,,False,Holton Elementary School,13369391
+11659829,145984477,7,70,year,545 Padilla Squares Apt. 311,,Masonfort,CO,91334,(936)543-5544,(882)991-6939,(047)750-6413,False,,,,,,False,Logistics and distribution manager,31109743
+918426598,104288135,3,60,year,37492 Hill Trail,,Figueroabury,NJ,90310,(680)226-3961,(540)704-8395,(679)805-4395,False,,,,,,False,Building surveyor,91859904
+918426598,362881647,3,60,year,1601 Morris Glen,,West Jasmineton,VA,02082,(879)318-5598,(223)584-0996,(508)371-7599,False,,,,,,True,Consulting civil engineer,75257729
+858669965,881249795,8,58,year,389 Meyer Prairie,,Harrishaven,NY,23014,(350)936-1921,(432)548-4452,(067)316-4521,True,,,,,,True,Sport and exercise psychologist,13877920
+858669965,799724606,8,58,year,84679 Anderson Valleys Suite 474,,Andrewstad,SD,87772,(594)913-6290,(684)944-0051,(528)887-8146,False,,,,,,False,"Journalist, broadcasting",84757200
+918426598,54192213,3,60,year,2455 Vincent Highway Suite 965,,North Alisonside,UT,73975,(136)230-3397,(594)845-0383,(533)187-2841,True,,,,,,True,Counsellor,98665329
+945775172,277180894,1,12,year,0483 Samantha Cliff,,Cainstad,NY,92318,(700)579-2458,(707)936-3259,(707)795-2295,True,,,,,,True,UMO N HO N NATION MIDDLE SCH,63823067
+918426598,567960271,3,60,year,55817 Caldwell Valley Suite 004,,East Josephville,CO,12323,(920)202-4057,(182)405-2501,(019)695-5091,True,,,,,,True,Animator,38881557
+918426598,94192374,3,60,year,0300 Christopher Station,,West Jessica,UT,07179,(624)319-3644,(538)220-4128,(040)659-2098,False,,,,,,False,Associate Professor,79558648
+858669965,795445797,8,58,year,090 James Glen,,North Rhondahaven,GA,12271,(962)321-3132,(997)232-0376,(283)660-8111,True,,,,,,False,Arts administrator,65619368
+945775172,6851062,1,12,year,037 Griffin Mission Suite 639,,Sandraborough,MN,06412,(525)796-9203,(373)930-6942,(959)929-7218,True,,,,,,False,Downtown College Preparatory,50103917
+11659829,158409078,7,70,year,26989 Jessica Green,,North Nancy,KY,71371,(506)969-8324,(991)129-3207,(797)513-0611,False,,,,,,False,Product/process development scientist,62266594
+918426598,143533439,3,60,year,040 Jean Fords,,Ricehaven,PA,76598,(079)161-5103,(707)244-1889,(533)969-9993,False,,,,,,True,Air traffic controller,16412649
+945775172,644164072,1,12,year,04570 Hendricks Mills,,North Douglas,SC,61280,(329)153-5414,(117)051-2987,(153)112-2067,True,,,,,,False,JAMES WELDON JOHNSON SCHOOL,5221119
+11659829,655812148,7,70,year,22635 Rivera Rapids Suite 750,,West Kaitlynshire,MA,22379,(743)272-7377,(964)876-4450,(644)028-6224,False,,,,,,False,Proofreader,31434145
+945775172,65508207,1,12,year,5074 Bowman Key Apt. 394,,North Joseph,DE,81398,(179)622-7998,(633)041-4356,(348)641-7517,False,,,,,,False,Olomoana Elementary School,71855642
+858669965,844038421,8,58,year,3757 Regina Tunnel Suite 119,,Gillespieburgh,ND,96191,(596)293-8888,(259)671-1589,(506)182-6753,False,,,,,,False,Arts administrator,54095639
+389780941,678986653,9,14,year,2814 Peggy Hills,,West Ronald,MT,08649,(522)816-2169,(983)824-4058,(520)185-7806,False,,,,,,False,Woodglen School,74386255
+11659829,39911283,7,70,year,07751 Shannon Extensions Apt. 494,,Port Morganberg,UT,36191,(077)609-6705,(419)989-9119,(341)371-4529,False,,,,,,False,Sales promotion account executive,49207869
+389780941,11844402,9,14,year,29760 Welch Forks,,West Richard,NE,53681,(913)940-6338,(243)988-8913,(528)281-0480,False,,,,,,True,SEGUIN EL,50186149
+945775172,840676736,1,12,year,5841 Robert Cliff,,East Trevor,CT,20414,(716)136-1470,(655)187-0155,(058)871-3154,True,,,,,,False,Clara Barton Elementary,36509742
+945775172,323302958,1,12,year,26142 Mason Ridges,,Humphreyfort,NJ,04814,(826)231-0526,(674)597-7313,(132)776-2306,True,,,,,,False,SEILING ES,61955754
+918426598,82056818,3,60,year,64616 Thompson Dam Suite 031,,Johnfurt,MT,29321,(980)942-4642,(217)470-9510,(378)352-5295,False,,,,,,True,"Psychotherapist, dance movement",78015761
+389780941,163887590,9,14,year,39272 Stewart Camp,,Angelaburgh,HI,81264,(527)678-2545,(495)805-3256,(216)576-8771,False,,,,,,False,Alternative Spcl Needs Div Occ,46929516
+11659829,910390595,7,70,year,698 Hernandez Lock,,Port Alexandrahaven,UT,57776,(105)116-6273,(445)114-1264,(329)421-3627,True,,,,,,True,"Administrator, local government",780632
+389780941,758504138,9,14,year,51276 Sandoval Dale,,South Linda,CA,83388,(709)541-6849,(542)669-6013,(157)413-7157,False,,,,,,True,Whitley County Central Primary School,82532291
+918426598,17824,3,60,year,981 Brown Island Suite 437,,Thompsonside,KY,06239,(634)121-9909,(608)785-3859,(480)477-9920,True,,,,,,False,"Therapist, drama",78357302
+945775172,597945912,1,12,year,4314 Anderson Squares Apt. 743,,Sheltonfurt,MS,39241,(038)049-1904,(922)906-3203,(525)392-5505,True,,,,,,False,Greenwood Elementary,33180683
+918426598,122911864,3,60,year,0167 Lawson Lake,,West Samuelfort,FL,81497,(725)764-1577,(221)391-4983,(244)411-9761,False,,,,,,False,Fish farm manager,71850852
+389780941,681834076,9,14,year,211 Gomez Burgs Suite 684,,Port Marie,NH,46907,(382)833-1677,(098)976-0862,(017)940-9181,False,,,,,,True,White River Reengagement Program,34835968
+945775172,82102869,1,12,year,284 Fitzgerald River,,Brownburgh,KY,26733,(537)336-6057,(663)466-5557,(669)168-6260,False,,,,,,False,John Newbery Elementary,44021838
+389780941,652599030,9,14,year,92610 Samuel Islands,,Port Kimberly,SC,33247,(511)305-8914,(100)062-9522,(050)885-3778,False,,,,,,False,Rising Stars at Aiken New Tech/College Hill,96472501
+389780941,136279325,9,14,year,5260 Meyer Extensions Apt. 102,,South Danielhaven,IN,31351,(774)546-6642,(903)335-9312,(976)178-5969,True,,,,,,True,Oakley Elementary,49183720
+11659829,454834734,7,70,year,68998 Ricky Mountain,,New Donald,LA,83174,(387)154-6955,(180)935-1910,(679)829-7356,False,,,,,,True,Multimedia programmer,16724231
+858669965,326360065,8,58,year,18964 Felicia Roads,,Allenland,MA,77006,(763)256-3443,(207)246-5512,(452)445-5394,False,,,,,,False,"Scientist, research (life sciences)",74944781
+389780941,92585681,9,14,year,29032 Tammy Summit,,North Alexandraborough,LA,76380,(678)479-3592,(486)584-0912,(833)537-0919,False,,,,,,False,ACE LEADERSHIP HIGH SCHOOL,59522952
+858669965,786046247,8,58,year,006 Roberson Parks,,Port Lisa,OR,84962,(432)438-0537,(272)624-1513,(471)410-8401,False,,,,,,False,Ergonomist,77072853
+918426598,86958366,3,60,year,2866 Kim Viaduct,,Huffland,ME,56819,(906)482-2723,(096)398-3284,(785)020-9085,True,,,,,,True,Office manager,11369029
+389780941,325518946,9,14,year,43960 Amanda Manor,,Armstrongview,CA,55482,(555)637-0650,(149)007-5923,(847)401-2154,False,,,,,,True,Southside Middle School,36042456
+858669965,975338613,8,58,year,346 Alisha Villages,,Zacharymouth,TX,40572,(010)667-4191,(474)400-4894,(494)470-5355,False,,,,,,True,Medical physicist,30124288
+389780941,809507441,9,14,year,55424 Anthony Union,,Angelafort,VA,32139,(024)584-1232,(349)471-4391,(389)983-5830,True,,,,,,True,Calhoun High School,79401525
+858669965,501004026,8,58,year,34293 Joshua Field Apt. 371,,Sanchezmouth,WA,83647,(281)244-7843,(371)948-9340,(770)478-3034,True,,,,,,True,"Therapist, music",15348212
+945775172,28211542,1,12,year,9167 Taylor Loaf,,Allenborough,IA,50117,(208)565-9816,(814)214-3791,(999)341-6202,True,,,,,,True,Yorkville High School,3110107
+858669965,64079200,8,58,year,5355 Megan Neck,,East Karenview,MD,18407,(791)937-6312,(473)605-8209,(721)433-4020,True,,,,,,False,Magazine features editor,44411198
+858669965,447249296,8,58,year,96600 Karen Walks Apt. 812,,Port Janiceville,CA,77603,(240)054-5562,(178)800-6143,(195)662-8733,True,,,,,,True,Science writer,31547128
+945775172,673318769,1,12,year,00159 Holly Camp,,Lake Mariachester,WA,88098,(952)072-9397,(676)416-0252,(945)814-2748,True,,,,,,True,JANET BROCKETT EL,21892592
+918426598,752868693,3,60,year,175 Martin Shoal,,Port Jessica,NE,81547,(090)380-6214,(371)179-7431,(413)668-2413,True,,,,,,False,Accounting technician,48516933
+389780941,183270360,9,14,year,344 Warren Spurs Suite 561,,Wheelerfurt,NH,86765,(817)570-7065,(734)147-0601,(076)179-2347,True,,,,,,True,GLEN OAKS EL,31180323
+918426598,81585480,3,60,year,5238 Valerie Ports,,Nicholasview,NE,85839,(289)095-2717,(129)668-4546,(653)351-0237,False,,,,,,False,Restaurant manager,36010123
+858669965,792159408,8,58,year,313 Carlson Prairie Suite 477,,Port Regina,WI,95405,(966)738-2411,(016)688-2433,(964)422-7663,False,,,,,,True,IT sales professional,92020461
+389780941,176500745,9,14,year,01104 Mark Mount Suite 928,,East Mark,WA,08761,(774)193-6127,(656)758-9173,(829)711-4465,True,,,,,,False,Abraham Lincoln Elementary,45828149
+918426598,506026793,3,60,year,505 Debbie Valleys,,Lawrencefort,CA,85611,(803)013-6080,(751)511-3141,(239)015-3995,True,,,,,,True,Hydrogeologist,50303217
+389780941,820925046,9,14,year,765 Santiago Trafficway Apt. 704,,New Richard,HI,06315,(248)641-4389,(529)783-2972,(331)495-5910,True,,,,,,True,WOODLAWN EL,90716328
+945775172,494272109,1,12,year,82181 Nunez Creek Suite 968,,North Jackburgh,PA,88829,(369)073-7350,(469)588-8833,(988)890-9842,False,,,,,,False,EARLY CHILDHOOD SPECIAL EDUCATION SCHOOL,77191700
+945775172,887835515,1,12,year,1706 Acosta Inlet Suite 484,,Wilsonbury,PA,72827,(087)486-3372,(687)549-6976,(395)658-0970,False,,,,,,False,E.H. MARSTELLER MIDDLE,711984
+945775172,569610004,1,12,year,89401 King Mews,,Kristenton,IL,65471,(830)973-9322,(110)460-4968,(183)146-0000,True,,,,,,True,South Hadley High,98863340
+945775172,600561505,1,12,year,47061 Ryan Rapids,,Lawrenceburgh,KY,91284,(670)574-4678,(606)899-0825,(788)314-1423,True,,,,,,False,Cheboygan Intermediate School,45074066
+918426598,266444645,3,60,year,09751 Sabrina Keys Suite 447,,Amyshire,MT,94024,(106)007-7275,(558)759-2783,(354)805-6482,False,,,,,,False,Data scientist,49162024
+945775172,427362044,1,12,year,98768 Rick Stravenue Apt. 293,,Stevensfort,NJ,42858,(526)147-4960,(308)161-9851,(465)035-4934,True,,,,,,False,PS 116 MARY LINDLEY MURRAY,91723396
+918426598,92973703,3,60,year,499 Lopez Square,,Castroport,AK,25650,(611)349-1110,(469)961-3186,(905)469-4800,True,,,,,,True,Public affairs consultant,86260487
+945775172,277183583,1,12,year,5491 Payne Way Suite 915,,Kristinamouth,TX,89547,(576)568-3699,(494)545-4451,(867)761-0269,False,,,,,,True,Heritage Elementary School,56229650
+389780941,184922189,9,14,year,02105 Robert Well,,Devinville,OH,55538,(842)468-3685,(606)233-3760,(504)929-2139,False,,,,,,True,Eastern Sky Community Charter School,21910606
+389780941,816149090,9,14,year,3619 Wilcox Row Apt. 665,,West Paulhaven,AZ,59801,(839)944-3457,(913)332-5111,(517)063-0947,False,,,,,,True,SUPERIOR VOCACIONAL (ANTONIO LUCHETTI),83320077
+389780941,878656445,9,14,year,76079 Mason Drive,,Joneston,WI,62457,(701)442-0372,(052)479-6210,(108)947-8834,False,,,,,,True,West Manor Elementary School,46904811
+858669965,644863328,8,58,year,9312 Norman Lodge,,Ballmouth,IL,45394,(007)335-9749,(871)802-1422,(411)674-0350,False,,,,,,True,Advertising art director,59762856
+858669965,356919463,8,58,year,2502 Jesus Throughway,,Travismouth,CT,84671,(835)204-4015,(337)210-0951,(616)501-1765,True,,,,,,True,TEFL teacher,59143802
+945775172,405107654,1,12,year,49671 Robin Forges,,Rodneyfort,MD,86721,(339)569-0763,(805)212-3153,(904)577-0758,True,,,,,,True,Park Lane El Sch,61878179
+918426598,418053441,3,60,year,0256 Williamson Place,,Castroview,HI,13754,(798)431-8185,(039)743-2917,(204)105-4595,True,,,,,,True,Dentist,76044607
+389780941,733664608,9,14,year,14267 Gomez Mountains,,South Bailey,NV,84372,(675)393-0559,(031)174-0554,(112)807-3628,True,,,,,,False,PEDRO CARLOS TIMOTHEE,56934801
+918426598,240231864,3,60,year,82879 Morton Forges,,North Jennifer,MO,55099,(564)790-6276,(218)520-3856,(415)522-9432,True,,,,,,False,Music tutor,28244919
+918426598,768417991,3,60,year,2489 Johnson Union Suite 561,,South Alisha,OH,41251,(553)407-6266,(264)873-6757,(808)519-5998,True,,,,,,False,"Presenter, broadcasting",49134347
+945775172,350894326,1,12,year,034 Michael Branch Suite 219,,Port Johnview,KY,76405,(440)620-7460,(564)119-8587,(003)515-8930,True,,,,,,True,Thomas Jefferson Middle,5798707
+11659829,977336872,7,70,year,10231 Miller Heights Apt. 153,,Port Marissa,OH,95238,(203)954-1325,(380)397-3931,(529)460-1130,True,,,,,,True,Hydrologist,36794469
+945775172,45920623,1,12,year,87065 Linda Trail Suite 671,,Phillipsmouth,LA,88603,(908)299-9231,(641)674-7373,(402)200-0766,False,,,,,,False,ROGERS MIDDLE SCHOOL,74880397
+945775172,944233619,1,12,year,253 Audrey Coves,,Nicholaston,MA,68056,(423)381-8264,(655)218-2813,(552)635-8479,True,,,,,,True,Great Oaks Elementary School,28163715
+858669965,783128667,8,58,year,45690 Ellis Plains,,New Thomas,IN,10106,(942)494-3348,(994)390-4166,(542)182-0068,False,,,,,,True,Early years teacher,21191405
+945775172,188171656,1,12,year,216 Tyrone Springs Apt. 256,,Allisonbury,IA,12754,(741)922-7963,(384)620-5502,(048)448-5075,False,,,,,,True,MARBLETOWN ELEMENTARY SCHOOL,29945933
+389780941,263415639,9,14,year,7245 Morris Union Apt. 763,,West Carrieton,NJ,84961,(568)711-2769,(457)762-6766,(529)713-1412,False,,,,,,False,NORTHPOINTE INT,65465811
+918426598,788574070,3,60,year,67403 Weeks Valleys Suite 332,,New Jeffrey,VT,09889,(866)564-3466,(605)530-0171,(790)395-8273,True,,,,,,False,Special educational needs teacher,36713805
+11659829,56687153,7,70,year,03996 John Crest Apt. 516,,South Michaelfurt,WI,70517,(632)376-8313,(422)312-8217,(472)891-8421,True,,,,,,True,Nutritional therapist,90937615
+945775172,259252849,1,12,year,0632 Evan Turnpike Apt. 820,,New Ricardo,WV,69232,(815)862-2238,(939)616-4597,(958)673-3381,False,,,,,,True,CHANDLER ACADEMY,33003735
+389780941,54184992,9,14,year,593 Michael Canyon Apt. 422,,Henrymouth,CO,76305,(612)481-7396,(682)512-0521,(002)036-6775,False,,,,,,False,KEISTER ELEM,46268095
+945775172,463582498,1,12,year,90397 Johnson Fields Apt. 551,,Jamesshire,CA,00814,(951)659-8287,(581)018-0931,(803)234-9600,False,,,,,,True,Hoven Elementary - 02,60200808
+11659829,731390171,7,70,year,951 Sarah Mill,,Port Mary,NV,82099,(641)820-5464,(483)626-8516,(532)120-0783,False,,,,,,False,IT technical support officer,89647026
+858669965,646356187,8,58,year,511 Amber Course Apt. 851,,South Stephanie,TN,25783,(165)478-7284,(363)397-6673,(787)504-6902,False,,,,,,False,"Librarian, academic",56969259
+945775172,342148123,1,12,year,20976 Chase Unions Suite 763,,West Christyview,ME,37138,(703)999-7539,(612)092-7068,(836)812-6147,True,,,,,,False,Lone Mountain Elementary School,47317676
+11659829,890670254,7,70,year,491 Manuel Green,,Rayside,MO,27529,(994)664-3549,(971)505-7031,(267)302-4189,True,,,,,,True,"Scientist, audiological",66408546
+858669965,325222620,8,58,year,4226 Sharp Parks Apt. 503,,North Nicole,CO,17642,(621)470-8642,(833)242-5730,(449)651-0065,False,,,,,,True,Fine artist,18461464
+918426598,223041555,3,60,year,1372 Lewis Summit,,Cherylmouth,CA,92138,(959)035-0549,(254)530-7804,(054)379-2014,False,,,,,,False,"Conservator, furniture",53692053
+858669965,660904088,8,58,year,266 Joel Mountain,,South Renee,MD,82518,(533)271-4673,(061)224-0250,(231)598-8548,True,,,,,,True,Geophysical data processor,23565929
+389780941,472196423,9,14,year,3508 Hays Ramp,,Larsenfort,FL,39688,(614)232-2374,(358)505-1940,(785)593-2870,False,,,,,,False,Germantown Elem School,50465607
+918426598,188810996,3,60,year,074 Johnson Bypass Apt. 236,,Gordonberg,CT,58477,(311)204-8298,(422)659-0395,(799)102-9082,True,,,,,,True,Network engineer,15146701
+918426598,375349979,3,60,year,78304 Travis Views Suite 008,,East Noah,OR,25574,(980)450-8079,(648)682-4425,(233)585-9896,True,,,,,,False,Medical physicist,46753715
+11659829,959157186,7,70,year,72655 Willis Extensions,,Johnsonchester,OR,84466,(343)210-1688,(617)115-3570,(435)880-8320,True,,,,,,False,Automotive engineer,7851088
+945775172,272502431,1,12,year,04432 Morgan Drive,,East Kennethfurt,OR,35436,(875)274-3196,(926)959-4170,(769)277-5415,False,,,,,,False,C V T  Gilbert Elementary School,82727195
+389780941,885344292,9,14,year,224 Duarte Fall Apt. 817,,Lake Amandaborough,DE,46907,(326)597-2228,(861)564-7483,(158)028-1509,True,,,,,,True,Graham Creek Elementary School,65862331
+858669965,353494954,8,58,year,029 William Estate Apt. 523,,Dianafort,WA,13002,(966)948-3249,(287)520-6283,(045)150-0349,False,,,,,,False,Set designer,37612835
+945775172,139609538,1,12,year,386 Schneider Island,,Curtisshire,ND,09526,(223)358-3892,(147)221-6056,(032)539-3960,True,,,,,,False,East St Louis Senior High School,98024683
+389780941,912347977,9,14,year,92093 Sanchez Turnpike Suite 327,,East Williamview,NV,61692,(352)633-2177,(194)092-1088,(224)960-5330,False,,,,,,True,WASMER ELEMENTARY SCHOOL,52893856
+858669965,142514473,8,58,year,01206 Gina Pine,,Shannonberg,MS,53225,(982)270-9312,(433)175-3658,(256)884-6380,True,,,,,,False,"Librarian, academic",37033024
+11659829,419168383,7,70,year,28976 Smith Drive,,East Shannon,CT,02167,(297)897-2576,(388)042-1117,(383)489-0701,False,,,,,,True,Chief Marketing Officer,66719941
+918426598,872937319,3,60,year,8626 Clements Brooks,,Smithborough,RI,73704,(562)855-8946,(994)383-5354,(139)443-8413,False,,,,,,True,Senior tax professional/tax inspector,20911740
+11659829,122311511,7,70,year,37647 Sonia Trail,,South Frankstad,WA,07515,(469)783-8324,(817)420-8665,(182)427-2239,False,,,,,,False,"Loss adjuster, chartered",79159529
+11659829,878375330,7,70,year,55911 Lopez Hollow Suite 982,,New Brendabury,NH,48668,(968)242-9639,(539)403-1623,(485)301-8069,True,,,,,,False,Public house manager,78330580
+11659829,987027269,7,70,year,1461 Oliver Centers,,Danielbury,ID,63848,(196)335-1013,(674)957-1012,(356)276-8042,True,,,,,,False,Biomedical engineer,12874547
+11659829,692551172,7,70,year,7500 Diane Port,,Port Jeannefurt,NH,39494,(072)662-9279,(598)303-7700,(287)910-8097,True,,,,,,False,Medical illustrator,83803816
+945775172,557236694,1,12,year,8677 Graves Burg,,South Dana,ND,03283,(001)927-0115,(006)812-5672,(123)019-1367,True,,,,,,False,Hampton Elementary,82360936
+858669965,663196430,8,58,year,9461 Solis Coves,,Sarabury,CA,94115,(421)590-7095,(317)984-3469,(813)329-7265,True,,,,,,False,Mining engineer,79759809
+389780941,876703853,9,14,year,45558 Knox Roads Suite 288,,Port Teresamouth,OK,99249,(963)767-1441,(417)360-8538,(484)132-9952,True,,,,,,False,COMANCHE EARLY CHILDHOOD CENTER,94250446
+858669965,18901632,8,58,year,1562 Miller Knoll,,Mossmouth,NC,94892,(534)056-6365,(530)406-3979,(548)962-3603,False,,,,,,True,"Administrator, sports",81384598
+858669965,970588456,8,58,year,24213 Cohen Ways Apt. 037,,Parkport,MA,88645,(509)228-0047,(733)792-5874,(622)098-0233,True,,,,,,True,Orthoptist,24148172
+858669965,846127141,8,58,year,26898 Copeland Points,,Lake Shawnside,SC,00854,(482)385-5002,(781)350-7856,(699)546-4216,False,,,,,,False,Mining engineer,18898951
+918426598,375415354,3,60,year,068 Bob Wells Apt. 371,,North Ronald,MI,70818,(782)638-3938,(096)098-1901,(902)170-0386,True,,,,,,True,Air broker,97376075
+918426598,940294989,3,60,year,88257 Cheryl Plain,,West Cindy,AZ,27921,(282)905-4557,(785)290-3650,(624)268-3228,True,,,,,,False,"Editor, magazine features",26278908
+918426598,293823823,3,60,year,3962 Alejandra Forge Suite 538,,East Jeffery,AZ,58163,(946)899-2601,(675)895-3772,(918)612-7817,True,,,,,,True,"Editor, film/video",81478724
+918426598,158134347,3,60,year,80133 Carroll Spur,,Jonesbury,MD,34026,(778)120-8816,(594)553-7132,(337)179-2621,False,,,,,,True,"Surveyor, building control",21551956
+945775172,303687437,1,12,year,5316 Johnson Skyway Suite 850,,Heathermouth,OK,96486,(598)168-9536,(538)702-5107,(488)964-2127,True,,,,,,True,Parker High,79821984
+389780941,675027120,9,14,year,91813 Aguilar Springs,,Tylershire,HI,87403,(290)188-8200,(457)074-1234,(238)234-2896,True,,,,,,True,Mann Middle School,2222609
+11659829,92711316,7,70,year,988 Denise Mission,,Jacksonborough,KS,25403,(319)960-7236,(913)599-7248,(382)147-1912,False,,,,,,False,Intelligence analyst,60748320
+945775172,462468162,1,12,year,181 Barker Canyon,,Lindsayshire,AZ,89807,(328)947-9754,(923)422-2117,(481)073-6232,True,,,,,,True,Blackburn Education Center,6847610
+918426598,503258846,3,60,year,042 Davis Crest,,New Jamesport,NM,69704,(702)576-9782,(481)548-9852,(269)509-3475,True,,,,,,False,"Administrator, arts",31753049
+858669965,911271516,8,58,year,511 David Spring Apt. 945,,West Kathrynport,AK,66860,(934)957-7541,(903)936-2998,(168)500-9779,False,,,,,,False,Higher education lecturer,91312102
+945775172,360110381,1,12,year,832 Matthew Park Suite 080,,Shepardfurt,LA,30615,(624)322-1638,(516)737-3563,(457)197-3716,False,,,,,,True,WEST CENTRAL AREA LEARNING CENTER,38065024
+389780941,238178835,9,14,year,2006 Galloway Isle,,Noahburgh,AZ,97160,(385)203-2109,(714)224-0066,(582)496-1702,False,,,,,,True,Gainesville Regional Youth Detention Center,33798465
+858669965,177890231,8,58,year,1289 Lopez Junction Suite 073,,East Sarahbury,IA,21483,(659)225-6417,(020)247-5176,(287)448-4028,False,,,,,,True,"Engineer, production",38479378
+389780941,613895100,9,14,year,66783 Brenda Route,,East Dana,CO,61378,(546)802-9481,(162)492-6961,(662)672-1824,False,,,,,,False,Mission Valley ROCP,71089676
+945775172,894290956,1,12,year,2982 Castro River,,Powellborough,ID,52929,(008)904-7586,(733)075-6764,(780)357-9532,False,,,,,,True,JOSEFINA BOYA LEON,99558220
+858669965,252431316,8,58,year,0127 Barnes Loaf Apt. 732,,West Martha,NJ,52593,(237)993-7673,(225)200-9220,(910)933-1422,True,,,,,,True,Clinical biochemist,18395095
+945775172,594008682,1,12,year,659 Christina Spurs Apt. 072,,North Geraldstad,NE,35007,(025)363-4148,(321)141-6600,(017)543-0149,False,,,,,,False,21st Century Preparatory School,61176998
+945775172,46455438,1,12,year,639 Fletcher Mountain Suite 110,,East Alicia,SD,91479,(591)136-6981,(806)285-8004,(620)163-9973,True,,,,,,True,Joaquin Miller Elementary,57574258
+389780941,824278484,9,14,year,677 Gary Cape,,Garciaton,LA,99191,(675)084-3769,(851)189-5259,(717)455-6029,False,,,,,,False,Lillie May Carroll Jackson School,10729677
+945775172,131214017,1,12,year,78520 Jennifer Valley,,South Lisahaven,VA,41182,(025)456-6768,(295)808-4929,(497)670-7464,False,,,,,,True,TECHNOLOGY LEADERSHIP HIGH SCHOOL,83720479
+945775172,304472919,1,12,year,232 Stephen Expressway,,South David,KS,40250,(560)274-5538,(344)147-3508,(869)900-4640,False,,,,,,False,LAKE PEND OREILLE HIGH SCHOOL,10922654
+918426598,131258755,3,60,year,3075 Melvin Ways,,Phillipsbury,AK,90144,(732)290-9053,(824)098-3764,(980)075-6342,True,,,,,,False,Animator,37107352
+389780941,434351100,9,14,year,586 Mackenzie Skyway,,Lake Brianland,IL,86271,(761)445-5144,(961)491-6977,(388)064-8252,True,,,,,,False,Excel Academy Charter School,63159391
+945775172,737545462,1,12,year,887 Williams Fall Apt. 756,,Burnsmouth,SD,86664,(015)323-6144,(533)322-1231,(406)989-3372,False,,,,,,False,STUART HS,66009674
+918426598,367365061,3,60,year,86994 Roy Streets Suite 720,,Tonyberg,NM,30568,(474)682-6768,(438)005-8704,(257)318-1996,True,,,,,,True,Insurance account manager,6766967
+389780941,649322855,9,14,year,47879 Cox Fords,,Rodriguezside,VT,53830,(047)552-3096,(631)996-6881,(271)899-5840,True,,,,,,True,Sierra Vista High (Alternative),17736843
+389780941,979385042,9,14,year,7723 Leah Turnpike Suite 033,,West Erica,HI,07052,(125)482-0163,(972)887-6748,(891)268-9294,True,,,,,,True,Thirteenth & Union El Sch,55315678
+918426598,876236391,3,60,year,942 Patterson Parkway Suite 038,,Vaughnmouth,VT,95473,(542)840-4604,(643)150-1586,(103)716-1149,True,,,,,,True,"Engineer, building services",55041184
+389780941,663728113,9,14,year,99454 Rodriguez Club,,Nathanielville,DE,85664,(649)934-2454,(471)156-2483,(140)440-2889,True,,,,,,True,CAMELOT ACADEMY OF ESCAMBIA COUNTY,24528366
+389780941,378560388,9,14,year,562 Nicholas Fall,,Port Johntown,NV,93137,(602)693-9979,(694)745-3422,(120)702-0964,False,,,,,,True,Amy B. Seibert Elementary,5437716
+945775172,261854426,1,12,year,83753 Daniel Stream,,Davisberg,LA,68717,(664)369-3565,(498)662-9031,(661)395-2646,True,,,,,,True,CEDAR VALLEY EL,67295750
+858669965,985676995,8,58,year,07021 Ferguson Station Apt. 275,,East Davidtown,PA,68239,(436)910-8218,(818)995-6201,(206)891-3949,True,,,,,,False,"Engineer, production",87446850
+389780941,891821033,9,14,year,6471 Osborne Freeway,,Rayburgh,VT,78779,(656)770-2657,(224)344-6802,(790)203-4013,False,,,,,,True,Scobey High School,22661154
+945775172,231938896,1,12,year,105 Bryan Street Suite 958,,New Katie,NJ,66251,(958)791-9381,(347)655-3015,(318)400-9777,False,,,,,,False,Warner High School - 01,12073841
+389780941,208789583,9,14,year,35315 Robert Course,,Contrerashaven,NY,19455,(048)502-6977,(984)810-3136,(614)431-2589,False,,,,,,False,Sundance Elementary,3832885
+945775172,626217471,1,12,year,912 Marcus Shoals,,Darrellhaven,MO,52402,(776)813-9094,(145)385-8206,(303)273-9167,True,,,,,,False,Seneca East Middle School,98990077
+945775172,521863314,1,12,year,9088 Herrera Fields Apt. 419,,South Joseph,WI,80385,(814)097-5873,(297)430-9431,(054)885-3310,True,,,,,,True,Peabody Veterans Memorial High,10851595
+11659829,835145633,7,70,year,25765 John Cape Suite 138,,Tylerchester,KY,88729,(876)177-4858,(316)714-1144,(904)738-7926,False,,,,,,True,Geoscientist,3476978
+945775172,200269004,1,12,year,61387 Robert Fields Suite 989,,Hubbardton,MN,95998,(355)090-3044,(656)701-3896,(583)751-9775,False,,,,,,False,Hazelwood Elementary,43175566
+945775172,822080354,1,12,year,0213 Williams Stravenue,,Donovanhaven,TN,26822,(398)194-8734,(373)855-4396,(285)050-5644,False,,,,,,True,LEGACY SCHOLARS ACADEMY,87709615
+11659829,510155441,7,70,year,3791 Taylor Extension,,Martinside,MD,16901,(196)418-4109,(690)278-5696,(523)200-9489,True,,,,,,False,Lawyer,54985874
+945775172,36076514,1,12,year,347 Michelle Ways Suite 005,,Kristenberg,IN,89141,(620)022-5596,(845)662-8358,(436)117-5026,False,,,,,,False,Megan Cope Elementary,42966213
+858669965,226512030,8,58,year,62087 Mccoy Isle,,North Lydiaberg,WA,64625,(255)061-2550,(869)500-6818,(152)870-8122,False,,,,,,False,Planning and development surveyor,23889155
+858669965,963199644,8,58,year,7546 Graves Mountains,,West Charlesmouth,KS,66171,(239)975-4618,(512)531-4663,(506)052-0741,True,,,,,,False,Building services engineer,1622976
+945775172,334723194,1,12,year,853 Ashley Forest,,Jamesview,OK,44438,(414)438-8205,(310)252-8247,(745)667-8561,False,,,,,,False,East Carter Middle School,22617454
+945775172,416173030,1,12,year,000 Morales Rapids,,Stephenland,NY,04594,(382)746-1893,(429)584-4833,(159)211-0821,False,,,,,,False,Fairless Elementary School,4272300
+11659829,195652773,7,70,year,800 Harold Gateway Apt. 585,,Nunezstad,MS,74190,(515)775-3694,(541)146-8622,(295)685-8407,True,,,,,,False,"Engineer, maintenance (IT)",6224219
+945775172,138438217,1,12,year,42330 Candice Crescent,,Rodrigueztown,OK,36829,(798)215-4422,(978)702-8816,(925)565-6458,True,,,,,,False,Eastern Randolph High,45450039
+945775172,718443641,1,12,year,1921 Harmon Canyon,,Port Kenneth,MT,31252,(012)426-3771,(728)347-9712,(764)139-6599,True,,,,,,True,KIPP WISDOM ACADEMY,25082075
+389780941,759663958,9,14,year,877 Christopher Mission,,Port Jenniferview,CA,45810,(652)383-0979,(987)762-8877,(738)038-3234,False,,,,,,False,Solana Pacific Elementary,59301637
+858669965,538253137,8,58,year,198 Young Hill Apt. 671,,East Sheryl,OK,03302,(383)695-7263,(130)409-4344,(118)935-3334,True,,,,,,True,"Designer, blown glass/stained glass",83947000

@@ -7,7 +7,7 @@ from database.create_tables import main as create_tables
 from database.create_database import main as create_database
 from database.create_user import main as create_user
 from database.populate_database import main as populate_database
-from generator.data_generator import main as data_generator
+from generator.data_generator import run_generator_menu, create_scenario
 
 db_tables = [
     "state",
@@ -116,6 +116,19 @@ def load_scenario(scenario_name):
         print(f"[red]Error loading scenario: {str(e)}")
         return False
 
+def save_scenario_from_generator():
+    """
+    Create a new scenario from generated data.
+    This is different from the data_generator's scenario creation in that
+    it assumes data has already been generated.
+    """
+    scenario_name = Prompt.ask("[yellow]Enter a name for the new scenario")
+    result = create_scenario(scenario_name)
+    if result:
+        print(f"[green]Scenario '{scenario_name}' has been created successfully.")
+    else:
+        print("[red]Failed to create scenario.")
+
 if __name__ == "__main__":
     print('''
 [bold blue]WELCOME TO THE NCA-TRAK SETUP WIZARD\n
@@ -127,11 +140,12 @@ If you haven't yet, please read the [red]README.MD [blue]file in the home direct
 [1] Complete Install
 [2] Add New Generated Data
 [3] Load Predefined Scenario
+[4] Save Current Data as Scenario
 ''')
 
     while True:
         n = input()
-        if not (n.isdigit() and 3 >= int(n) > 0):
+        if not (n.isdigit() and 4 >= int(n) > 0):
             print("[red]Please insert a number from the options listed.")
         else:
             break
@@ -157,7 +171,7 @@ If you haven't yet, please read the [red]README.MD [blue]file in the home direct
         print(f"[green]The user \"{data[2]}\" has been created for the database \"{data[1]}\.")
         create_tables()
         print("[green]Database tables created.")
-        data_generator()
+        run_generator_menu()
         print("[green]Database tables generated.")
         populate_database()
         print("[green]Database tables populated.")
@@ -166,7 +180,7 @@ If you haven't yet, please read the [red]README.MD [blue]file in the home direct
     # Add New Generated Data
     elif n == 2:
         print("[green]Database tables created.")
-        data_generator()
+        run_generator_menu()
         print("[green]Database tables generated.")
         populate_database()
         print("[bold green]Additional data added.")
@@ -201,3 +215,12 @@ If you haven't yet, please read the [red]README.MD [blue]file in the home direct
                     print(f"[bold green]Scenario '{scenario_name}' has been loaded successfully.")
                 else:
                     print(f"[bold red]Failed to load scenario '{scenario_name}'.")
+                    
+    # Save current data as scenario
+    elif n == 4:
+        # Check if csvs directory exists (indicating data has been generated)
+        generator_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "generator", "csvs")
+        if not os.path.exists(generator_dir) or not os.listdir(generator_dir):
+            print("[red]No generated data found. Please generate data first using option 2.")
+        else:
+            save_scenario_from_generator()

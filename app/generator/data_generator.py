@@ -1,8 +1,106 @@
+def generate_data(n):
+    """Generate data with specified amount"""
+    # Reset all data lists
+    child_advocacy_center_data.clear()
+    cac_agency_data.clear()
+    person_data.clear()
+    case_person_data.clear()
+    cac_case_data.clear()
+    case_va_session_attendee_data.clear()
+    case_va_session_log_data.clear()
+    case_va_session_service_data.clear()
+    case_mh_assessments_data.clear()
+    case_mh_assessment_instruments_data.clear()
+    case_mh_assessment_measure_scores_data.clear()
+    case_mh_diagonosis_log_data.clear()
+    case_mh_session_log_enc_data.clear()
+    case_mh_treatment_plans_data.clear()
+    case_mh_session_attendee_data.clear()
+    case_mh_attribute_group_data.clear()
+    case_mh_provider_log_data.clear()
+    case_mh_service_barriers_data.clear()
+    case_mh_treatment_models_data.clear()
+    
+    # Generate data
+    generate_cac_agency()
+    generate_child_advocacy_center()
+    generate_person(amount = n)
+    generator_cac_case(amount= n * 2)
+    generator_case_person(amount= n * 2)
+    generator_case_va_session_log(amount=n // 2)
+    generator_case_va_session_attendee(amount=n // 4)
+    generator_case_va_session_service(n // 4)
+    generator_case_mh_assessments_instruments(n // 4)
+    generator_case_mh_assessments(n // 4)
+    generator_case_mh_assessment_measure_scores(n // 4)
+    generator_mh_assessment_diagnosis_log(n // 4)
+    generator_mh_session_log_enc(n // 4)
+    generator_mh_treatment_plan(n // 4)
+    generator_mh_session_attendee(n // 4)
+    generator_mh_session_attribute_group(n // 4)
+    generator_mh_provider_log(n // 4)
+    generator_mh_service_barriers(n // 4)
+    generator_mh_treatment_models(n // 4)
+    
+    # Write data to CSVs
+    write_data_to_csvs()
+
+def main():
+    """
+    Original main function that will be called from outside
+    """
+    run_generator_menu()
+
+def run_generator_menu():
+    """Run the data generator with a menu"""
+    print("[bold blue]NCA-Trak-Mock Data Generator")
+    print('''
+[yellow]Please select an option:
+[white]
+[1] Generate data only
+[2] Generate data and save as a scenario
+[3] Exit
+''')
+    
+    while True:
+        option = input()
+        if not (option.isdigit() and 3 >= int(option) > 0):
+            print("[red]Please insert a number from the options listed.")
+        else:
+            break
+    
+    option = int(option)
+    
+    if option == 3:
+        print("[yellow]Exiting data generator.")
+        return
+    
+    print("[yellow]How many data entries would you like to be generated?")
+    n = int(input())
+    print("[yellow]Generating Data...")
+    
+    # Generate data
+    generate_data(n)
+    
+    # If option 2, save as scenario
+    if option == 2:
+        print("[yellow]Saving data as a new scenario...")
+        scenario_name = Prompt.ask("[yellow]Enter a name for the new scenario")
+        create_scenario(scenario_name)
+    
+    print("[green]Data generation complete.")
+    
+if __name__ == "__main__":
+    run_generator_menu() 
+
 from faker import Faker
 from faker_education import SchoolProvider
 import random
 from datetime import datetime
+import os
+import shutil
 from rich import print
+from rich.prompt import Prompt
 from . import util
 
 # Configurable
@@ -498,33 +596,9 @@ def generator_mh_treatment_models(amount: int):
         instrument["Name"] = temp[1]
         
         case_mh_treatment_models_data.append(instrument)
-        
-def main():
-    print("[bold blue]NCA-Trak-Mock Data Generator")
-    print("[yellow]How many data entries would you like to be generated?")
-    n = int(input())
-    print("[yellow]Generating Data...")
-    # Call to make
-    generate_cac_agency()
-    generate_child_advocacy_center()
-    generate_person(amount = n)
-    generator_cac_case(amount= n * 2)
-    generator_case_person(amount= n * 2)
-    generator_case_va_session_log(amount=n // 2)
-    generator_case_va_session_attendee(amount=n // 4)
-    generator_case_va_session_service(n // 4)
-    generator_case_mh_assessments_instruments(n // 4)
-    generator_case_mh_assessments(n // 4)
-    generator_case_mh_assessment_measure_scores(n // 4)
-    generator_mh_assessment_diagnosis_log(n // 4)
-    generator_mh_session_log_enc(n // 4)
-    generator_mh_treatment_plan(n // 4)
-    generator_mh_session_attendee(n // 4)
-    generator_mh_session_attribute_group(n // 4)
-    generator_mh_provider_log(n // 4)
-    generator_mh_service_barriers(n // 4)
-    generator_mh_treatment_models(n // 4)
-    
+
+def write_data_to_csvs():
+    """Write the generated data to CSV files"""
     util.write_to_csv(data=cac_agency_data, name="cac_agency_data")
     util.write_to_csv(data=child_advocacy_center_data, name="child_advocacy_center_data")
     util.write_to_csv(data=person_data, name="person_data")
@@ -547,4 +621,46 @@ def main():
     #util.write_to_csv(data=state_data, name="state_data")
     #util.write_to_csv(data=employee_data, name="employee_data")
     #util.write_to_csv(data=employee_account_data, name="employee_account_data")
+
+def create_scenario(scenario_name: str):
+    """
+    Create a new scenario from the generated data
+    """
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    app_dir = os.path.dirname(cwd)
+    scenarios_dir = os.path.join(app_dir, "scenarios")
     
+    # Create scenarios directory if it doesn't exist
+    if not os.path.exists(scenarios_dir):
+        os.makedirs(scenarios_dir)
+        
+    # Create the specific scenario directory
+    scenario_dir = os.path.join(scenarios_dir, scenario_name)
+    if os.path.exists(scenario_dir):
+        overwrite = Prompt.ask(f"[yellow]Scenario '{scenario_name}' already exists. Overwrite?", choices=["y", "n"], default="n")
+        if overwrite.lower() != "y":
+            print(f"[yellow]Scenario creation cancelled.")
+            return False
+        else:
+            # Remove existing directory to start fresh
+            shutil.rmtree(scenario_dir)
+            
+    os.makedirs(scenario_dir, exist_ok=True)
+    
+    # Create description file
+    description = Prompt.ask("[yellow]Enter a brief description for this scenario")
+    with open(os.path.join(scenario_dir, "description.txt"), "w") as f:
+        f.write(description)
+    
+    # Copy CSV files from the generator/csvs directory to the scenario directory
+    generator_csvs_dir = os.path.join(cwd, "csvs")
+    if os.path.exists(generator_csvs_dir):
+        for file_name in os.listdir(generator_csvs_dir):
+            if file_name.endswith(".csv"):
+                source_path = os.path.join(generator_csvs_dir, file_name)
+                dest_path = os.path.join(scenario_dir, file_name)
+                shutil.copy2(source_path, dest_path)
+                print(f"[green]Copied {file_name} to scenario.")
+                
+    print(f"[green]Scenario '{scenario_name}' created successfully!")
+    return True

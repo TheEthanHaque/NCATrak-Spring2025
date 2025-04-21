@@ -1,7 +1,7 @@
 cac_id,person_id,first_name,middle_initial,last_name,suffix,date_of_birth,gender,language_id,race_id,religion_id,prior_convictions,convicted_against_children,sexual_offender,sexual_predator
 5,431879505,Ami,Karen,Black,,1990-11-13,F,,,,False,True,True,False
 8,109064883,Amy,Carla,Black,,1929-08-06,F,,,,False,False,False,False
-8,611345019,Steve,Sean,Jordan,,1957-09-12,M,,,,False,False,False,False
+8,611345019,Steve,Sean,Jordan2222,,1957-09-12,M,,,,False,False,False,False
 5,278316270,Tina,Jennifer,Alvarado,,1935-01-01,F,,,,False,False,False,False
 5,255361273,Ashley,Melinda,Mendoza,,2021-09-13,F,,,,False,False,False,False
 8,862067624,Sherry,Ashley,Lewis,,1999-04-21,F,,,,False,True,False,False
