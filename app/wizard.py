@@ -168,7 +168,7 @@ If you haven't yet, please read the [red]README.MD [blue]file in the home direct
         create_database(data)
         print(f"[green]The database \"{data[1]}\" has been created.")
         create_user(data)
-        print(f"[green]The user \"{data[2]}\" has been created for the database \"{data[1]}\.")
+        print(f"[green]The user \"{data[2]}\" has been created for the database \"{data[1]}\".")
         create_tables()
         print("[green]Database tables created.")
         run_generator_menu()
