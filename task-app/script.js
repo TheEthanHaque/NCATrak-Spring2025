@@ -1,5 +1,8 @@
-// Dynamic PDF switching for tasks
+// Randomly associate PDFs with tasks
+const pdfOrder = Array.from({ length: 10 }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+console.log(pdfOrder);
 
+// Dynamic PDF switching for tasks
 document.addEventListener('DOMContentLoaded', () => {
     const buttons = document.querySelectorAll('.button');
     const tasks = document.querySelectorAll('.sidebar a');
@@ -15,8 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
       interactionLocked = true;
       disableAllInteractions();
       alert("You have completed 60 minutes of task time. You have already finished this study.");
-    // }, 60 * 60 * 1000); // 60 minutes
-    }, 2 * 60 * 1000); // 2 minutes
+    }, 60 * 60 * 1000); // 60 minutes
   
     function disableAllInteractions() {
       buttons.forEach(btn => {
@@ -51,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
               maxTaskReached = Math.max(maxTaskReached, currentTask);
               updateTask();
               instructions.textContent = `Please read the instructions for Task ${currentTask} carefully before proceeding.`;
-              pdfViewer.src = `${currentTask}.pdf`;
+              pdfViewer.src = `${pdfOrder[currentTask-1]}.pdf`;
               tasks.forEach(l => l.classList.remove('current-task'));
               tasks[currentTask - 1].classList.add('current-task');
 
@@ -77,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (taskNum >= maxTaskReached) {
           currentTask = taskNum;
           instructions.textContent = `Please read the instructions for Task ${taskNum} carefully before proceeding.`;
-          pdfViewer.src = `${taskNum}.pdf`;
+          pdfViewer.src = `${pdfOrder[taskNum-1]}.pdf`;
           tasks.forEach(l => l.classList.remove('current-task'));
           tasks[index].classList.add('current-task');
           updateTask();
@@ -93,6 +95,6 @@ function startTasks() {
     document.querySelector('.start-page').style.display = 'none';
     document.querySelector('.container').style.display = 'flex';
     document.querySelector('.instructions').textContent = 'Please read the instructions carefully before proceeding.';
-    document.querySelector('.pdf-viewer').src = '1.pdf';
+    document.querySelector('.pdf-viewer').src = `${pdfOrder[0]}.pdf`;
     document.querySelector('.sidebar').style.display = 'block';
 }
