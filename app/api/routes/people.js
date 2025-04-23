@@ -332,11 +332,14 @@ router.put('/case/:personId/:caseId', async (req, res, next) => {
 
 /**
  * @route GET /api/people/search/:lastName
- * @desc Search people by last name
+ * @desc Search people by last name with case information
  */
 router.get('/search/:lastName', async (req, res, next) => {
   try {
     const lastName = req.params.lastName;
+    console.log(`Searching for people with last name containing: ${lastName}`);
+    
+    // First, find all people matching the last name
     const people = await req.prisma.person.findMany({
       where: { 
         last_name: {
@@ -358,12 +361,85 @@ router.get('/search/:lastName', async (req, res, next) => {
         prior_convictions: true,
         convicted_against_children: true,
         sex_offender: true,
-        sex_predator: true
+        sex_predator: true,
       }
     });
     
-    res.json(people);
+    console.log(`Found ${people.length} people matching the search criteria`);
+    
+    // For each person, fetch their case information
+    const peopleWithCases = await Promise.all(people.map(async (person) => {
+      try {
+        // Find all cases associated with this person
+        const casePerson = await req.prisma.case_person.findMany({
+          where: { 
+            person_id: person.person_id 
+          },
+          include: {
+            cac_case: {
+              select: {
+                case_id: true,
+                case_number: true
+              }
+            }
+          },
+          orderBy: {
+            role_id: 'asc' // Prioritize victims (role_id = 1) first
+          }
+        });
+        
+        // Add case information to the person object
+        return {
+          ...person,
+          case_person: casePerson
+        };
+      } catch (err) {
+        console.error(`Error fetching case info for person ID ${person.person_id}:`, err);
+        // Return the person without case information
+        return {
+          ...person,
+          case_person: []
+        };
+      }
+    }));
+    
+    res.json(peopleWithCases);
   } catch (error) {
+    console.error("Error in /api/people/search/:lastName:", error);
+    next(error);
+  }
+});
+
+/**
+ * @route GET /api/people/case/:personId
+ * @desc Get all cases associated with a person
+ */
+router.get('/case/:personId', async (req, res, next) => {
+  try {
+    const personId = parseInt(req.params.personId);
+    console.log(`Fetching cases for person ID: ${personId}`);
+    
+    const casePerson = await req.prisma.case_person.findMany({
+      where: { 
+        person_id: personId 
+      },
+      include: {
+        cac_case: {
+          select: {
+            case_id: true,
+            case_number: true
+          }
+        }
+      },
+      orderBy: {
+        role_id: 'asc' // Prioritize victims (role_id = 1) first
+      }
+    });
+    
+    console.log(`Found ${casePerson.length} cases for person ID ${personId}`);
+    res.json(casePerson);
+  } catch (error) {
+    console.error(`Error fetching cases for person ID ${req.params.personId}:`, error);
     next(error);
   }
 });

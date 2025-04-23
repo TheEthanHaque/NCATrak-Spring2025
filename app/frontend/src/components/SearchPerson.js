@@ -26,8 +26,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import ResetIcon from '@mui/icons-material/Refresh';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
-import PersonProfile from './PersonProfile';
-import { peopleApi } from '../services/api';
+
+const API_BASE_URL = 'http://localhost:5000';
 
 const SearchPerson = () => {
   const navigate = useNavigate();
@@ -38,7 +38,6 @@ const SearchPerson = () => {
     lastName: '',
     firstName: '',
     dateOfBirth: '',
-    ssn: '',
     phoneNumber: ''
   });
   
@@ -49,10 +48,6 @@ const SearchPerson = () => {
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
   
-  // State for person profile dialog
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState(null);
-
   // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -68,7 +63,6 @@ const SearchPerson = () => {
       lastName: '',
       firstName: '',
       dateOfBirth: '',
-      ssn: '',
       phoneNumber: ''
     });
     setSearchResults([]);
@@ -76,17 +70,18 @@ const SearchPerson = () => {
 
   // Helper function to map role_id to human-readable role
   const getPersonRole = (roleId) => {
+    if (!roleId) return 'Unknown Role';
+    
     const roles = {
-      1: 'Primary Victim',
-      2: 'Parent/Guardian',
-      3: 'Sibling',
-      4: 'Alleged Perpetrator',
-      5: 'Witness',
-      // Add more roles as needed
+      1: 'Victim',
+      2: 'Guardian',
+      3: 'Suspect', 
+      4: 'Witness',
+      5: 'Family Member'
     };
+    
     return roles[roleId] || 'Unknown Role';
   };
-
 
   // Handle search
   const handleSearch = async () => {
@@ -100,11 +95,18 @@ const SearchPerson = () => {
     setError(null);
     
     try {
-      // Use the existing lastName search endpoint
-      const results = await peopleApi.searchByLastName(searchCriteria.lastName.trim());
+      // Make direct API call to search endpoint
+      const response = await fetch(`${API_BASE_URL}/api/people/search/${encodeURIComponent(searchCriteria.lastName)}`);
+      
+      if (!response.ok) {
+        throw new Error(`Search failed with status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Search API response:', data);
       
       // Filter results if other criteria are provided
-      let filteredResults = [...results];
+      let filteredResults = [...data];
       
       if (searchCriteria.firstName) {
         filteredResults = filteredResults.filter(person => 
@@ -113,56 +115,118 @@ const SearchPerson = () => {
       }
       
       if (searchCriteria.dateOfBirth) {
-        filteredResults = filteredResults.filter(person => 
-          person.date_of_birth?.includes(searchCriteria.dateOfBirth)
-        );
+        const searchDate = new Date(searchCriteria.dateOfBirth).toISOString().split('T')[0];
+        filteredResults = filteredResults.filter(person => {
+          if (!person.date_of_birth) return false;
+          const personDob = new Date(person.date_of_birth).toISOString().split('T')[0];
+          return personDob === searchDate;
+        });
       }
       
-      if (searchCriteria.ssn) {
-        filteredResults = filteredResults.filter(person => 
-          person.ssn?.includes(searchCriteria.ssn)
-        );
-      }
+      // For each person, get their cases
+      const enhancedResults = await Promise.all(
+        filteredResults.map(async (person) => {
+          try {
+            // If the person has case_person data already, use it
+            if (person.case_person && person.case_person.length > 0) {
+              const caseInfo = person.case_person[0];
+              
+              return {
+                id: person.person_id.toString(),
+                firstName: person.first_name || '',
+                lastName: person.last_name || '',
+                alias: '', // No nick_name field in database
+                caseId: caseInfo?.case_id?.toString() || '',
+                caseNumber: caseInfo?.cac_case?.case_number || '',
+                role: getPersonRole(caseInfo?.role_id),
+                dateOfBirth: person.date_of_birth || '',
+                // Removed ssn field which doesn't exist in the database
+              };
+            }
+            
+            // If no case_person data, try to fetch it
+            const caseResponse = await fetch(`${API_BASE_URL}/api/people/case/${person.person_id}`);
+            
+            if (caseResponse.ok) {
+              const caseData = await caseResponse.json();
+              console.log(`Case data for person ${person.person_id}:`, caseData);
+              
+              if (caseData && caseData.length > 0) {
+                const caseInfo = caseData[0];
+                
+                return {
+                  id: person.person_id.toString(),
+                  firstName: person.first_name || '',
+                  lastName: person.last_name || '',
+                  alias: '', // No nick_name field in database
+                  caseId: caseInfo.case_id?.toString() || '',
+                  caseNumber: caseInfo.cac_case?.case_number || '',
+                  role: getPersonRole(caseInfo.role_id),
+                  dateOfBirth: person.date_of_birth || '',
+                  // Removed ssn field which doesn't exist in the database
+                };
+              }
+            }
+            
+            // If no case data found, return person without case info
+            return {
+              id: person.person_id.toString(),
+              firstName: person.first_name || '',
+              lastName: person.last_name || '',
+              alias: '', // No nick_name field in database
+              caseId: '',
+              caseNumber: '',
+              role: 'Unknown Role',
+              dateOfBirth: person.date_of_birth || '',
+              // Removed ssn field which doesn't exist in the database
+            };
+          } catch (err) {
+            console.error(`Error processing case info for person ${person.person_id}:`, err);
+            
+            // Return basic person info if case info processing fails
+            return {
+              id: person.person_id.toString(),
+              firstName: person.first_name || '',
+              lastName: person.last_name || '',
+              alias: '', // No nick_name field in database
+              caseId: '',
+              caseNumber: '',
+              role: 'Unknown Role',
+              dateOfBirth: person.date_of_birth || '',
+              // Removed ssn field which doesn't exist in the database
+            };
+          }
+        })
+      );
       
-      // Format the results for display
-      const formattedResults = filteredResults.map(person => {
-        // Find case information if available
-        const caseInfo = person.case_person?.[0];
-        
-        return {
-          id: person.person_id.toString(),
-          firstName: person.first_name || '',
-          lastName: person.last_name || '',
-          alias: person.nick_name || '',
-          caseId: caseInfo?.case_id?.toString() || '',
-          caseNumber: caseInfo?.cac_case?.case_number || '',
-          role: getPersonRole(caseInfo?.role_id),
-          dateOfBirth: person.date_of_birth || '',
-          ssn: person.ssn || ''
-        };
-      });
-      
-      setSearchResults(formattedResults);
+      console.log('Processed search results:', enhancedResults);
+      setSearchResults(enhancedResults);
       setPage(0); // Reset to first page
     } catch (err) {
-      setError("Failed to search for people. Please try again.");
-      console.error("Search error:", err);
+      console.error('Search error:', err);
+      setError(`Failed to search for people: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
+  // Handle Enter key press in search fields
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   // Handle clicking on a person name
   const handlePersonClick = (person) => {
-    // In a real implementation, this would navigate to a person bio page
-    console.log("Person clicked:", person);
+    console.log('Person clicked:', person);
     navigate('/PersonBio');
   };
 
   // Handle clicking on a case
   const handleCaseClick = (caseId, caseNumber) => {
     if (!caseId) {
-      console.log("No case ID available for this person");
+      console.log('No case ID available for this person');
       return;
     }
     
@@ -185,7 +249,7 @@ const SearchPerson = () => {
   );
   
   // Calculate pagination info
-  const startIndex = page * rowsPerPage + 1;
+  const startIndex = searchResults.length > 0 ? page * rowsPerPage + 1 : 0;
   const endIndex = Math.min((page + 1) * rowsPerPage, searchResults.length);
   const totalItems = searchResults.length;
   const totalPages = Math.ceil(totalItems / rowsPerPage);
@@ -194,7 +258,7 @@ const SearchPerson = () => {
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString; // Return original if invalid
+    if (isNaN(date.getTime())) return dateString;
     return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
   };
 
@@ -217,6 +281,7 @@ const SearchPerson = () => {
               name="lastName"
               value={searchCriteria.lastName}
               onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
               variant="outlined"
               required
             />
@@ -229,6 +294,7 @@ const SearchPerson = () => {
               name="firstName"
               value={searchCriteria.firstName}
               onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
               variant="outlined"
             />
           </Grid>
@@ -251,21 +317,11 @@ const SearchPerson = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Social Security Number"
-              name="ssn"
-              value={searchCriteria.ssn}
-              onChange={handleInputChange}
-              variant="outlined"
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
               label="Phone Number"
               name="phoneNumber"
               value={searchCriteria.phoneNumber}
               onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
               variant="outlined"
             />
           </Grid>
@@ -305,20 +361,19 @@ const SearchPerson = () => {
         
         <TableContainer sx={{ maxHeight: 400, mb: 2 }}>
           <Table stickyHeader>
-            <TableHead>
+                          <TableHead>
               <TableRow>
                 <TableCell>Person's Name</TableCell>
                 <TableCell>Alias</TableCell>
                 <TableCell>CAC Case</TableCell>
                 <TableCell>Role on Case</TableCell>
                 <TableCell>Date of Birth</TableCell>
-                <TableCell>SSN</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
+                  <TableCell colSpan={5} align="center">
                     <CircularProgress size={40} sx={{ my: 2 }} />
                     <Typography variant="body2" display="block">
                       Searching...
@@ -361,17 +416,15 @@ const SearchPerson = () => {
                         'No case assigned'
                       )}
                     </TableCell>
-                    <TableCell>{person.role || 'N/A'}</TableCell>
+                    <TableCell>{person.role}</TableCell>
                     <TableCell>{formatDate(person.dateOfBirth)}</TableCell>
-                    <TableCell>{person.ssn || ''}</TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} align="center">
                     {searchCriteria.lastName || searchCriteria.firstName || 
-                     searchCriteria.dateOfBirth || searchCriteria.ssn || 
-                     searchCriteria.phoneNumber ? 
+                     searchCriteria.dateOfBirth || searchCriteria.phoneNumber ? 
                       'No matching results found' : 'Enter search criteria to find people'}
                   </TableCell>
                 </TableRow>
@@ -438,20 +491,13 @@ const SearchPerson = () => {
             </Box>
             <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
               {totalItems > 0 ? `${startIndex} - ${endIndex} of ${totalItems} items` : 'No items'}
-              <IconButton size="small" sx={{ ml: 1 }} onClick={handleSearch}>
+              <IconButton size="small" sx={{ ml: 1 }} onClick={handleSearch} disabled={loading}>
                 <RefreshIcon />
               </IconButton>
             </Typography>
           </Box>
         )}
       </Paper>
-      
-      {/* Person Profile Dialog */}
-      <PersonProfile 
-        open={viewDialogOpen}
-        person={selectedPerson}
-        onClose={() => setViewDialogOpen(false)}
-      />
     </Box>
   );
 };

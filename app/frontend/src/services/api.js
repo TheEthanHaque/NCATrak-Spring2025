@@ -28,8 +28,47 @@ async function fetchApi(endpoint, options = {}) {
 // People API methods
 export const peopleApi = {
   // Search people by last name
-  searchByLastName: (lastName) => {
-    return fetchApi(`/api/people/search/${lastName}`);
+  searchByLastName: async (lastName) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/people/search/${lastName}`);
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+      
+      const people = await response.json();
+      
+      // For each person, fetch case information
+      const peopleWithCases = await Promise.all(
+        people.map(async (person) => {
+          try {
+            // Get cases associated with this person
+            const caseResponse = await fetch(`${API_BASE_URL}/api/people/case/${person.person_id}`);
+            
+            if (caseResponse.ok) {
+              const casePeople = await caseResponse.json();
+              if (casePeople && casePeople.length > 0) {
+                // Attach case information to the person object
+                person.case_person = casePeople.map(cp => ({
+                  case_id: cp.case_id,
+                  role_id: cp.role_id,
+                  case_number: cp.case_number
+                }));
+              }
+            }
+          } catch (err) {
+            console.error(`Error fetching case data for person ${person.person_id}:`, err);
+          }
+          
+          return person;
+        })
+      );
+      
+      return peopleWithCases;
+    } catch (error) {
+      console.error('API Request Failed:', error);
+      throw error;
+    }
   },
   
   // Get a person by ID
@@ -40,14 +79,6 @@ export const peopleApi = {
   // Get people associated with a case
   getPeopleByCaseId: (caseId) => {
     return fetchApi(`/api/people/case/${caseId}`);
-  },
-  
-  // Update a person
-  updatePerson: (personId, personData) => {
-    return fetchApi(`/api/people/${personId}`, {
-      method: 'PUT',
-      body: JSON.stringify(personData)
-    });
   },
   
   // Create a new person
