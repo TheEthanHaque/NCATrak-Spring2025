@@ -17,7 +17,7 @@ def create_user(data):
         connection_postgres = psycopg2.connect(
             dbname="postgres",  
             user="postgres",  
-            password="",  
+            password="securepassword",  
             host=curr_host,
             port="5432"
         )
