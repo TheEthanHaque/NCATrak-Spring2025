@@ -160,6 +160,11 @@ export default function TreatmentPlan() {
 
   // Handle form input changes
   const handleFormChange = (field, value) => {
+    // Convert string ID values to integers where needed
+    if (field === 'selectedModelId' || field === 'providerId' || field === 'therapistId' || field === 'authStatus') {
+      value = value ? parseInt(value) : null;
+    }
+    
     setPlanForm(prev => ({
       ...prev,
       [field]: value
@@ -244,18 +249,20 @@ export default function TreatmentPlan() {
       // Prepare data for API
       const planData = {
         treatment_plan_date: planForm.planDate || null,
-        treatment_model_id: planForm.selectedModelId || null,
-        provider_agency_id: planForm.providerId || null,
-        provider_employee_id: planForm.therapistId || null,
+        treatment_model_id: planForm.selectedModelId,  // Already converted to integer in handleFormChange
+        provider_agency_id: planForm.providerId,      // Already converted to integer in handleFormChange
+        provider_employee_id: planForm.therapistId,   // Already converted to integer in handleFormChange
         duration: planForm.expectedLength ? parseInt(planForm.expectedLength) : null,
         duration_unit: planForm.lengthUnit || null,
         planned_start_date: planForm.plannedStart || null,
         planned_end_date: planForm.plannedEnd || null,
         planned_review_date: planForm.planReview || null,
-        authorized_status_id: planForm.authStatus ? parseInt(planForm.authStatus) : null,
+        authorized_status_id: planForm.authStatus,    // Already converted to integer in handleFormChange
         // These fields would need to be saved to their respective tables
         // For now, we're just focusing on the basic treatment plan data
       };
+      
+      // Dates are properly handled in the backend to convert to proper DateTime format
       
       if (isEditing) {
         // Update existing plan

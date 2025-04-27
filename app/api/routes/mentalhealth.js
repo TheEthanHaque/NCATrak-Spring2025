@@ -451,26 +451,49 @@ router.post('/treatment-plans', async (req, res, next) => {
     
     const newPlanId = maxPlanIdResult ? maxPlanIdResult.id + 1 : 1;
     
+    // Ensure integer fields are actually integers
+    const treatmentModelId = req.body.treatment_model_id ? parseInt(req.body.treatment_model_id) : null;
+    const providerAgencyId = req.body.provider_agency_id ? parseInt(req.body.provider_agency_id) : null;
+    const cacId = parseInt(req.body.cac_id);
+    const caseId = parseInt(req.body.case_id);
+    const authorizedStatusId = req.body.authorized_status_id ? parseInt(req.body.authorized_status_id) : null;
+    const duration = req.body.duration ? parseInt(req.body.duration) : null;
+    const providerEmployeeId = req.body.provider_employee_id ? parseInt(req.body.provider_employee_id) : null;
+    
+    // Format date fields properly - convert strings to Date objects
+    // This ensures proper ISO-8601 format that Prisma expects
+    const formatDate = (dateStr) => {
+      if (!dateStr) return null;
+      // Create a date object which will be serialized as a proper ISO string when sent to Prisma
+      return new Date(dateStr);
+    };
+
+    const treatmentPlanDate = formatDate(req.body.treatment_plan_date);
+    const plannedStartDate = formatDate(req.body.planned_start_date);
+    const plannedEndDate = formatDate(req.body.planned_end_date);
+    const plannedReviewDate = formatDate(req.body.planned_review_date);
+    
     const newPlan = await req.prisma.case_mh_treatment_plans.create({
       data: {
         id: newPlanId,
-        treatment_model_id: req.body.treatment_model_id,
-        provider_agency_id: req.body.provider_agency_id,
-        cac_id: req.body.cac_id,
-        planned_start_date: req.body.planned_start_date,
-        planned_end_date: req.body.planned_end_date,
-        case_id: req.body.case_id,
-        authorized_status_id: req.body.authorized_status_id,
-        duration: req.body.duration,
-        duration_unit: req.body.duration_unit,
-        planned_review_date: req.body.planned_review_date,
-        treatment_plan_date: req.body.treatment_plan_date,
-        provider_employee_id: req.body.provider_employee_id
+        treatment_model_id: treatmentModelId,
+        provider_agency_id: providerAgencyId,
+        cac_id: cacId,
+        planned_start_date: plannedStartDate,
+        planned_end_date: plannedEndDate,
+        case_id: caseId,
+        authorized_status_id: authorizedStatusId,
+        duration: duration,
+        duration_unit: req.body.duration_unit || null,
+        planned_review_date: plannedReviewDate,
+        treatment_plan_date: treatmentPlanDate,
+        provider_employee_id: providerEmployeeId
       }
     });
     
     res.status(201).json(newPlan);
   } catch (error) {
+    console.error("Error creating treatment plan:", error);
     next(error);
   }
 });
@@ -492,25 +515,46 @@ router.put('/treatment-plans/:id', async (req, res, next) => {
       return res.status(404).json({ message: 'Treatment plan not found' });
     }
     
+    // Ensure integer fields are actually integers
+    const treatmentModelId = req.body.treatment_model_id ? parseInt(req.body.treatment_model_id) : null;
+    const providerAgencyId = req.body.provider_agency_id ? parseInt(req.body.provider_agency_id) : null;
+    const authorizedStatusId = req.body.authorized_status_id ? parseInt(req.body.authorized_status_id) : null;
+    const duration = req.body.duration ? parseInt(req.body.duration) : null;
+    const providerEmployeeId = req.body.provider_employee_id ? parseInt(req.body.provider_employee_id) : null;
+    
+    // Format date fields properly - convert strings to Date objects
+    // This ensures proper ISO-8601 format that Prisma expects
+    const formatDate = (dateStr) => {
+      if (!dateStr) return null;
+      // Create a date object which will be serialized as a proper ISO string when sent to Prisma
+      return new Date(dateStr);
+    };
+
+    const treatmentPlanDate = formatDate(req.body.treatment_plan_date);
+    const plannedStartDate = formatDate(req.body.planned_start_date);
+    const plannedEndDate = formatDate(req.body.planned_end_date);
+    const plannedReviewDate = formatDate(req.body.planned_review_date);
+    
     // Update the treatment plan
     const updatedPlan = await req.prisma.case_mh_treatment_plans.update({
       where: { id: planId },
       data: {
-        treatment_model_id: req.body.treatment_model_id,
-        provider_agency_id: req.body.provider_agency_id,
-        planned_start_date: req.body.planned_start_date,
-        planned_end_date: req.body.planned_end_date,
-        authorized_status_id: req.body.authorized_status_id,
-        duration: req.body.duration,
-        duration_unit: req.body.duration_unit,
-        planned_review_date: req.body.planned_review_date,
-        treatment_plan_date: req.body.treatment_plan_date,
-        provider_employee_id: req.body.provider_employee_id
+        treatment_model_id: treatmentModelId,
+        provider_agency_id: providerAgencyId,
+        planned_start_date: plannedStartDate,
+        planned_end_date: plannedEndDate,
+        authorized_status_id: authorizedStatusId,
+        duration: duration,
+        duration_unit: req.body.duration_unit || null,
+        planned_review_date: plannedReviewDate,
+        treatment_plan_date: treatmentPlanDate,
+        provider_employee_id: providerEmployeeId
       }
     });
     
     res.json(updatedPlan);
   } catch (error) {
+    console.error("Error updating treatment plan:", error);
     next(error);
   }
 });
