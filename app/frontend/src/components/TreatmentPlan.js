@@ -1,91 +1,428 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./TreatmentPlan.css";
+import { useCase } from '../context/CaseContext';
+import { mentalHealthApi, employeesApi, agenciesApi, casesApi } from '../services/api';
+import { 
+  Box, 
+  Button, 
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Snackbar,
+  Alert,
+  CircularProgress
+} from '@mui/material';
 
 export default function TreatmentPlan() {
-  // Modal visibility state
+  // Context for current case
+  const { currentCase } = useCase();
+  
+  // States for data
+  const [treatmentPlans, setTreatmentPlans] = useState([]);
+  const [treatmentModels, setTreatmentModels] = useState([]);
+  const [agencies, setAgencies] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  
+  // Loading and error states
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
+  
+  // Modal visibility states
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [showSetupModal, setShowSetupModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
 
   // State for expanded rows in setup
   const [expandedRows, setExpandedRows] = useState({});
 
-  // Treatment models list
-  const [models, setModels] = useState([
-    { name: "AF-CBT", intervention: "" },
-    { name: "CBT", intervention: "step1" },
-    { name: "CFTSI", intervention: "" },
-    { name: "CPP", intervention: "" },
-    { name: "EMDR", intervention: "" },
-  ]);
-
-  // Form state for main modal
-  const [planDate, setPlanDate] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [provider, setProvider] = useState("");
-  const [therapist, setTherapist] = useState("");
-  const [expectedLength, setExpectedLength] = useState("");
-  const [lengthUnit, setLengthUnit] = useState("Weeks");
-  const [plannedStart, setPlannedStart] = useState("");
-  const [plannedEnd, setPlannedEnd] = useState("");
-  const [planReview, setPlanReview] = useState("");
-  const [authStatus, setAuthStatus] = useState("");
-  const [sessionNotes, setSessionNotes] = useState([""]);
-  const [planGoals, setPlanGoals] = useState([""]);
-  const [privacyForms, setPrivacyForms] = useState({});
-  const [consents, setConsents] = useState({});
-
   // "Add new record" state within setup
   const [isAddingRecord, setIsAddingRecord] = useState(false);
   const [newRecordModel, setNewRecordModel] = useState("");
-  const [newRecordIntervention, setNewRecordIntervention] = useState("");
+  const [confirmDeleteDialog, setConfirmDeleteDialog] = useState({ open: false, modelId: null });
 
-  // Handlers for main modal arrays
+  // Form state for main modal
+  const [planForm, setPlanForm] = useState({
+    planDate: "",
+    selectedModelId: "",
+    providerId: "",
+    therapistId: "",
+    expectedLength: "",
+    lengthUnit: "Weeks",
+    plannedStart: "",
+    plannedEnd: "",
+    planReview: "",
+    authStatus: "",
+    sessionNotes: [""],
+    planGoals: [""],
+    privacyForms: {},
+    consents: {}
+  });
+
+  // Fetch data when component mounts or currentCase changes
+  useEffect(() => {
+    if (!currentCase || currentCase === 'create-new' || currentCase === 'search-case') return;
+    
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Fetch treatment models
+        const models = await mentalHealthApi.getTreatmentModels();
+        setTreatmentModels(models);
+        
+        // Fetch agencies
+        const agencyList = await agenciesApi.getAllAgencies();
+        setAgencies(agencyList);
+        
+        // Fetch employees
+        const employeeList = await employeesApi.getAllEmployees();
+        setEmployees(employeeList);
+        
+        // Fetch treatment plans for the current case
+        const plans = await mentalHealthApi.getTreatmentPlansByCaseId(currentCase);
+        setTreatmentPlans(plans);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [currentCase]);
+
+  // Reset form state
+  const resetForm = () => {
+    setPlanForm({
+      planDate: "",
+      selectedModelId: "",
+      providerId: "",
+      therapistId: "",
+      expectedLength: "",
+      lengthUnit: "Weeks",
+      plannedStart: "",
+      plannedEnd: "",
+      planReview: "",
+      authStatus: "",
+      sessionNotes: [""],
+      planGoals: [""],
+      privacyForms: {},
+      consents: {}
+    });
+    setIsEditing(false);
+    setEditId(null);
+  };
+
+  // Handle opening add/edit modal
+  const handleOpenPlanModal = (plan = null) => {
+    if (plan) {
+      // Edit existing plan
+      setIsEditing(true);
+      setEditId(plan.id);
+      
+      // Convert dates to YYYY-MM-DD format for input fields
+      const formatDate = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+      };
+      
+      setPlanForm({
+        planDate: formatDate(plan.treatment_plan_date),
+        selectedModelId: plan.treatment_model_id || "",
+        providerId: plan.provider_agency_id || "",
+        therapistId: plan.provider_employee_id || "",
+        expectedLength: plan.duration || "",
+        lengthUnit: plan.duration_unit || "Weeks",
+        plannedStart: formatDate(plan.planned_start_date),
+        plannedEnd: formatDate(plan.planned_end_date),
+        planReview: formatDate(plan.planned_review_date),
+        authStatus: plan.authorized_status_id || "",
+        // These would need to be loaded from additional API calls
+        sessionNotes: [""], 
+        planGoals: [""],
+        privacyForms: {},
+        consents: {}
+      });
+    } else {
+      // Add new plan
+      resetForm();
+    }
+    
+    setShowPlanModal(true);
+  };
+
+  // Handle form input changes
+  const handleFormChange = (field, value) => {
+    setPlanForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Handle note changes
   const handleNoteChange = (i, val) => {
-    const arr = [...sessionNotes];
-    arr[i] = val;
-    setSessionNotes(arr);
+    const newNotes = [...planForm.sessionNotes];
+    newNotes[i] = val;
+    setPlanForm(prev => ({
+      ...prev,
+      sessionNotes: newNotes
+    }));
   };
-  const addNote = () => setSessionNotes([...sessionNotes, ""]);
-  const removeNote = (i) =>
-    setSessionNotes(sessionNotes.filter((_, idx) => idx !== i));
+
+  const addNote = () => {
+    setPlanForm(prev => ({
+      ...prev,
+      sessionNotes: [...prev.sessionNotes, ""]
+    }));
+  };
+
+  const removeNote = (i) => {
+    setPlanForm(prev => ({
+      ...prev,
+      sessionNotes: prev.sessionNotes.filter((_, idx) => idx !== i)
+    }));
+  };
+
+  // Handle goal changes
   const handleGoalChange = (i, val) => {
-    const arr = [...planGoals];
-    arr[i] = val;
-    setPlanGoals(arr);
+    const newGoals = [...planForm.planGoals];
+    newGoals[i] = val;
+    setPlanForm(prev => ({
+      ...prev,
+      planGoals: newGoals
+    }));
   };
-  const addGoal = () => setPlanGoals([...planGoals, ""]);
-  const removeGoal = (i) =>
-    setPlanGoals(planGoals.filter((_, idx) => idx !== i));
 
-  const togglePrivacy = (key) =>
-    setPrivacyForms({ ...privacyForms, [key]: !privacyForms[key] });
-  const toggleConsent = (key) =>
-    setConsents({ ...consents, [key]: !consents[key] });
+  const addGoal = () => {
+    setPlanForm(prev => ({
+      ...prev,
+      planGoals: [...prev.planGoals, ""]
+    }));
+  };
 
-  // Handlers for setup modal
+  const removeGoal = (i) => {
+    setPlanForm(prev => ({
+      ...prev,
+      planGoals: prev.planGoals.filter((_, idx) => idx !== i)
+    }));
+  };
+
+  // Handle checkbox changes
+  const togglePrivacy = (key) => {
+    setPlanForm(prev => ({
+      ...prev,
+      privacyForms: {
+        ...prev.privacyForms,
+        [key]: !prev.privacyForms[key]
+      }
+    }));
+  };
+
+  const toggleConsent = (key) => {
+    setPlanForm(prev => ({
+      ...prev,
+      consents: {
+        ...prev.consents,
+        [key]: !prev.consents[key]
+      }
+    }));
+  };
+
+  // Save treatment plan
+  const handleSavePlan = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Prepare data for API
+      const planData = {
+        treatment_plan_date: planForm.planDate || null,
+        treatment_model_id: planForm.selectedModelId || null,
+        provider_agency_id: planForm.providerId || null,
+        provider_employee_id: planForm.therapistId || null,
+        duration: planForm.expectedLength ? parseInt(planForm.expectedLength) : null,
+        duration_unit: planForm.lengthUnit || null,
+        planned_start_date: planForm.plannedStart || null,
+        planned_end_date: planForm.plannedEnd || null,
+        planned_review_date: planForm.planReview || null,
+        authorized_status_id: planForm.authStatus ? parseInt(planForm.authStatus) : null,
+        // These fields would need to be saved to their respective tables
+        // For now, we're just focusing on the basic treatment plan data
+      };
+      
+      if (isEditing) {
+        // Update existing plan
+        await mentalHealthApi.updateTreatmentPlan(editId, {
+          ...planData,
+          cac_id: treatmentPlans.find(p => p.id === editId)?.cac_id,
+          case_id: parseInt(currentCase)
+        });
+        
+        setNotification({
+          open: true,
+          message: 'Treatment plan updated successfully',
+          severity: 'success'
+        });
+      } else {
+        // Get CAC ID from case data
+        const caseData = await casesApi.getCaseById(currentCase);
+        
+        // Create new plan
+        await mentalHealthApi.createTreatmentPlan({
+          ...planData,
+          cac_id: caseData.cac_id,
+          case_id: parseInt(currentCase)
+        });
+        
+        setNotification({
+          open: true,
+          message: 'Treatment plan created successfully',
+          severity: 'success'
+        });
+      }
+      
+      // Refresh treatment plans
+      const plans = await mentalHealthApi.getTreatmentPlansByCaseId(currentCase);
+      setTreatmentPlans(plans);
+      
+      // Close modal
+      setShowPlanModal(false);
+      resetForm();
+    } catch (err) {
+      console.error("Error saving treatment plan:", err);
+      setError("Failed to save treatment plan. Please try again.");
+      setNotification({
+        open: true,
+        message: 'Failed to save treatment plan',
+        severity: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle setup modal
   const startAddRecord = () => {
     setIsAddingRecord(true);
     setNewRecordModel("");
-    setNewRecordIntervention("");
   };
-  const cancelAddRecord = () => setIsAddingRecord(false);
-  const saveNewRecord = () => {
-    const trimmed = newRecordModel.trim();
-    if (!trimmed) return;
-    setModels([
-      { name: trimmed, intervention: newRecordIntervention },
-      ...models,
-    ]);
+
+  const cancelAddRecord = () => {
     setIsAddingRecord(false);
   };
-  const toggleExpand = (i) =>
-    setExpandedRows((prev) => ({ ...prev, [i]: !prev[i] }));
-  const handleSavePlan = () => setShowPlanModal(false);
 
+  const saveNewRecord = async () => {
+    const trimmedModel = newRecordModel.trim();
+    if (!trimmedModel) return;
+    
+    setLoading(true);
+    
+    try {
+      // Get the highest existing ID to create a new one
+      const highestId = treatmentModels.length > 0 
+        ? Math.max(...treatmentModels.map(m => m.id)) 
+        : 0;
+      
+      // Create new treatment model
+      const newModel = await mentalHealthApi.createTreatmentModel({
+        id: highestId + 1,
+        model_name: trimmedModel
+      });
+      
+      // Add to local state
+      setTreatmentModels([...treatmentModels, newModel]);
+      
+      setNotification({
+        open: true,
+        message: 'Treatment model added successfully',
+        severity: 'success'
+      });
+      
+      setIsAddingRecord(false);
+    } catch (err) {
+      console.error("Error adding treatment model:", err);
+      setNotification({
+        open: true,
+        message: 'Failed to add treatment model',
+        severity: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleExpand = (i) => {
+    setExpandedRows((prev) => ({ ...prev, [i]: !prev[i] }));
+  };
+
+  // Handle delete treatment model
+  const confirmDeleteModel = (modelId) => {
+    setConfirmDeleteDialog({ open: true, modelId });
+  };
+
+  const handleDeleteModel = async () => {
+    const modelId = confirmDeleteDialog.modelId;
+    
+    if (!modelId) {
+      setConfirmDeleteDialog({ open: false, modelId: null });
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      await mentalHealthApi.deleteTreatmentModel(modelId);
+      
+      // Remove from local state
+      setTreatmentModels(treatmentModels.filter(model => model.id !== modelId));
+      
+      setNotification({
+        open: true,
+        message: 'Treatment model deleted successfully',
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error("Error deleting treatment model:", err);
+      setNotification({
+        open: true,
+        message: 'Failed to delete treatment model',
+        severity: 'error'
+      });
+    } finally {
+      setLoading(false);
+      setConfirmDeleteDialog({ open: false, modelId: null });
+    }
+  };
+
+  // Render the component
   return (
     <div className="container">
       <h1>Mental Health Treatment Plan</h1>
-      <button className="add-button" onClick={() => setShowPlanModal(true)}>
+      
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', m: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+      
+      {error && (
+        <Box sx={{ m: 2 }}>
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      )}
+      
+      <button 
+        className="add-button" 
+        onClick={() => handleOpenPlanModal()}
+        disabled={loading}
+      >
         + Add New Treatment Plan
       </button>
 
@@ -94,26 +431,51 @@ export default function TreatmentPlan() {
           <tr>
             <th>Planned Start Date</th>
             <th>Treatment Model</th>
-            <th>Name</th>
             <th>Provider Agency</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>2025-04-01</td>
-            <td>Cognitive Behavioral Therapy</td>
-            <td>John Doe</td>
-            <td>Agency XYZ</td>
-          </tr>
+          {treatmentPlans.length === 0 ? (
+            <tr>
+              <td colSpan="4" style={{ textAlign: 'center' }}>No treatment plans available</td>
+            </tr>
+          ) : (
+            treatmentPlans.map((plan) => (
+              <tr key={plan.id}>
+                <td>{plan.planned_start_date ? new Date(plan.planned_start_date).toLocaleDateString() : 'Not set'}</td>
+                <td>
+                  {plan.treatment_model_id 
+                    ? treatmentModels.find(m => m.id === plan.treatment_model_id)?.model_name 
+                    : 'Not assigned'}
+                </td>
+                <td>
+                  {plan.provider_agency_id 
+                    ? agencies.find(a => a.agency_id === plan.provider_agency_id)?.agency_name 
+                    : 'Not assigned'}
+                </td>
+                <td>
+                  <Button 
+                    size="small"
+                    variant="contained"
+                    onClick={() => handleOpenPlanModal(plan)}
+                    disabled={loading}
+                  >
+                    Edit
+                  </Button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
-      {/* Edit Modal */}
+      {/* Edit Treatment Plan Modal */}
       {showPlanModal && (
         <div className="modal-overlay" onClick={() => setShowPlanModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Edit Treatment Plan</h2>
+              <h2>{isEditing ? 'Edit Treatment Plan' : 'Add New Treatment Plan'}</h2>
               <button
                 className="modal-close"
                 onClick={() => setShowPlanModal(false)}
@@ -126,20 +488,22 @@ export default function TreatmentPlan() {
                 <label>Plan Date</label>
                 <input
                   type="date"
-                  value={planDate}
-                  onChange={(e) => setPlanDate(e.target.value)}
+                  value={planForm.planDate}
+                  onChange={(e) => handleFormChange('planDate', e.target.value)}
                 />
               </div>
               <div className="form-row">
                 <label>Treatment Model</label>
                 <div className="inline-group">
                   <select
-                    value={selectedModel}
-                    onChange={(e) => setSelectedModel(e.target.value)}
+                    value={planForm.selectedModelId}
+                    onChange={(e) => handleFormChange('selectedModelId', e.target.value)}
                   >
                     <option value="">-- select --</option>
-                    {models.map((m, i) => (
-                      <option key={i}>{m.name}</option>
+                    {treatmentModels.map((model) => (
+                      <option key={model.id} value={model.id}>
+                        {model.model_name}
+                      </option>
                     ))}
                   </select>
                   <button onClick={() => setShowSetupModal(true)}>Add</button>
@@ -147,33 +511,43 @@ export default function TreatmentPlan() {
               </div>
               <div className="form-row">
                 <label>Provider Agency</label>
-                <input
-                  type="text"
-                  placeholder="Agency Name"
-                  value={provider}
-                  onChange={(e) => setProvider(e.target.value)}
-                />
+                <select
+                  value={planForm.providerId}
+                  onChange={(e) => handleFormChange('providerId', e.target.value)}
+                >
+                  <option value="">-- select --</option>
+                  {agencies.map((agency) => (
+                    <option key={agency.agency_id} value={agency.agency_id}>
+                      {agency.agency_name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="form-row">
                 <label>Therapist</label>
-                <input
-                  type="text"
-                  placeholder="Therapist Name"
-                  value={therapist}
-                  onChange={(e) => setTherapist(e.target.value)}
-                />
+                <select
+                  value={planForm.therapistId}
+                  onChange={(e) => handleFormChange('therapistId', e.target.value)}
+                >
+                  <option value="">-- select --</option>
+                  {employees.map((employee) => (
+                    <option key={employee.employee_id} value={employee.employee_id}>
+                      {`${employee.first_name} ${employee.last_name}`}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="form-row">
                 <label>Expected Length of Services</label>
                 <div className="inline-group">
                   <input
                     type="number"
-                    value={expectedLength}
-                    onChange={(e) => setExpectedLength(e.target.value)}
+                    value={planForm.expectedLength}
+                    onChange={(e) => handleFormChange('expectedLength', e.target.value)}
                   />
                   <select
-                    value={lengthUnit}
-                    onChange={(e) => setLengthUnit(e.target.value)}
+                    value={planForm.lengthUnit}
+                    onChange={(e) => handleFormChange('lengthUnit', e.target.value)}
                   >
                     <option>Days</option>
                     <option>Weeks</option>
@@ -185,41 +559,41 @@ export default function TreatmentPlan() {
                 <label>Planned Start</label>
                 <input
                   type="date"
-                  value={plannedStart}
-                  onChange={(e) => setPlannedStart(e.target.value)}
+                  value={planForm.plannedStart}
+                  onChange={(e) => handleFormChange('plannedStart', e.target.value)}
                 />
               </div>
               <div className="form-row">
                 <label>Planned End</label>
                 <input
                   type="date"
-                  value={plannedEnd}
-                  onChange={(e) => setPlannedEnd(e.target.value)}
+                  value={planForm.plannedEnd}
+                  onChange={(e) => handleFormChange('plannedEnd', e.target.value)}
                 />
               </div>
               <div className="form-row">
                 <label>Plan Review Date</label>
                 <input
                   type="date"
-                  value={planReview}
-                  onChange={(e) => setPlanReview(e.target.value)}
+                  value={planForm.planReview}
+                  onChange={(e) => handleFormChange('planReview', e.target.value)}
                 />
               </div>
               <div className="form-row">
                 <label>Authorization Status</label>
                 <select
-                  value={authStatus}
-                  onChange={(e) => setAuthStatus(e.target.value)}
+                  value={planForm.authStatus}
+                  onChange={(e) => handleFormChange('authStatus', e.target.value)}
                 >
                   <option value="">-- select --</option>
-                  <option>Pending</option>
-                  <option>Active</option>
-                  <option>Closed</option>
+                  <option value="1">Pending</option>
+                  <option value="2">Active</option>
+                  <option value="3">Closed</option>
                 </select>
               </div>
               <div className="form-row">
                 <label>Session Notes</label>
-                {sessionNotes.map((note, i) => (
+                {planForm.sessionNotes.map((note, i) => (
                   <div className="inline-group" key={i}>
                     <textarea
                       rows={2}
@@ -229,15 +603,17 @@ export default function TreatmentPlan() {
                     <button type="button" onClick={addNote}>
                       +
                     </button>
-                    <button type="button" onClick={() => removeNote(i)}>
-                      -
-                    </button>
+                    {planForm.sessionNotes.length > 1 && (
+                      <button type="button" onClick={() => removeNote(i)}>
+                        -
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
               <div className="form-row">
                 <label>Treatment Plan Goals/Progress</label>
-                {planGoals.map((goal, i) => (
+                {planForm.planGoals.map((goal, i) => (
                   <div className="inline-group" key={i}>
                     <textarea
                       rows={2}
@@ -247,9 +623,11 @@ export default function TreatmentPlan() {
                     <button type="button" onClick={addGoal}>
                       +
                     </button>
-                    <button type="button" onClick={() => removeGoal(i)}>
-                      -
-                    </button>
+                    {planForm.planGoals.length > 1 && (
+                      <button type="button" onClick={() => removeGoal(i)}>
+                        -
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -266,7 +644,7 @@ export default function TreatmentPlan() {
                     <label key={key}>
                       <input
                         type="checkbox"
-                        checked={!!privacyForms[key]}
+                        checked={!!planForm.privacyForms[key]}
                         onChange={() => togglePrivacy(key)}
                       />
                       {key}
@@ -287,7 +665,7 @@ export default function TreatmentPlan() {
                     <label key={key}>
                       <input
                         type="checkbox"
-                        checked={!!consents[key]}
+                        checked={!!planForm.consents[key]}
                         onChange={() => toggleConsent(key)}
                       />
                       {key}
@@ -297,20 +675,24 @@ export default function TreatmentPlan() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="modal-save" onClick={handleSavePlan}>
-                Update
+              <button 
+                className="modal-save" 
+                onClick={handleSavePlan}
+                disabled={loading}
+              >
+                {loading ? "Saving..." : (isEditing ? "Update" : "Save")}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Setup Modal */}
+      {/* Treatment Model Setup Modal */}
       {showSetupModal && (
         <div className="modal-overlay" onClick={() => setShowSetupModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Treatment Plan Setup</h2>
+              <h2>Treatment Model Setup</h2>
               <button
                 className="modal-close"
                 onClick={() => setShowSetupModal(false)}
@@ -320,7 +702,7 @@ export default function TreatmentPlan() {
             </div>
             <div className="modal-body">
               <div className="setup-actions">
-                <button className="add-new-record" onClick={startAddRecord}>
+                <button className="add-new-record" onClick={startAddRecord} disabled={loading}>
                   + Add new record
                 </button>
               </div>
@@ -330,7 +712,6 @@ export default function TreatmentPlan() {
                     <tr>
                       <th>Action</th>
                       <th>Treatment Model</th>
-                      <th>Intervention</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -340,12 +721,14 @@ export default function TreatmentPlan() {
                           <button
                             className="update-btn"
                             onClick={saveNewRecord}
+                            disabled={loading}
                           >
-                            ✔ Update
+                            {loading ? "Saving..." : "✔ Update"}
                           </button>
                           <button
                             className="cancel-btn"
                             onClick={cancelAddRecord}
+                            disabled={loading}
                           >
                             ⛔ Cancel
                           </button>
@@ -358,20 +741,10 @@ export default function TreatmentPlan() {
                             onChange={(e) => setNewRecordModel(e.target.value)}
                           />
                         </td>
-                        <td>
-                          <input
-                            type="text"
-                            placeholder="Intervention"
-                            value={newRecordIntervention}
-                            onChange={(e) =>
-                              setNewRecordIntervention(e.target.value)
-                            }
-                          />
-                        </td>
                       </tr>
                     )}
-                    {models.map((entry, i) => (
-                      <React.Fragment key={i}>
+                    {treatmentModels.map((model, i) => (
+                      <React.Fragment key={model.id}>
                         <tr>
                           <td>
                             <span
@@ -387,30 +760,76 @@ export default function TreatmentPlan() {
                             </span>
                           </td>
                           <td>
-                            <strong>Treatment Model: {entry.name}</strong>
+                            <strong>{model.model_name}</strong>
                           </td>
-                          <td></td>
                         </tr>
                         {expandedRows[i] && (
                           <tr className="detail-row">
                             <td>
-                              <button className="edit-btn">✎ Edit</button>
-                              <button className="delete-btn">✖ Delete</button>
+                              <button 
+                                className="delete-btn"
+                                onClick={() => confirmDeleteModel(model.id)}
+                                disabled={loading}
+                              >
+                                ✖ Delete
+                              </button>
                             </td>
-                            <td>{entry.name}</td>
-                            <td>{entry.intervention}</td>
+                            <td>{model.model_name}</td>
                           </tr>
                         )}
                       </React.Fragment>
-                    ))}{" "}
+                    ))}
                   </tbody>
                 </table>
               </div>
             </div>
-            <div className="modal-footer"></div>
           </div>
         </div>
       )}
+
+      {/* Confirmation Dialog for Delete */}
+      <Dialog
+        open={confirmDeleteDialog.open}
+        onClose={() => setConfirmDeleteDialog({ open: false, modelId: null })}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this treatment model? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={() => setConfirmDeleteDialog({ open: false, modelId: null })}
+            color="primary"
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteModel} 
+            color="error"
+            disabled={loading}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Notification Snackbar */}
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={() => setNotification({ ...notification, open: false })}
+      >
+        <Alert 
+          onClose={() => setNotification({ ...notification, open: false })} 
+          severity={notification.severity}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
+
+      {/* Documents Section */}
       <section className="mh-section">
         <h2>Uploaded Documents</h2>
         <div className="documents-grid">

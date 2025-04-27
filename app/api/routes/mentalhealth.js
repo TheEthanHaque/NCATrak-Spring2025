@@ -251,8 +251,134 @@ router.post('/diagnoses', async (req, res, next) => {
  */
 router.get('/treatment-models', async (req, res, next) => {
   try {
-    const models = await req.prisma.case_mh_treatment_models.findMany();
+    const models = await req.prisma.case_mh_treatment_models.findMany({
+      orderBy: {
+        model_name: 'asc'
+      }
+    });
     res.json(models);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /api/mentalhealth/treatment-models/:id
+ * @desc Get a treatment model by ID
+ */
+router.get('/treatment-models/:id', async (req, res, next) => {
+  try {
+    const modelId = parseInt(req.params.id);
+    const model = await req.prisma.case_mh_treatment_models.findUnique({
+      where: { id: modelId }
+    });
+    
+    if (!model) {
+      return res.status(404).json({ message: 'Treatment model not found' });
+    }
+    
+    res.json(model);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route POST /api/mentalhealth/treatment-models
+ * @desc Create a new treatment model
+ */
+router.post('/treatment-models', async (req, res, next) => {
+  try {
+    const { id, model_name } = req.body;
+    
+    // Validate required fields
+    if (!model_name) {
+      return res.status(400).json({ message: 'Model name is required' });
+    }
+    
+    // Check if ID is provided, otherwise get the next available ID
+    let modelId = id;
+    if (!modelId) {
+      const maxIdResult = await req.prisma.case_mh_treatment_models.findFirst({
+        orderBy: {
+          id: 'desc'
+        },
+        select: {
+          id: true
+        }
+      });
+      
+      modelId = maxIdResult ? maxIdResult.id + 1 : 1;
+    }
+    
+    // Create the treatment model
+    const newModel = await req.prisma.case_mh_treatment_models.create({
+      data: {
+        id: modelId,
+        model_name: model_name
+      }
+    });
+    
+    res.status(201).json(newModel);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route PUT /api/mentalhealth/treatment-models/:id
+ * @desc Update a treatment model
+ */
+router.put('/treatment-models/:id', async (req, res, next) => {
+  try {
+    const modelId = parseInt(req.params.id);
+    const { model_name } = req.body;
+    
+    // Validate required fields
+    if (!model_name) {
+      return res.status(400).json({ message: 'Model name is required' });
+    }
+    
+    // Update the treatment model
+    const updatedModel = await req.prisma.case_mh_treatment_models.update({
+      where: { id: modelId },
+      data: {
+        model_name: model_name
+      }
+    });
+    
+    res.json(updatedModel);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route DELETE /api/mentalhealth/treatment-models/:id
+ * @desc Delete a treatment model
+ */
+router.delete('/treatment-models/:id', async (req, res, next) => {
+  try {
+    const modelId = parseInt(req.params.id);
+    
+    // Check if the model is in use in any treatment plans
+    const plansUsingModel = await req.prisma.case_mh_treatment_plans.findMany({
+      where: { treatment_model_id: modelId },
+      take: 1
+    });
+    
+    if (plansUsingModel.length > 0) {
+      return res.status(400).json({ 
+        message: 'Cannot delete treatment model: it is in use by existing treatment plans'
+      });
+    }
+    
+    // Delete the treatment model
+    await req.prisma.case_mh_treatment_models.delete({
+      where: { id: modelId }
+    });
+    
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -276,6 +402,32 @@ router.get('/treatment-plans/case/:caseId', async (req, res, next) => {
     });
     
     res.json(plans);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /api/mentalhealth/treatment-plans/:id
+ * @desc Get a treatment plan by ID
+ */
+router.get('/treatment-plans/:id', async (req, res, next) => {
+  try {
+    const planId = parseInt(req.params.id);
+    const plan = await req.prisma.case_mh_treatment_plans.findUnique({
+      where: { id: planId },
+      include: {
+        case_mh_treatment_models: true,
+        cac_agency: true,
+        employee: true
+      }
+    });
+    
+    if (!plan) {
+      return res.status(404).json({ message: 'Treatment plan not found' });
+    }
+    
+    res.json(plan);
   } catch (error) {
     next(error);
   }
@@ -318,6 +470,64 @@ router.post('/treatment-plans', async (req, res, next) => {
     });
     
     res.status(201).json(newPlan);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route PUT /api/mentalhealth/treatment-plans/:id
+ * @desc Update an existing treatment plan
+ */
+router.put('/treatment-plans/:id', async (req, res, next) => {
+  try {
+    const planId = parseInt(req.params.id);
+    
+    // Verify the plan exists
+    const existingPlan = await req.prisma.case_mh_treatment_plans.findUnique({
+      where: { id: planId }
+    });
+    
+    if (!existingPlan) {
+      return res.status(404).json({ message: 'Treatment plan not found' });
+    }
+    
+    // Update the treatment plan
+    const updatedPlan = await req.prisma.case_mh_treatment_plans.update({
+      where: { id: planId },
+      data: {
+        treatment_model_id: req.body.treatment_model_id,
+        provider_agency_id: req.body.provider_agency_id,
+        planned_start_date: req.body.planned_start_date,
+        planned_end_date: req.body.planned_end_date,
+        authorized_status_id: req.body.authorized_status_id,
+        duration: req.body.duration,
+        duration_unit: req.body.duration_unit,
+        planned_review_date: req.body.planned_review_date,
+        treatment_plan_date: req.body.treatment_plan_date,
+        provider_employee_id: req.body.provider_employee_id
+      }
+    });
+    
+    res.json(updatedPlan);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route DELETE /api/mentalhealth/treatment-plans/:id
+ * @desc Delete a treatment plan
+ */
+router.delete('/treatment-plans/:id', async (req, res, next) => {
+  try {
+    const planId = parseInt(req.params.id);
+    
+    await req.prisma.case_mh_treatment_plans.delete({
+      where: { id: planId }
+    });
+    
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -524,6 +734,145 @@ router.post('/sessions/:sessionId/attendees', async (req, res, next) => {
     });
     
     res.status(201).json(newAttendee);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /api/mentalhealth/sessions/:sessionId/attendees
+ * @desc Get all attendees for a session
+ */
+router.get('/sessions/:sessionId/attendees', async (req, res, next) => {
+  try {
+    const sessionId = parseInt(req.params.sessionId);
+    
+    const attendees = await req.prisma.case_mh_session_attendee.findMany({
+      where: { case_mh_session_id: sessionId },
+      include: {
+        person: true
+      }
+    });
+    
+    res.json(attendees);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /api/mentalhealth/sessions/:sessionId/attributes
+ * @desc Get all attribute groups for a session
+ */
+router.get('/sessions/:sessionId/attributes', async (req, res, next) => {
+  try {
+    const sessionId = parseInt(req.params.sessionId);
+    
+    const attributes = await req.prisma.case_mh_session_attribute_group.findMany({
+      where: { case_mh_session_id: sessionId }
+    });
+    
+    res.json(attributes);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route POST /api/mentalhealth/sessions/:sessionId/attributes
+ * @desc Add an attribute group to a session
+ */
+router.post('/sessions/:sessionId/attributes', async (req, res, next) => {
+  try {
+    const sessionId = parseInt(req.params.sessionId);
+    
+    // Get maximum attribute group ID
+    const maxAttributeIdResult = await req.prisma.case_mh_session_attribute_group.findFirst({
+      orderBy: {
+        id: 'desc'
+      },
+      select: {
+        id: true
+      }
+    });
+    
+    const newAttributeId = maxAttributeIdResult ? maxAttributeIdResult.id + 1 : 1;
+    
+    const newAttribute = await req.prisma.case_mh_session_attribute_group.create({
+      data: {
+        id: newAttributeId,
+        cac_id: req.body.cac_id,
+        case_id: req.body.case_id,
+        case_mh_session_id: sessionId,
+        attribute_group_description: req.body.attribute_group_description,
+        attributes: req.body.attributes,
+        attribute_value: req.body.attribute_value
+      }
+    });
+    
+    res.status(201).json(newAttribute);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route PUT /api/mentalhealth/sessions/:id
+ * @desc Update a session
+ */
+router.put('/sessions/:id', async (req, res, next) => {
+  try {
+    const sessionId = parseInt(req.params.id);
+    
+    const updatedSession = await req.prisma.case_mh_session_log_enc.update({
+      where: { case_mh_session_id: sessionId },
+      data: {
+        comments: req.body.comments,
+        start_time: req.body.start_time,
+        end_time: req.body.end_time,
+        intervention_id: req.body.intervention_id,
+        location_id: req.body.location_id,
+        onsite: req.body.onsite,
+        provider_agency_id: req.body.provider_agency_id,
+        provider_employee_id: req.body.provider_employee_id,
+        session_date: req.body.session_date,
+        session_status_id: req.body.session_status_id,
+        session_type_id: req.body.session_type_id,
+        recurring: req.body.recurring,
+        recurring_fre: req.body.recurring_fre,
+        recurring_duration: req.body.recurring_duration,
+        recurring_duration_unit: req.body.recurring_duration_unit
+      }
+    });
+    
+    res.json(updatedSession);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route DELETE /api/mentalhealth/sessions/:id
+ * @desc Delete a session
+ */
+router.delete('/sessions/:id', async (req, res, next) => {
+  try {
+    const sessionId = parseInt(req.params.id);
+    
+    // Due to foreign key constraints, we need to delete related records first
+    await req.prisma.case_mh_session_attribute_group.deleteMany({
+      where: { case_mh_session_id: sessionId }
+    });
+    
+    await req.prisma.case_mh_session_attendee.deleteMany({
+      where: { case_mh_session_id: sessionId }
+    });
+    
+    await req.prisma.case_mh_session_log_enc.delete({
+      where: { case_mh_session_id: sessionId }
+    });
+    
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

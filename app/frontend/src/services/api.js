@@ -318,9 +318,45 @@ export const mentalHealthApi = {
   },
   
   // Get treatment models
-  getTreatmentModels: () => {
-    return fetchApi('/api/mentalhealth/treatment-models');
-  },
+getTreatmentModels: () => {
+  return fetchApi('/api/mentalhealth/treatment-models');
+},
+
+// Get treatment model by ID
+getTreatmentModelById: (modelId) => {
+  return fetchApi(`/api/mentalhealth/treatment-models/${modelId}`);
+},
+
+// Create a new treatment model
+createTreatmentModel: (modelData) => {
+  return fetchApi('/api/mentalhealth/treatment-models', {
+    method: 'POST',
+    body: JSON.stringify(modelData)
+  });
+},
+
+// Update a treatment model
+updateTreatmentModel: (modelId, modelData) => {
+  return fetchApi(`/api/mentalhealth/treatment-models/${modelId}`, {
+    method: 'PUT',
+    body: JSON.stringify(modelData)
+  });
+},
+
+// Delete a treatment model
+deleteTreatmentModel: (modelId) => {
+  return fetchApi(`/api/mentalhealth/treatment-models/${modelId}`, {
+    method: 'DELETE'
+  });
+},
+
+// Update a treatment plan
+updateTreatmentPlan: (planId, planData) => {
+  return fetchApi(`/api/mentalhealth/treatment-plans/${planId}`, {
+    method: 'PUT',
+    body: JSON.stringify(planData)
+  });
+},
   
   // Get treatment plans for a case
   getTreatmentPlansByCaseId: (caseId) => {
@@ -375,6 +411,8 @@ export const mentalHealthApi = {
       body: JSON.stringify(attendeeData)
     });
   }
+  
+  
 };
 
 export const victimAdvocacyApi = {
