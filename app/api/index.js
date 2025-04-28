@@ -1,5 +1,9 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
+
 import casesRouter from './routes/cases.js';
 import peopleRouter from './routes/people.js';
 import agenciesRouter from './routes/agencies.js';
@@ -11,36 +15,63 @@ import caseSearchRoutes from './routes/case-search.js';
 const prisma = new PrismaClient();
 const app = express();
 
+// Toggle AOI logging via env var (false to disable):
+//   ENABLE_AOI_LOGGING=false node index.js
+const ENABLE_AOI_LOGGING = process.env.ENABLE_AOI_LOGGING !== 'false';
+console.log(`AOI logging is ${ENABLE_AOI_LOGGING ? 'ENABLED' : 'DISABLED'}`);
+
+// In-memory map of session_id → filename
+const sessionFiles = {};
+
+// Lazily create one CSV per session
+function getLogFileForSession(sessionId) {
+  if (!sessionFiles[sessionId]) {
+    const logDir = path.resolve(process.cwd(), 'AOI log');
+    if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+
+    const ts = new Date()
+      .toISOString()
+      .replace(/:/g, '-')
+      .replace(/\.\d+Z$/, '');
+    const filename = `aoi_${sessionId}_${ts}.csv`;
+    const fullPath = path.join(logDir, filename);
+
+    // write CSV header
+    const header = [
+      'ms',
+      'x',
+      'y',
+      'aoi',
+      'mouse_click',
+      'text_input',
+      'text_activity',
+      'targetId',
+      'description',
+    ].join(',') + '\n';
+
+    fs.writeFileSync(fullPath, header);
+    sessionFiles[sessionId] = fullPath;
+  }
+  return sessionFiles[sessionId];
+}
+
 // Middleware
 app.use(express.json());
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
-// CORS middleware for development
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message: 'An error occurred',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
-
-// Inject Prisma into the request
+// Inject Prisma
 app.use((req, res, next) => {
   req.prisma = prisma;
   next();
 });
 
-// Routes
+// Your existing routers
 app.use('/api/cases', casesRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/agencies', agenciesRouter);
@@ -49,18 +80,63 @@ app.use('/api/mentalhealth', mentalhealthRouter);
 app.use('/api/va', victimsAdvocacyRouter);
 app.use('/api/case-search', caseSearchRoutes);
 
-// Health check endpoint
+// AOI event endpoint
+app.post('/api/aoi_event', async (req, res) => {
+  try {
+    const {
+      session_id,
+      timestamp_ms = '',
+      coordinates = {},
+      mouse_click = false,
+      text_input = false,
+      text_activity = '',
+      targetId = '',
+      description = '',
+    } = req.body;
+
+    if (ENABLE_AOI_LOGGING && session_id) {
+      const logFile = getLogFileForSession(session_id);
+      const x = coordinates.x ?? '';
+      const y = coordinates.y ?? '';
+      const esc = (s) => String(s).replace(/,/g, ';');
+
+      const line = [
+        timestamp_ms,
+        x,
+        y,
+        esc(req.body.mouse_aoi || ''),
+        mouse_click,
+        text_input,
+        esc(text_activity),
+        esc(targetId),
+        esc(description),
+      ].join(',') + '\n';
+
+      fs.appendFile(logFile, line, (err) => {
+        if (err) console.error('Error writing AOI event:', err);
+      });
+    }
+
+    console.log('AOI event received:', req.body);
+    res.status(200).json({ message: 'Event received' });
+  } catch (err) {
+    console.error('Error in /api/aoi_event:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+  res.json({ status: 'ok' });
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`API server running on port ${PORT}`);
 });
 
-// Handle graceful shutdown
+// Graceful shutdown
 process.on('SIGINT', async () => {
   await prisma.$disconnect();
   process.exit(0);

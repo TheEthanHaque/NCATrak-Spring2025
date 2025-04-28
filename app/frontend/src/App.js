@@ -1,6 +1,8 @@
+// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import AOIEventViewer from './AOIEventViewer';
+import AOITracker from './AOITracker';               // ← NEW
 import GeneralTab from './components/GeneralTab';  
 import MHBasicInterface from './components/MHBasicInterface';  
 import PeopleInterface from './components/PeopleInterface';  
@@ -92,6 +94,8 @@ const AppLayout = () => {
 
   return (
     <>
+      <AOITracker /> {/* ← NEW: start time-based AOI sampling & click logging */}
+
       {/* Header */}
       <AppBar position="static">
         <Toolbar>
@@ -163,8 +167,8 @@ const AppLayout = () => {
       <Container maxWidth="md" sx={{ mt: 4 }}>
         {/* When not to show new case info*/}
         {!isNewCasePage && !isSearchPage && <CurrentCaseInfo />}
+        {!isNewCasePage && <CurrentCaseInfo />}
 
-        {/* Routes */}
         <Routes>
           <Route path="/" element={<Typography variant="h6">Home: NCATrak Spring 2025!</Typography>} />
           <Route path="/CaseGeneral" element={<GeneralTab />} />
@@ -178,13 +182,8 @@ const AppLayout = () => {
           <Route path="/CaseProsecution" element={<Typography variant="h6">Prosecution Component (Under Development)</Typography>} />
           <Route path="/CaseReport" element={<Typography variant="h6">Report Component (Under Development)</Typography>} />
           <Route path="/CaseAttachments" element={<Typography variant="h6">Case Attachments Component (Under Development)</Typography>} />
-
-          {/* Create New Case Route */}
           <Route path="/NewCase" element={<NewCase />} />
-          
-          {/* MH Section with sub-navigation */}
           <Route path="/CaseMH/*" element={<MHSection />} />
-          
           <Route path="/CaseVA/*" element={<VALogInterface />} />
 
           {/* Search Case Route */}
@@ -208,23 +207,12 @@ const AppLayout = () => {
   );
 };
 
-// Component to display current case information
 const CurrentCaseInfo = () => {
   const { currentCase, cases, loading, error } = useCase();
   
   if (loading) {
     return (
-      <Box sx={{ 
-        textAlign: 'center', 
-        mb: 4, 
-        p: 3, 
-        backgroundColor: '#f5f5f5', 
-        borderRadius: 2,
-        boxShadow: 1,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
+      <Box sx={{ textAlign: 'center', mb: 4, p: 3, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <CircularProgress size={30} sx={{ mr: 2 }} />
         <Typography variant="h6">Loading case information...</Typography>
       </Box>
@@ -233,14 +221,7 @@ const CurrentCaseInfo = () => {
   
   if (error) {
     return (
-      <Box sx={{ 
-        textAlign: 'center', 
-        mb: 4, 
-        p: 3, 
-        backgroundColor: '#ffeded', 
-        borderRadius: 2,
-        boxShadow: 1
-      }}>
+      <Box sx={{ textAlign: 'center', mb: 4, p: 3, backgroundColor: '#ffeded', borderRadius: 2, boxShadow: 1 }}>
         <Typography variant="h6" color="error">Error loading case information</Typography>
         <Typography variant="body1">Please try refreshing the page</Typography>
       </Box>
@@ -251,14 +232,7 @@ const CurrentCaseInfo = () => {
   
   if (!selectedCase) {
     return (
-      <Box sx={{ 
-        textAlign: 'center', 
-        mb: 4, 
-        p: 3, 
-        backgroundColor: '#f5f5f5', 
-        borderRadius: 2,
-        boxShadow: 1
-      }}>
+      <Box sx={{ textAlign: 'center', mb: 4, p: 3, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: 1 }}>
         <Typography variant="h6">No case selected</Typography>
         <Typography variant="body1">Please select a case from the dropdown menu</Typography>
       </Box>
@@ -266,19 +240,22 @@ const CurrentCaseInfo = () => {
   }
   
   return (
-    <Box sx={{ 
-      textAlign: 'center', 
-      mb: 4, 
-      p: 3, 
-      backgroundColor: '#f5f5f5', 
-      borderRadius: 2,
-      boxShadow: 1
-    }}>
+    <Box
+      sx={{
+        textAlign: 'center',
+        mb: 4,
+        p: 3,
+        backgroundColor: '#f5f5f5',
+        borderRadius: 2,
+        boxShadow: 1
+      }}
+    >
       <Typography variant="h4" gutterBottom>
-        {selectedCase.name} 
+        {selectedCase.name}
       </Typography>
       <Typography variant="h6" color="text.secondary" gutterBottom>
         Case {selectedCase.number}
+        {selectedCase.cacName && ` – ${selectedCase.cacName}`}
       </Typography>
       <Typography variant="body1" color="text.secondary">
         Currently viewing data for this case. Use the dropdown in the navigation bar to switch cases.
@@ -286,15 +263,3 @@ const CurrentCaseInfo = () => {
     </Box>
   );
 };
-
-function App() {
-  return (
-    <CaseProvider>
-      <Router>
-        <AppLayout />
-      </Router>
-    </CaseProvider>
-  );
-}
-
-export default App;
