@@ -1,222 +1,367 @@
-import React from "react";
+// src/components/GeneralTab.js
+import React, { useEffect } from "react";
+import useAOILogging from "../useAOILogging";
+import AOIInput from "./AOIInput";
 import "./GeneralTab.css";
 
 function GeneralTab() {
+  const logEvent = useAOILogging("GeneralTab");
+
+  // Log page view
+  useEffect(() => {
+    logEvent("tab_view");
+  }, [logEvent]);
+
+  // Global AOI mouseover listener
+  useEffect(() => {
+    const handleMouseOver = (e) => {
+      const aoi = e.target.getAttribute("data-aoi");
+      if (aoi) {
+        logEvent("mouseover", {
+          aoi,
+          coordinates: { x: e.clientX, y: e.clientY },
+          mouse_click: false,
+          text_input: false,
+          text_activity: ""
+        });
+      }
+    };
+    document.addEventListener("mouseover", handleMouseOver);
+    return () => document.removeEventListener("mouseover", handleMouseOver);
+  }, [logEvent]);
+
+  // Button handlers
+  const handleSaveClick = (e) => {
+    logEvent("save_click", { targetId: "save-button" });
+  };
+  const handleCancelClick = (e) => {
+    logEvent("cancel_click", { targetId: "cancel-button" });
+  };
+  const handleAddButtonClick = (e, fieldName) => {
+    logEvent("add_click", {
+      targetId: e.target.id || fieldName,
+      description: `+ Add button clicked for ${fieldName}`
+    });
+  };
+  const handleEditClick = (e, context) => {
+    logEvent("edit_click", {
+      targetId: e.target.id,
+      description: `Edit button clicked in ${context}`
+    });
+  };
+
   return (
     <div className="general-tab-container">
       <header className="general-tab-header">
-        <h1>Case Tracking</h1>
+        <h1 data-aoi="Case Tracking Header">Case Tracking</h1>
       </header>
 
       <form className="general-tab-form">
         {/* 1. CASE TRACKING TABLE */}
-        <section className="gt-section">
+        <section className="gt-section" data-aoi="Case Tracking Table Section">
           <table className="gt-table">
             <thead>
               <tr>
-                <th>Action</th>
-                <th>Service</th>
-                <th>Referral Date</th>
-                <th>Referred By</th>
-                <th>Providing Agency</th>
-                <th>Primary Contact</th>
-                <th>Status</th>
-                <th>Status Date</th>
+                <th data-aoi="Table Header Action">Action</th>
+                <th data-aoi="Table Header Service">Service</th>
+                <th data-aoi="Table Header Referral Date">Referral Date</th>
+                <th data-aoi="Table Header Referred By">Referred By</th>
+                <th data-aoi="Table Header Providing Agency">Providing Agency</th>
+                <th data-aoi="Table Header Primary Contact">Primary Contact</th>
+                <th data-aoi="Table Header Status">Status</th>
+                <th data-aoi="Table Header Status Date">Status Date</th>
               </tr>
             </thead>
             <tbody>
-              {/* Example rows - replace or remove as needed */}
               <tr>
                 <td>
-                  <button type="button" className="gt-edit-button">
+                  <button
+                    type="button"
+                    className="gt-edit-button"
+                    data-aoi="Edit Case Tracking Row 1"
+                    onClick={(e) => handleEditClick(e, "Case Tracking Table")}
+                  >
                     Edit
                   </button>
                 </td>
-                <td>MDT</td>
-                <td>07/03/2015</td>
-                <td>Unknown</td>
-                <td>Anderson SVU Team</td>
-                <td>Jane Doe</td>
-                <td>Adjourned</td>
-                <td>07/03/2015</td>
+                <td data-aoi="Row1 Service">MDT</td>
+                <td data-aoi="Row1 Referral Date">07/03/2015</td>
+                <td data-aoi="Row1 Referred By">Unknown</td>
+                <td data-aoi="Row1 Providing Agency">Anderson SVU Team</td>
+                <td data-aoi="Row1 Primary Contact">Jane Doe</td>
+                <td data-aoi="Row1 Status">Adjourned</td>
+                <td data-aoi="Row1 Status Date">07/03/2015</td>
               </tr>
               <tr>
                 <td>
-                  <button type="button" className="gt-edit-button">
+                  <button
+                    type="button"
+                    className="gt-edit-button"
+                    data-aoi="Edit Case Tracking Row 2"
+                    onClick={(e) => handleEditClick(e, "Case Tracking Table")}
+                  >
                     Edit
                   </button>
                 </td>
-                <td>MH</td>
-                <td>07/03/2015</td>
-                <td>DCS - Anderson Co.</td>
-                <td>Anderson SVU Team</td>
-                <td>Sylvia Jones</td>
-                <td>Referred</td>
-                <td>01/10/2030</td>
+                <td data-aoi="Row2 Service">MH</td>
+                <td data-aoi="Row2 Referral Date">07/03/2015</td>
+                <td data-aoi="Row2 Referred By">DCS - Anderson Co.</td>
+                <td data-aoi="Row2 Providing Agency">Anderson SVU Team</td>
+                <td data-aoi="Row2 Primary Contact">Sylvia Jones</td>
+                <td data-aoi="Row2 Status">Referred</td>
+                <td data-aoi="Row2 Status Date">01/10/2030</td>
               </tr>
             </tbody>
           </table>
         </section>
 
         {/* 2. FIELDS BELOW THE TABLE */}
-        <section className="gt-section">
-          <div className="form-row">
-            <label htmlFor="date-received-cac">Date Received by CAC</label>
-            <input type="date" id="date-received-cac" name="dateReceivedCAC" />
-          </div>
+        <section className="gt-section" data-aoi="Fields Section">
+          <AOIInput
+            label="Date Received by CAC"
+            id="date-received-cac"
+            type="date"
+            data-aoi="Date Received by CAC Input"
+          />
 
           <div className="form-row">
-            <label htmlFor="main-agency">Main Agency Involved</label>
-            <input
-              type="text"
+            <label htmlFor="main-agency" data-aoi="Main Agency Label">
+              Main Agency Involved
+            </label>
+            <AOIInput
               id="main-agency"
-              name="mainAgency"
-              placeholder="Anderson SVU Team"
-            />
-            <button type="button" className="add-button">
-              + Add
-            </button>
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="main-personnel">Main Personnel Involved</label>
-            <input
               type="text"
-              id="main-personnel"
-              name="mainPersonnel"
-              placeholder="Janice Smith"
+              placeholder="Anderson SVU Team"
+              data-aoi="Main Agency Input"
             />
-            <button type="button" className="add-button">
+            <button
+              type="button"
+              className="add-button"
+              data-aoi="Add Main Agency Button"
+              onClick={(e) => handleAddButtonClick(e, "Main Agency")}
+            >
               + Add
             </button>
           </div>
 
           <div className="form-row">
-            <label htmlFor="case-closed-reason">Case Closed Reason</label>
-            <select id="case-closed-reason" name="caseClosedReason">
+            <label htmlFor="main-personnel" data-aoi="Main Personnel Label">
+              Main Personnel Involved
+            </label>
+            <AOIInput
+              id="main-personnel"
+              type="text"
+              placeholder="Janice Smith"
+              data-aoi="Main Personnel Input"
+            />
+            <button
+              type="button"
+              className="add-button"
+              data-aoi="Add Main Personnel Button"
+              onClick={(e) => handleAddButtonClick(e, "Main Personnel")}
+            >
+              + Add
+            </button>
+          </div>
+
+          <div className="form-row">
+            <label htmlFor="case-closed-reason" data-aoi="Case Closed Reason Label">
+              Case Closed Reason
+            </label>
+            <select
+              id="case-closed-reason"
+              name="caseClosedReason"
+              data-aoi="Case Closed Reason Select"
+              onFocus={(e) =>
+                logEvent("field_focus", {
+                  field: "Case Closed Reason",
+                  fieldId: "case-closed-reason",
+                  coordinates: { x: e.clientX, y: e.clientY }
+                })
+              }
+              onChange={(e) =>
+                logEvent("field_change", {
+                  field: "Case Closed Reason",
+                  fieldId: "case-closed-reason",
+                  newValue: e.target.value
+                })
+              }
+            >
               <option value="">Select reason...</option>
-              <option value="allComplete">
-                All Investigations/Services Completed
-              </option>
+              <option value="allComplete">All Investigations/Services Completed</option>
               <option value="clientMoved">Client Moved</option>
               <option value="noServicesNeeded">No Services Needed</option>
             </select>
           </div>
 
-          <div className="form-row">
-            <label htmlFor="case-close-date">Case Close Date</label>
-            <input type="date" id="case-close-date" name="caseCloseDate" />
+          <AOIInput
+            label="Case Close Date"
+            id="case-close-date"
+            type="date"
+            data-aoi="Case Close Date Input"
+          />
+
+          <div className="form-row checkbox-row">
+            <label htmlFor="survey-complete" data-aoi="Survey Complete Label">
+              Survey Complete (1)
+            </label>
+            <input
+              type="checkbox"
+              id="survey-complete"
+              name="surveyComplete"
+              data-aoi="Survey Complete Checkbox"
+              onFocus={(e) =>
+                logEvent("field_focus", {
+                  field: "Survey Complete",
+                  fieldId: "survey-complete",
+                  coordinates: { x: e.clientX, y: e.clientY }
+                })
+              }
+              onChange={(e) =>
+                logEvent("field_change", {
+                  field: "Survey Complete",
+                  fieldId: "survey-complete",
+                  newValue: e.target.checked
+                })
+              }
+            />
           </div>
 
           <div className="form-row checkbox-row">
-            <label htmlFor="survey-complete">Survey Complete (1)</label>
-            <input type="checkbox" id="survey-complete" name="surveyComplete" />
-          </div>
-
-          <div className="form-row checkbox-row">
-            <label htmlFor="followup-survey-complete">
+            <label htmlFor="followup-survey-complete" data-aoi="Follow Up Survey Label">
               Follow Up Survey Complete (2)
             </label>
             <input
               type="checkbox"
               id="followup-survey-complete"
               name="followupSurveyComplete"
+              data-aoi="Follow Up Survey Checkbox"
+              onFocus={(e) =>
+                logEvent("field_focus", {
+                  field: "Follow Up Survey Complete",
+                  fieldId: "followup-survey-complete",
+                  coordinates: { x: e.clientX, y: e.clientY }
+                })
+              }
+              onChange={(e) =>
+                logEvent("field_change", {
+                  field: "Follow Up Survey Complete",
+                  fieldId: "followup-survey-complete",
+                  newValue: e.target.checked
+                })
+              }
             />
           </div>
 
-          <div className="form-row">
-            <label htmlFor="cac-case-b">CAC Case # (3)</label>
-            <input
-              type="text"
-              id="cac-case-b"
-              name="cacCaseB"
-              placeholder="Enter CAC Case #(B)"
-            />
-          </div>
+          <AOIInput
+            label="CAC Case # (3)"
+            id="cac-case-b"
+            type="text"
+            placeholder="Enter CAC Case #(B)"
+            data-aoi="CAC Case B Input"
+          />
 
           {/* EDUCATION PROGRAM QUESTION */}
-          <div className="form-row">
-            <label>Did child go through the education program? (4)</label>
+          <div className="form-row" data-aoi="Education Program Section">
+            <label data-aoi="Education Program Label">
+              Did child go through the education program? (4)
+            </label>
             <div className="radio-group">
-              <label>
-                <input type="radio" name="educationProgram" value="yes" />
-                Yes
-              </label>
-              <label>
-                <input type="radio" name="educationProgram" value="no" />
-                No
-              </label>
-              <label>
-                <input type="radio" name="educationProgram" value="maybe" />
-                Maybe
-              </label>
-              <label>
-                <input type="radio" name="educationProgram" value="notSure" />
-                Not sure
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="educationProgram"
-                  value="notInterested"
-                />
-                Not interested
-              </label>
-              <label>
-                <input type="radio" name="educationProgram" value="denied" />
-                Denied
-              </label>
+              {["yes", "no", "maybe", "notSure", "notInterested", "denied"].map((val) => (
+                <label key={val} data-aoi={`Education Program ${val}`}>
+                  <input
+                    type="radio"
+                    name="educationProgram"
+                    value={val}
+                    onFocus={(e) =>
+                      logEvent("field_focus", {
+                        field: "Education Program",
+                        fieldId: "educationProgram",
+                        coordinates: { x: e.clientX, y: e.clientY }
+                      })
+                    }
+                    onChange={() =>
+                      logEvent("field_change", {
+                        field: "Education Program",
+                        fieldId: "educationProgram",
+                        newValue: val
+                      })
+                    }
+                  />
+                  {val.charAt(0).toUpperCase() + val.slice(1)}
+                </label>
+              ))}
             </div>
           </div>
 
-          <div className="form-row">
-            <label htmlFor="test-3">Test (5)</label>
-            <input
-              type="text"
-              id="test-3"
-              name="test3"
-              placeholder="Optional field"
-            />
-          </div>
+          <AOIInput
+            label="Test (5)"
+            id="test-3"
+            type="text"
+            placeholder="Optional field"
+            data-aoi="Test 5 Input"
+          />
 
-          <div className="form-row">
-            <label htmlFor="general-custom-6">General - Custom Field (6)</label>
-            <input
-              type="text"
-              id="general-custom-6"
-              name="generalCustom6"
-              placeholder="Optional field"
-            />
-          </div>
+          <AOIInput
+            label="General - Custom Field (6)"
+            id="general-custom-6"
+            type="text"
+            placeholder="Optional field"
+            data-aoi="General Custom 6 Input"
+          />
 
-          <div className="form-row">
-            <label htmlFor="general-custom-cfp">
-              General - Custom Field Chp (7)
-            </label>
-            <input
-              type="text"
-              id="general-custom-cfp"
-              name="generalCustomCfp"
-              placeholder="Optional field"
-            />
-          </div>
+          <AOIInput
+            label="General - Custom Field Chp (7)"
+            id="general-custom-cfp"
+            type="text"
+            placeholder="Optional field"
+            data-aoi="General Custom CFP Input"
+          />
 
-          <div className="form-row checkbox-group-row">
-            <label>Chapter Test Field (8)</label>
+          <div className="form-row checkbox-group-row" data-aoi="Chapter Test Field Section">
+            <label data-aoi="Chapter Test Field Label">Chapter Test Field (8)</label>
             <div className="checkbox-group">
-              <label>
+              <label data-aoi="No Testing Checkbox">
                 <input
                   type="checkbox"
                   name="chapterTestField"
                   value="noTesting"
+                  onFocus={(e) =>
+                    logEvent("field_focus", {
+                      field: "Chapter Test Field",
+                      fieldId: "chapterTestField",
+                      coordinates: { x: e.clientX, y: e.clientY }
+                    })
+                  }
+                  onChange={(e) =>
+                    logEvent("field_change", {
+                      field: "Chapter Test Field",
+                      fieldId: "chapterTestField",
+                      newValue: e.target.checked
+                    })
+                  }
                 />
                 No Testing
               </label>
-              <label>
+              <label data-aoi="New Client Checkbox">
                 <input
                   type="checkbox"
                   name="chapterTestField"
                   value="newClient"
+                  onFocus={(e) =>
+                    logEvent("field_focus", {
+                      field: "Chapter Test Field",
+                      fieldId: "chapterTestField",
+                      coordinates: { x: e.clientX, y: e.clientY }
+                    })
+                  }
+                  onChange={(e) =>
+                    logEvent("field_change", {
+                      field: "Chapter Test Field",
+                      fieldId: "chapterTestField",
+                      newValue: e.target.checked
+                    })
+                  }
                 />
                 New Client
               </label>
@@ -225,278 +370,276 @@ function GeneralTab() {
         </section>
 
         {/* 3. CASES LINKED TO THIS ALLEGATION */}
-        <section className="gt-section">
-          <h2>Cases Linked to this Allegation</h2>
-          <button type="button" className="session-log-button">
+        <section className="gt-section" data-aoi="Linked Cases Section">
+          <h2 data-aoi="Linked Cases Header">Cases Linked to this Allegation</h2>
+          <button
+            type="button"
+            className="session-log-button"
+            data-aoi="Add Linked Cases Button"
+            onClick={(e) => handleAddButtonClick(e, "Linked Cases")}
+          >
             + Add new record
           </button>
           <table className="gt-table">
             <thead>
               <tr>
-                <th>CAC Case Number</th>
-                <th>Alleged Victim</th>
+                <th data-aoi="Linked Cases Table Header CAC Case Number">CAC Case Number</th>
+                <th data-aoi="Linked Cases Table Header Alleged Victim">Alleged Victim</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td colSpan="2" style={{ textAlign: "center" }}>
-                  No items to display
-                </td>
+                <td colSpan="2" data-aoi="No Linked Cases">No items to display</td>
               </tr>
             </tbody>
           </table>
         </section>
 
         {/* 4. COURT ACTIVITIES */}
-        <section className="gt-section">
-          <h2>Court Activities</h2>
-          <button type="button" className="session-log-button">
+        <section className="gt-section" data-aoi="Court Activities Section">
+          <h2 data-aoi="Court Activities Header">Court Activities</h2>
+          <button
+            type="button"
+            className="session-log-button"
+            data-aoi="Add Court Activities Button"
+            onClick={(e) => handleAddButtonClick(e, "Court Activities")}
+          >
             + Add new record
           </button>
           <table className="gt-table">
             <thead>
               <tr>
-                <th>Court Type</th>
-                <th>Court Date</th>
+                <th data-aoi="Court Activities Table Header Court Type">Court Type</th>
+                <th data-aoi="Court Activities Table Header Court Date">Court Date</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td colSpan="2" style={{ textAlign: "center" }}>
-                  No items to display
-                </td>
+                <td colSpan="2" data-aoi="No Court Activities">No items to display</td>
               </tr>
             </tbody>
           </table>
         </section>
 
         {/* 5. RELEASE OF INFORMATION */}
-        <section className="gt-section">
-          <h2>Release of Information</h2>
-          <button type="button" className="session-log-button">
+        <section className="gt-section" data-aoi="Release of Information Section">
+          <h2 data-aoi="Release of Information Header">Release of Information</h2>
+          <button
+            type="button"
+            className="session-log-button"
+            data-aoi="Add Release of Information Button"
+            onClick={(e) => handleAddButtonClick(e, "Release of Information")}
+          >
             + Add new record
           </button>
           <table className="gt-table">
             <thead>
               <tr>
-                <th>Date Requested</th>
-                <th>Requested By</th>
-                <th>By Subpoena</th>
-                <th>Authorized By</th>
-                <th>Released By</th>
-                <th>Records</th>
-                <th>Date Released</th>
-                <th>Date to be Returned</th>
-                <th>Date Returned</th>
+                <th data-aoi="Release Info Date Requested">Date Requested</th>
+                <th data-aoi="Release Info Requested By">Requested By</th>
+                <th data-aoi="Release Info By Subpoena">By Subpoena</th>
+                <th data-aoi="Release Info Authorized By">Authorized By</th>
+                <th data-aoi="Release Info Released By">Released By</th>
+                <th data-aoi="Release Info Records">Records</th>
+                <th data-aoi="Release Info Date Released">Date Released</th>
+                <th data-aoi="Release Info Date to be Returned">Date to be Returned</th>
+                <th data-aoi="Release Info Date Returned">Date Returned</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td colSpan="9" style={{ textAlign: "center" }}>
-                  No items to display
-                </td>
+                <td colSpan="9" data-aoi="No Release Info">No items to display</td>
               </tr>
             </tbody>
           </table>
         </section>
 
         {/* 6. OUTSIDE REFERRALS */}
-        <section className="gt-section">
-          <h2>Outside Referrals</h2>
+        <section className="gt-section" data-aoi="Outside Referrals Section">
+          <h2 data-aoi="Outside Referrals Header">Outside Referrals</h2>
           <table className="gt-table">
             <thead>
               <tr>
-                <th>Action</th>
-                <th>Referred From</th>
-                <th>Referral Date</th>
-                <th>Referred To</th>
-                <th>Comments</th>
+                <th data-aoi="Outside Referrals Table Header Action">Action</th>
+                <th data-aoi="Outside Referrals Table Header Referred From">Referred From</th>
+                <th data-aoi="Outside Referrals Table Header Referral Date">Referral Date</th>
+                <th data-aoi="Outside Referrals Table Header Referred To">Referred To</th>
+                <th data-aoi="Outside Referrals Table Header Comments">Comments</th>
               </tr>
             </thead>
             <tbody>
-              {/* Example row */}
               <tr>
                 <td>
-                  <button type="button" className="gt-view-button">
+                  <button
+                    type="button"
+                    className="gt-view-button"
+                    data-aoi="View Outside Referrals Button"
+                    onClick={(e) => handleEditClick(e, "Outside Referrals")}
+                  >
                     View
                   </button>
                 </td>
-                <td>Prosecution</td>
-                <td>11/19/2014</td>
-                <td>ChildSafe Therapeutic Foster Care</td>
-                <td></td>
+                <td data-aoi="Outside Referrals Row1 Referred From">Prosecution</td>
+                <td data-aoi="Outside Referrals Row1 Referral Date">11/19/2014</td>
+                <td data-aoi="Outside Referrals Row1 Referred To">ChildSafe Therapeutic Foster Care</td>
+                <td data-aoi="Outside Referrals Row1 Comments"></td>
               </tr>
             </tbody>
           </table>
         </section>
 
         {/* 7. INSURANCE INFORMATION */}
-        <section className="gt-section">
-          <h2>Insurance Information</h2>
+        <section className="gt-section" data-aoi="Insurance Information Section">
+          <h2 data-aoi="Insurance Information Header">Insurance Information</h2>
           <div className="insurance-container">
-            {/* Primary Insurance */}
-            <div className="insurance-column">
-              <h3>Primary Insurance</h3>
-              <div className="form-row">
-                <label htmlFor="primary-company">Company</label>
-                <input type="text" id="primary-company" name="primaryCompany" />
-              </div>
-              <div className="form-row">
-                <label htmlFor="primary-subscriber">Subscriber</label>
-                <input
-                  type="text"
-                  id="primary-subscriber"
-                  name="primarySubscriber"
-                />
-              </div>
-              <div className="form-row">
-                <label htmlFor="primary-policy">Policy Number</label>
-                <input
-                  type="text"
-                  id="primary-policy"
-                  name="primaryPolicyNumber"
-                />
-              </div>
-              <div className="form-row">
-                <label htmlFor="primary-group">Group</label>
-                <input type="text" id="primary-group" name="primaryGroup" />
-              </div>
+            <div className="insurance-column" data-aoi="Primary Insurance Column">
+              <h3 data-aoi="Primary Insurance Header">Primary Insurance</h3>
+              <AOIInput label="Company" id="primary-company" type="text" data-aoi="Primary Company Input" />
+              <AOIInput label="Subscriber" id="primary-subscriber" type="text" data-aoi="Primary Subscriber Input" />
+              <AOIInput label="Policy Number" id="primary-policy" type="text" data-aoi="Primary Policy Input" />
+              <AOIInput label="Group" id="primary-group" type="text" data-aoi="Primary Group Input" />
             </div>
-
-            {/* Secondary Insurance */}
-            <div className="insurance-column">
-              <h3>Secondary Insurance</h3>
-              <div className="form-row">
-                <label htmlFor="secondary-company">Company</label>
-                <input
-                  type="text"
-                  id="secondary-company"
-                  name="secondaryCompany"
-                />
-              </div>
-              <div className="form-row">
-                <label htmlFor="secondary-subscriber">Subscriber</label>
-                <input
-                  type="text"
-                  id="secondary-subscriber"
-                  name="secondarySubscriber"
-                />
-              </div>
-              <div className="form-row">
-                <label htmlFor="secondary-policy">Policy Number</label>
-                <input
-                  type="text"
-                  id="secondary-policy"
-                  name="secondaryPolicyNumber"
-                />
-              </div>
-              <div className="form-row">
-                <label htmlFor="secondary-group">Group</label>
-                <input type="text" id="secondary-group" name="secondaryGroup" />
-              </div>
+            <div className="insurance-column" data-aoi="Secondary Insurance Column">
+              <h3 data-aoi="Secondary Insurance Header">Secondary Insurance</h3>
+              <AOIInput label="Company" id="secondary-company" type="text" data-aoi="Secondary Company Input" />
+              <AOIInput label="Subscriber" id="secondary-subscriber" type="text" data-aoi="Secondary Subscriber Input" />
+              <AOIInput label="Policy Number" id="secondary-policy" type="text" data-aoi="Secondary Policy Input" />
+              <AOIInput label="Group" id="secondary-group" type="text" data-aoi="Secondary Group Input" />
             </div>
           </div>
-
           <div className="form-row checkbox-row">
-            <label htmlFor="client-received-referral">
+            <label htmlFor="client-received-referral" data-aoi="Client Received Referral Label">
               Has Client received referral?
             </label>
             <input
               type="checkbox"
               id="client-received-referral"
               name="clientReceivedReferral"
+              data-aoi="Client Received Referral Checkbox"
+              onFocus={(e) =>
+                logEvent("field_focus", {
+                  field: "Client Received Referral",
+                  fieldId: "client-received-referral",
+                  coordinates: { x: e.clientX, y: e.clientY }
+                })
+              }
+              onChange={(e) =>
+                logEvent("field_change", {
+                  field: "Client Received Referral",
+                  fieldId: "client-received-referral",
+                  newValue: e.target.checked
+                })
+              }
             />
           </div>
-
-          <div className="form-row">
-            <label htmlFor="primary-clinic">Primary Clinic</label>
-            <input type="text" id="primary-clinic" name="primaryClinic" />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="primary-provider">Primary Provider</label>
-            <input type="text" id="primary-provider" name="primaryProvider" />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="primary-provider-phone">
-              Primary Provider Phone
-            </label>
-            <input
-              type="text"
-              id="primary-provider-phone"
-              name="primaryProviderPhone"
-            />
-          </div>
+          <AOIInput label="Primary Clinic" id="primary-clinic" type="text" data-aoi="Primary Clinic Input" />
+          <AOIInput label="Primary Provider" id="primary-provider" type="text" data-aoi="Primary Provider Input" />
+          <AOIInput label="Primary Provider Phone" id="primary-provider-phone" type="text" data-aoi="Primary Provider Phone Input" />
         </section>
 
-        {/* 8. ICD CODES SECTION */}
-        <section className="gt-section">
-          <h2>ICD Codes</h2>
-          <button type="button" className="session-log-button">
+        {/* 8. ICD CODES */}
+        <section className="gt-section" data-aoi="ICD Codes Section">
+          <h2 data-aoi="ICD Codes Header">ICD Codes</h2>
+          <button
+            type="button"
+            className="session-log-button"
+            data-aoi="Add ICD Codes Button"
+            onClick={(e) => handleAddButtonClick(e, "ICD Codes")}
+          >
             + Add new record
           </button>
           <table className="gt-table">
             <thead>
               <tr>
-                <th>Action</th>
-                <th>Group</th>
-                <th>Code</th>
+                <th data-aoi="ICD Codes Table Header Action">Action</th>
+                <th data-aoi="ICD Codes Table Header Group">Group</th>
+                <th data-aoi="ICD Codes Table Header Code">Code</th>
               </tr>
             </thead>
             <tbody>
-              {/* Example rows */}
               <tr>
                 <td>
-                  <button type="button" className="gt-edit-button">
+                  <button
+                    type="button"
+                    className="gt-edit-button"
+                    data-aoi="Delete ICD Code 1"
+                    onClick={(e) => handleEditClick(e, "ICD Codes")}
+                  >
                     Delete
                   </button>
-                  <button type="button" className="gt-edit-button">
+                  <button
+                    type="button"
+                    className="gt-edit-button"
+                    data-aoi="Edit ICD Code 1"
+                    onClick={(e) => handleEditClick(e, "ICD Codes")}
+                  >
                     Edit
                   </button>
                 </td>
-                <td>Child Abuse Diagnosis</td>
-                <td>995.53 sexual abuse</td>
+                <td data-aoi="ICD Code Row1 Group">Child Abuse Diagnosis</td>
+                <td data-aoi="ICD Code Row1 Code">995.53 sexual abuse</td>
               </tr>
               <tr>
                 <td>
-                  <button type="button" className="gt-edit-button">
+                  <button
+                    type="button"
+                    className="gt-edit-button"
+                    data-aoi="Delete ICD Code 2"
+                    onClick={(e) => handleEditClick(e, "ICD Codes")}
+                  >
                     Delete
                   </button>
-                  <button type="button" className="gt-edit-button">
+                  <button
+                    type="button"
+                    className="gt-edit-button"
+                    data-aoi="Edit ICD Code 2"
+                    onClick={(e) => handleEditClick(e, "ICD Codes")}
+                  >
                     Edit
                   </button>
                 </td>
-                <td>Physical Abuse Diagnosis</td>
-                <td>T07 Unspecified multiple injuries</td>
+                <td data-aoi="ICD Code Row2 Group">Physical Abuse Diagnosis</td>
+                <td data-aoi="ICD Code Row2 Code">T07 Unspecified multiple injuries</td>
               </tr>
             </tbody>
           </table>
         </section>
 
-        {/* 9. DOCUMENT UPLOAD SECTION */}
-        <section className="gt-section">
-          <h2>Document Upload</h2>
+        {/* 9. DOCUMENT UPLOAD */}
+        <section className="gt-section" data-aoi="Document Upload Section">
+          <h2 data-aoi="Document Upload Header">Document Upload</h2>
           <table className="gt-table">
             <thead>
               <tr>
-                <th>File Name</th>
-                <th>Upload Date</th>
-                <th>User</th>
-                <th>Page</th>
-                <th>Size</th>
-                <th>Action</th>
+                <th data-aoi="Upload Table Header File Name">File Name</th>
+                <th data-aoi="Upload Table Header Upload Date">Upload Date</th>
+                <th data-aoi="Upload Table Header User">User</th>
+                <th data-aoi="Upload Table Header Page">Page</th>
+                <th data-aoi="Upload Table Header Size">Size</th>
+                <th data-aoi="Upload Table Header Action">Action</th>
               </tr>
             </thead>
           </table>
         </section>
 
-        {/* 10. FINAL SAVE / CANCEL BUTTONS */}
-        <div className="gt-form-buttons">
-          <button type="submit" className="save-button">
+        {/* 10. SAVE / CANCEL */}
+        <div className="gt-form-buttons" data-aoi="Form Buttons Section">
+          <button
+            type="submit"
+            className="save-button"
+            id="save-button"
+            data-aoi="Save Button"
+            onClick={handleSaveClick}
+          >
             SAVE
           </button>
-          <button type="button" className="cancel-button">
+          <button
+            type="button"
+            className="cancel-button"
+            id="cancel-button"
+            data-aoi="Cancel Button"
+            onClick={handleCancelClick}
+          >
             CANCEL
           </button>
         </div>
