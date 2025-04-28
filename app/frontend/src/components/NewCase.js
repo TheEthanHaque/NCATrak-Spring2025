@@ -17,14 +17,19 @@ import {
   Container,
   Dialog,
   DialogContent,
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Lookup from './Lookup';
 import ConfirmationModal from './ConfirmationModal';
+import { peopleApi, casesApi } from '../services/api';
+import { useCase } from '../context/CaseContext';
 
 const NewCase = () => {
   console.log("NewCase component is rendering");
   const navigate = useNavigate();
+  const { setCurrentCase } = useCase();
   
   // State for person lookup modal
   const [lookupModalOpen, setLookupModalOpen] = useState(false);
@@ -35,6 +40,10 @@ const NewCase = () => {
   // Add state for confirmation modal
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [pendingChanges, setPendingChanges] = useState(null);
+  
+  // Add loading and error state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   
   // Effect to open the lookup modal when component mounts
   useEffect(() => {
@@ -306,8 +315,24 @@ const NewCase = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.lastName) {
+      setError("Last name is required");
+      return;
+    }
+    
+    if (!formData.firstName) {
+      setError("First name is required");
+      return;
+    }
+    
+    if (!formData.reasonForReferral) {
+      setError("Reason for referral is required");
+      return;
+    }
     
     // Check if person data has been changed
     if (originalPersonData && originalPersonData.person_id) {
@@ -317,7 +342,7 @@ const NewCase = () => {
         originalPersonData.lastName !== formData.lastName ||
         originalPersonData.suffix !== formData.suffix ||
         originalPersonData.dateOfBirth !== formData.dateOfBirth ||
-        originalPersonData.gender !== formData.gender;
+        originalPersonData.gender !== formData.biologicalSex;
       
       if (personDataChanged) {
         // Store the changes for use in confirmation
@@ -328,7 +353,7 @@ const NewCase = () => {
           last_name: formData.lastName,
           suffix: formData.suffix,
           date_of_birth: formData.dateOfBirth,
-          gender: formData.gender === 'Male' ? 'M' : formData.gender === 'Female' ? 'F' : null
+          gender: formData.biologicalSex === 'Male' ? 'M' : formData.biologicalSex === 'Female' ? 'F' : null
         });
         
         // Show confirmation modal
@@ -345,21 +370,198 @@ const NewCase = () => {
   const submitForm = async () => {
     console.log('Form submitted:', formData);
     
-    // Add API call here to submit the data
+    setLoading(true);
+    setError(null);
+    
     try {
       // If we have pending changes to a person, update them in the database
       if (pendingChanges) {
         await updatePersonInDatabase(pendingChanges);
+        
+        // After updating the person, create a new case associated with this person
+        const newCaseId = await createNewCase(pendingChanges.person_id);
+        
+        // Navigate to the case view page after saving
+        setCurrentCase(newCaseId);
+        navigate('/CaseGeneral');
+        return;
       }
       
-      // Continue with regular form submission
-      // ...your existing submission code...
+      // Create a new person
+      const newPersonId = await createNewPerson();
+      
+      // Create a new case associated with the new person
+      const newCaseId = await createNewCase(newPersonId);
       
       // Navigate to the case view page after saving
-      navigate('/');
+      setCurrentCase(newCaseId);
+      navigate('/CaseGeneral');
     } catch (error) {
       console.error('Error submitting form:', error);
-      // Handle error (show message to user, etc.)
+      setError('Failed to save data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to create a new person in the database
+  const createNewPerson = async () => {
+    // Validate required fields
+    if (!formData.lastName || !formData.firstName) {
+      throw new Error('Last name and first name are required');
+    }
+    
+    // Helper function to truncate strings to specified length
+    const truncate = (str, maxLength) => {
+      if (!str) return null;
+      return str.substring(0, maxLength);
+    };
+    
+    try {
+      // First, get a valid CAC ID from the database
+      const cacsResponse = await fetch('http://localhost:5000/api/agencies/cacs/all');
+      if (!cacsResponse.ok) {
+        throw new Error('Failed to fetch CACs list');
+      }
+      
+      const cacs = await cacsResponse.json();
+      if (!cacs || cacs.length === 0) {
+        throw new Error('No Child Advocacy Centers found in the database');
+      }
+      
+      // Use the first available CAC ID
+      const cacId = cacs[0].cac_id;
+      console.log('Using CAC ID:', cacId);
+      
+      // Prepare person data with proper string length constraints
+      const personData = {
+        cac_id: cacId,
+        first_name: truncate(formData.firstName, 256),
+        middle_name: truncate(formData.middleName, 256),
+        last_name: truncate(formData.lastName, 256),
+        suffix: truncate(formData.suffix, 256),
+        date_of_birth: formData.dateOfBirth || null,
+        gender: formData.biologicalSex === 'Male' ? 'M' : 
+                formData.biologicalSex === 'Female' ? 'F' : null,
+        language_id: null, // Would need to map from formData.language
+        race_id: null, // Would need to map from formData.race
+        religion_id: null, // Would need to map from formData.religion
+        prior_convictions: false,
+        convicted_against_children: false,
+        sex_offender: false,
+        sex_predator: false
+      };
+      
+      console.log('Person data to submit:', personData);
+      
+      // Create person in database
+      const newPerson = await peopleApi.createPerson(personData);
+      console.log('Created new person:', newPerson);
+      
+      return newPerson.person_id;
+    } catch (error) {
+      console.error('Error creating new person:', error);
+      throw error;
+    }
+  };
+
+  // Function to create a new case in the database
+  const createNewCase = async (personId) => {
+    // Validate required fields
+    if (!formData.dateReceivedByCac || !formData.reasonForReferral) {
+      throw new Error('Date received and reason for referral are required');
+    }
+    
+    // Format date for API in ISO-8601 DateTime format
+    const formatDateISO = (dateStr) => {
+      if (!dateStr) return null;
+      
+      // For strings that already include time component
+      if (dateStr.includes('T')) {
+        return dateStr;
+      }
+      
+      // For date strings without time, add the time component
+      // Format: YYYY-MM-DDT00:00:00.000Z
+      const date = new Date(dateStr);
+      return date.toISOString();
+    };
+    
+    try {
+      // First, get a valid CAC ID from the database
+      const cacsResponse = await fetch('http://localhost:5000/api/agencies/cacs/all');
+      if (!cacsResponse.ok) {
+        throw new Error('Failed to fetch CACs list');
+      }
+      
+      const cacs = await cacsResponse.json();
+      if (!cacs || cacs.length === 0) {
+        throw new Error('No Child Advocacy Centers found in the database');
+      }
+      
+      // Use the first available CAC ID
+      const cacId = cacs[0].cac_id;
+      console.log('Using CAC ID for case:', cacId);
+      
+      // Get the maximum case ID to generate the next one
+      const casesResponse = await fetch('http://localhost:5000/api/cases');
+      if (!casesResponse.ok) {
+        throw new Error('Failed to fetch cases');
+      }
+      
+      const cases = await casesResponse.json();
+      // Find the max case_id in the existing cases, or use 1 if no cases exist
+      const maxCaseId = cases.length > 0 
+        ? Math.max(...cases.map(c => c.case_id)) 
+        : 0;
+      const newCaseId = maxCaseId + 1;
+      console.log('Generated new case ID:', newCaseId);
+      
+      // Prepare case data with proper date formatting
+      const caseData = {
+        case_id: newCaseId,
+        cac_id: cacId,
+        cac_received_date: formatDateISO(formData.dateReceivedByCac),
+        case_number: `CASE-${Date.now()}`.substring(0, 20), // Limit to 20 chars
+        created_date: formatDateISO(new Date().toISOString()),
+      };
+      
+      console.log('Case data to submit:', caseData);
+      
+      // Create case in database
+      const newCase = await casesApi.createCase(caseData);
+      console.log('Created new case:', newCase);
+      
+      // Associate person with case
+      await peopleApi.associatePersonWithCase(personId, newCase.case_id, cacId);
+      
+      // Helper function to truncate strings to specified length
+      const truncate = (str, maxLength) => {
+        if (!str) return null;
+        return str.substring(0, maxLength);
+      };
+      
+      // Update case-person details if needed
+      const casePersonDetails = {
+        role_id: 1, // Assuming role 1 = victim, adjust as needed
+        relationship_id: null,
+        age: formData.ageAtReferral ? parseInt(formData.ageAtReferral) : null,
+        age_unit: truncate(formData.ageUnit, 20),
+        address_line_1: truncate(formData.addressLine1, 200),
+        address_line_2: truncate(formData.addressLine2, 200),
+        city: truncate(formData.city, 50),
+        state_abbr: truncate(formData.state, 2),
+        zip: truncate(formData.zip, 20),
+        same_household: false,
+        school_or_employer: truncate(formData.schoolOrEmployer, 200)
+      };
+      
+      await peopleApi.updateCasePersonDetails(personId, newCase.case_id, casePersonDetails);
+      
+      return newCase.case_id;
+    } catch (error) {
+      console.error('Error creating new case:', error);
+      throw error;
     }
   };
 
@@ -581,8 +783,16 @@ const NewCase = () => {
         variant="contained"
         color="primary"
         onClick={handleSubmit}
+        disabled={loading}
       >
-        Save and Open Case
+        {loading ? (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <CircularProgress size={24} sx={{ mr: 1 }} color="inherit" />
+            Saving...
+          </Box>
+        ) : (
+          "Save and Open Case"
+        )}
       </Button>
       <Button
         variant="outlined"
@@ -603,6 +813,12 @@ const NewCase = () => {
 
   return (
     <Container maxWidth="md">
+      {error && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {error}
+        </Alert>
+      )}
+      
       <Paper elevation={3} sx={{ p: 4, my: 4 }}>
         <Typography variant="h4" gutterBottom align="left">
           Personal Profile
@@ -678,9 +894,7 @@ const NewCase = () => {
                 variant="outlined"
               />
             </Grid>
-
-            {/* Rest of the form continues here - no changes to these fields */}
-            {/* Only including a few sections for brevity, in a real implementation all the form fields would remain */}
+            
             <Grid item xs={12} sm={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pr: 2 }}>
               <Typography variant="body1">SSN</Typography>
             </Grid>
