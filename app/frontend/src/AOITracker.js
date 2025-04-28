@@ -1,67 +1,84 @@
-import React, { useEffect } from 'react';
+// src/AOITracker.js
+import { useEffect, useMemo } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
-const AOITracker = () => {
-    useEffect(() => {
-        const handleMouseMove = (event) => {
-            const data = {
-                event_type: 'mousemove',
-                coordinates: { x: event.clientX, y: event.clientY },
-                mouse_click: false,
-                text_input: false,
-                text_activity: ''
-            };
-            sendEvent(data);
-        };
+const BASE = 'http://localhost:5001';
 
-        const handleClick = (event) => {
-            const data = {
-                event_type: 'click',
-                coordinates: { x: event.clientX, y: event.clientY },
-                mouse_click: true,
-                text_input: false,
-                text_activity: ''
-            };
-            sendEvent(data);
-        };
+export default function AOITracker() {
+  // Generate one session ID per mount
+  const sessionId = useMemo(() => uuidv4(), []);
 
-        const handleKeyDown = (event) => {
-            const data = {
-                event_type: 'keydown',
-                coordinates: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-                mouse_click: false,
-                text_input: true,
-                text_activity: event.key
-            };
-            sendEvent(data);
-        };
+  useEffect(() => {
+    let running = true;
+    const startTime = performance.now();
+    let lastX = 0,
+      lastY = 0;
 
-        const sendEvent = async (eventData) => {
-            try {
-                await fetch('http://127.0.0.1:5000/api/aoi_event', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(eventData),
-                });
-            } catch (error) {
-                console.error('Failed to send AOI event:', error);
-            }
-        };
+    // Get the AOI under the given point
+    const getAOI = (x, y) => {
+      const el = document.elementFromPoint(x, y);
+      return el?.getAttribute('data-aoi') || '';
+    };
 
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('click', handleClick);
-        window.addEventListener('keydown', handleKeyDown);
+    // POST helper — includes session_id
+    const sendEvent = async (body) => {
+      try {
+        await fetch(`${BASE}/api/aoi_event`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: sessionId, ...body }),
+        });
+      } catch (err) {
+        console.error('AOI log failed:', err);
+      }
+    };
 
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('click', handleClick);
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, []);
+    // Sample every 1s (1000ms) — change back to 10 for 10ms
+    const intervalId = setInterval(() => {
+      if (!running) return;
+      const now = performance.now();
+      const ms = Math.floor(now - startTime);
 
-    return <div>AOI Tracker Active. Move your mouse or type something!</div>;
-};
+      sendEvent({
+        timestamp_ms: ms,
+        coordinates: { x: lastX, y: lastY },
+        mouse_aoi: getAOI(lastX, lastY),
+        mouse_click: false,
+        event_type: 'sample',
+      });
+    }, 1000);
 
-export default AOITracker;
+    // Track latest mouse position
+    const handleMouseMove = (e) => {
+      lastX = e.clientX;
+      lastY = e.clientY;
+    };
+
+    // Immediate click logging
+    const handleClick = (e) => {
+      const now = performance.now();
+      const ms = Math.floor(now - startTime);
+
+      sendEvent({
+        timestamp_ms: ms,
+        coordinates: { x: e.clientX, y: e.clientY },
+        mouse_aoi: getAOI(e.clientX, e.clientY),
+        mouse_click: true,
+        event_type: 'click',
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
+
+    return () => {
+      running = false;
+      clearInterval(intervalId);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleClick);
+    };
+  }, [sessionId]);
+
+  return null;
+}
 
