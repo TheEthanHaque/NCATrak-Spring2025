@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import {
   Box,
   Typography,
@@ -18,20 +17,11 @@ import {
   CircularProgress,
   Alert,
   InputAdornment,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCase } from '../context/CaseContext';
 import { peopleApi } from '../services/api';
-import { picklistsApi } from '../services/api';
 
 const PeopleInterface = () => {
   const navigate = useNavigate();
@@ -47,15 +37,6 @@ const PeopleInterface = () => {
   // State for form fields
   const [allegedOffenderUnknown, setAllegedOffenderUnknown] = useState(false);
   const [offenderComments, setOffenderComments] = useState('');
-
-  // State for adding/editing people
-  const [raceOptions, setRaceOptions] = useState([]);
-  const [relationshipOptions, setRelationshipOptions] = useState([]);
-  const [educationOptions, setEducationOptions] = useState([]);
-
-  const [selectedRace, setSelectedRace] = useState('');
-  const [selectedRelationship, setSelectedRelationship] = useState('');
-  const [selectedEducation, setSelectedEducation] = useState('');
   
   // Fetch people associated with the current case
   useEffect(() => {
@@ -78,29 +59,6 @@ const PeopleInterface = () => {
     
     fetchPeople();
   }, [currentCase]);
-
-  // Pick list
-  useEffect(() => {
-    const fetchPickLists = async () => {
-      try {
-        const races = await picklistsApi.getRaceOptions();
-        const relationships = await picklistsApi.getRelationshipOptions();
-        const educationLevels = await picklistsApi.getEducationOptions();
-
-        console.log('Fetched Races:', races);
-        console.log('Fetched Relationships:', relationships);
-        console.log('Fetched Education Levels:', educationLevels);
-  
-        setRaceOptions(races);
-        setRelationshipOptions(relationships);
-        setEducationOptions(educationLevels);
-      } catch (error) {
-        console.error('Error fetching picklists:', error);
-      }
-    };
-  
-    fetchPickLists();
-  }, []);
   
   // Filter people based on search term
   useEffect(() => {
@@ -132,24 +90,9 @@ const PeopleInterface = () => {
   };
   
   // Handle edit person
-  const handleEditPerson = async (personId) => {
+  const handleEditPerson = (personId) => {
     console.log('Edit person:', personId);
-    
-    try {
-      const person = await peopleApi.getPersonById(personId);
-  
-      // Load current values into the form states
-      setSelectedRace(person.race || '');
-      setSelectedEducation(person.education_level || '');
-      setSelectedRelationship(person.relationship_to_victim || '');
-  
-      // Here you would also load other person fields into your form if you want (like name, age)
-      // Then allow the user to update and re-save
-    } catch (error) {
-      console.error('Error fetching person details:', error);
-      alert('Failed to load person details.');
-    }
-
+    // Implement edit functionality here
   };
   
   // Handle bio view
@@ -161,9 +104,7 @@ const PeopleInterface = () => {
   // Handle add person
   const handleAddPerson = () => {
     console.log('Add new person');
-    setSelectedRace('');
-    setSelectedEducation('');
-    setSelectedRelationship('');
+    // Implement add person functionality here
   };
   
   // Handle checkbox change
@@ -177,43 +118,10 @@ const PeopleInterface = () => {
   };
   
   // Handle save form
-  const handleSave = async (e) => {
+  const handleSave = (e) => {
     e.preventDefault();
-
-  try {
-    // Find the IDs based on the selected names
-    const raceId = raceOptions.find(r => r.name === selectedRace)?.id || null;
-    const educationId = educationOptions.find(e => e.name === selectedEducation)?.id || null;
-    const relationshipId = relationshipOptions.find(r => r.name === selectedRelationship)?.id || null;
-
-    // Build the person object
-    const newPerson = {
-      // Hardcoded basic fields for now
-      first_name: "Test",
-      last_name: "User",
-      date_of_birth: "2000-01-01",
-      gender: "Male",
-      cac_id: 1, // Dummy CAC ID — replace later if needed
-
-      race_id: raceId,
-      // NOTE: educationId and relationshipId would need their own handling
-      // right now your person table schema only cares about race_id
-    };
-
-    console.log('Saving person with data:', newPerson);
-
-    await peopleApi.createPerson(newPerson);
-
-    alert('Person saved successfully!');
-
-    // Optionally clear selections after save
-    setSelectedRace('');
-    setSelectedEducation('');
-    setSelectedRelationship('');
-  } catch (error) {
-    console.error('Error saving person:', error);
-    alert('Failed to save person.');
-  }
+    console.log('Form saved');
+    // Implement save functionality here
   };
   
   return (
@@ -335,57 +243,7 @@ const PeopleInterface = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            {/* New dropdowns for Race, Education Level, Relationship To Victim */}
-  <Box sx={{ mb: 3 }}>
-  <Typography variant="h6" gutterBottom sx={{ borderBottom: '1px solid #ddd', pb: 1 }}>
-    Additional Information
-  </Typography>
-
-  <FormControl fullWidth sx={{ mb: 2 }}>
-    <InputLabel id="race-label">Race</InputLabel>
-    <Select
-      labelId="race-label"
-      value={selectedRace}
-      onChange={(e) => setSelectedRace(e.target.value)}
-    >
-      {raceOptions.map((race) => (
-        <MenuItem key={race.id} value={race.name}>
-          {race.name}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
-
-  <FormControl fullWidth sx={{ mb: 2 }}>
-    <InputLabel id="education-label">Education Level</InputLabel>
-    <Select
-      labelId="education-label"
-      value={selectedEducation}
-      onChange={(e) => setSelectedEducation(e.target.value)}
-    >
-      {educationOptions.map((education) => (
-        <MenuItem key={education.id} value={education.name}>
-          {education.name}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
-
-  <FormControl fullWidth sx={{ mb: 2 }}>
-    <InputLabel id="relationship-label">Relationship To Victim</InputLabel>
-    <Select
-      labelId="relationship-label"
-      value={selectedRelationship}
-      onChange={(e) => setSelectedRelationship(e.target.value)}
-    >
-      {relationshipOptions.map((relationship) => (
-        <MenuItem key={relationship.id} value={relationship.name}>
-          {relationship.name}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
-</Box>
+            
             {/* Alleged Offender Unknown section */}
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>

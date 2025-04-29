@@ -380,3 +380,24 @@ model state_table {
 
   @@ignore
 }
+
+model Race {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@map("race")
+}
+
+model Relationship {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@map("relationship")
+}
+
+model EducationLevel {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@map("education_level")
+}

@@ -1,5 +1,5 @@
 // Base URL for API requests
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'http://localhost:5000';
 
 // Generic fetch wrapper with error handling
 async function fetchApi(endpoint, options = {}) {
@@ -445,19 +445,6 @@ export const victimAdvocacyApi = {
     });
   }
 };
-
-export const picklistsApi = {
-  getRaceOptions: () => {
-    return fetchApi('/api/picklists/races');
-  },
-  getRelationshipOptions: () => {
-    return fetchApi('/api/picklists/relationships');
-  },
-  getEducationOptions: () => {
-    return fetchApi('/api/picklists/education-levels');
-  }
-};
-
 
 // Export the combined API service
 const apiService = {

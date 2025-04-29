@@ -156,19 +156,21 @@ If you haven't yet, please read the [red]README.MD [blue]file in the home direct
         database_ini_path = os.path.join(cwd, "database", "database.ini")
         with open(database_ini_path, "w") as file:
             file.write("[postgresql]\n")
-            data = [Prompt.ask("[yellow]Enter the host\n"), Prompt.ask("[yellow]Enter the database name\n"),
-                    Prompt.ask("[yellow]Enter user name\n"),
-                    Prompt.ask("[yellow]Enter password\n")]
-            file.write(f"host={data[0]}\ndatabase={data[1]}\nuser={data[2]}\npassword={data[3]}")
+            data = {
+                "host": Prompt.ask("[yellow]Enter the host\n"), 
+                "database": Prompt.ask("[yellow]Enter the database name\n"),
+                "username": Prompt.ask("[yellow]Enter user name\n"),
+                "password": Prompt.ask("[yellow]Enter password\n")}
+            file.write(f"host={data['host']}\ndatabase={data['database']}\nuser={data['username']}\npassword={data['password']}")
         print("[green]Database.ini file has been created.")
         env_file_path = os.path.join(cwd, "api", ".env")
         with open(env_file_path, "w") as env_file:
-            env_file.write(f'DATABASE_URL="postgresql://{data[2]}:{data[3]}@{data[0]}:5432/{data[1]}?schema=public"')
+            env_file.write(f'DATABASE_URL="postgresql://{data['username']}:{data['password']}@{data['host']}:5432/{data['database']}?schema=public"')
         print("[green].env file has been created.")
-        create_database(data)
-        print(f"[green]The database \"{data[1]}\" has been created.")
-        create_user(data)
-        print(f"[green]The user \"{data[2]}\" has been created for the database \"{data[1]}\".")
+        create_database([data["host"], data["database"], data["username"], data["password"]])
+        print(f"[green]The database \"{data['database']}\" has been created.")
+        create_user([data["host"], data["database"], data["username"], data["password"]])
+        print(f"[green]The user \"{data['username']}\" has been created for the database \"{data['database']}\".")
         create_tables()
         print("[green]Database tables created.")
         run_generator_menu()

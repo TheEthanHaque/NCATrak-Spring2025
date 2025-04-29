@@ -12,7 +12,10 @@ from database.config import load_config
 from database.connect import connect
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}},
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     supports_credentials=True)
 
 # In-memory storage for AOI events (for testing purposes)
 aoi_events = []

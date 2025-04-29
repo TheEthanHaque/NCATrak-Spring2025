@@ -1,0 +1,129 @@
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.subtitle {
+  color: #666;
+  margin-top: 10px;
+}
+
+/* Button Group */
+.button-group {
+  margin-bottom: 20px;
+}
+
+.add-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.add-button:hover {
+  background-color: #0056b3;
+}
+
+/* Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.data-table th {
+  background: #f4f4f4;
+}
+
+/* Uploaded Documents Section */
+.uploaded-documents {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+.documents-title {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* Documents Grid */
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
+}
+
+.grid-header {
+  display: contents;
+  font-weight: bold;
+  background-color: #f4f4f4;
+  padding: 10px 0;
+}
+
+.grid-header span {
+  display: block;
+}
+
+/* No Items Message */
+.no-items {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 15px;
+  color: #777;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Select Files Button */
+.select-files-button {
+  grid-column: 1 / -1;
+  padding: 10px 15px;
+  margin-top: 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.select-files-button:hover {
+  background-color: #0056b3;
+}
+
+/* File Size Info and Storage Warning */
+.file-size-info,
+.storage-warning {
+  grid-column: 1 / -1;
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 10px;
+}
