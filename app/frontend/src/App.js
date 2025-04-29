@@ -192,6 +192,7 @@ const AppLayout = () => {
 
           {/* Add the new PersonBio route */}
           <Route path="/PersonBio" element={<PersonBio />} />
+          <Route path="/PersonBio/:personId" element={<PersonBio />} />
           
           {/* Legacy routes - can be accessed directly but not from navigation */}
           <Route path="/case-notes" element={<CaseNotes />} />

@@ -75,6 +75,13 @@ export const peopleApi = {
   getPersonById: (personId) => {
     return fetchApi(`/api/people/${personId}`);
   },
+
+  updatePerson: (personId, personData) => {
+    return fetchApi(`/api/people/${personId}`, {
+      method: 'PUT',
+      body: JSON.stringify(personData)
+    });
+  },
   
   // Get people associated with a case
   getPeopleByCaseId: (caseId) => {
