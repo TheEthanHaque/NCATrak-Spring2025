@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation,} from 'react-router-dom';
 import AOIEventViewer from './AOIEventViewer';
 import GeneralTab from './components/GeneralTab';  
 import MHBasicInterface from './components/MHBasicInterface';  
@@ -13,9 +13,9 @@ import Lookup from './components/Lookup';
 import MHSection from './components/MHSection';
 import NewCase from './components/NewCase';
 import PersonBio from './components/PersonBio';
-// Import Admin components 
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminPlaceholder from './components/admin/AdminPlaceholder';
+import PickLists from './components/admin/PickLists';
 import { 
   AppBar, 
   Toolbar, 
@@ -204,7 +204,7 @@ const AppLayout = () => {
           <Route path="/admin/cac-setup" element={<AdminPlaceholder title="CAC/MDT Setup" />} />
           <Route path="/admin/add-names" element={<AdminPlaceholder title="Add Names" />} />
           <Route path="/admin/data-fields" element={<AdminPlaceholder title="Data Entry Fields" />} />
-          <Route path="/admin/pick-lists" element={<AdminPlaceholder title="Pick Lists" />} />
+          <Route path="/admin/pick-lists" element={<PickLists />} />
           <Route path="/admin/agencies" element={<AdminPlaceholder title="Agencies" />} />
           <Route path="/admin/personnel" element={<AdminPlaceholder title="Personnel" />} />
           <Route path="/admin/roles" element={<AdminPlaceholder title="Roles" />} />
