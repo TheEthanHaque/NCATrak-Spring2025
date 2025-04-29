@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import AOIEventViewer from './AOIEventViewer';
 import GeneralTab from './components/GeneralTab';  
 import MHBasicInterface from './components/MHBasicInterface';  
@@ -13,6 +13,9 @@ import Lookup from './components/Lookup';
 import MHSection from './components/MHSection';
 import NewCase from './components/NewCase';
 import PersonBio from './components/PersonBio';
+// Import Admin components 
+import AdminDashboard from './components/admin/AdminDashboard';
+import AdminPlaceholder from './components/admin/AdminPlaceholder';
 import { 
   AppBar, 
   Toolbar, 
@@ -38,6 +41,7 @@ const AppLayout = () => {
   const location = useLocation();
   const isNewCasePage = location.pathname === '/NewCase';
   const isSearchPage = location.pathname === '/SearchCase';
+  const isAdminPage = location.pathname.startsWith('/admin');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -57,7 +61,8 @@ const AppLayout = () => {
     { title: "VA", path: "/CaseVA" },
     { title: "Prosecution", path: "/CaseProsecution" },
     { title: "Report", path: "/CaseReport" },
-    { title: "Case Attachments", path: "/CaseAttachments" }
+    { title: "Case Attachments", path: "/CaseAttachments" },
+    { title: "Admin", path: "/admin" } // Added Admin link
   ];
 
   const toggleDrawer = (open) => (event) => {
@@ -97,7 +102,7 @@ const AppLayout = () => {
         <Toolbar>
           <Typography variant="h5" sx={{ flexGrow: 0, mr: 3 }}>NCATrak Spring 2025</Typography>
           
-          <CaseSelector />
+          {!isAdminPage && <CaseSelector />}
           
           {isMobile ? (
             <>
@@ -161,8 +166,8 @@ const AppLayout = () => {
 
       {/* Main Content */}
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        {/* When not to show new case info*/}
-        {!isNewCasePage && !isSearchPage && <CurrentCaseInfo />}
+        {/* When not to show case info */}
+        {!isNewCasePage && !isSearchPage && !isAdminPage && <CurrentCaseInfo />}
 
         {/* Routes */}
         <Routes>
@@ -193,6 +198,18 @@ const AppLayout = () => {
           {/* Add the new PersonBio route */}
           <Route path="/PersonBio" element={<PersonBio />} />
           <Route path="/PersonBio/:personId" element={<PersonBio />} />
+          
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/cac-setup" element={<AdminPlaceholder title="CAC/MDT Setup" />} />
+          <Route path="/admin/add-names" element={<AdminPlaceholder title="Add Names" />} />
+          <Route path="/admin/data-fields" element={<AdminPlaceholder title="Data Entry Fields" />} />
+          <Route path="/admin/pick-lists" element={<AdminPlaceholder title="Pick Lists" />} />
+          <Route path="/admin/agencies" element={<AdminPlaceholder title="Agencies" />} />
+          <Route path="/admin/personnel" element={<AdminPlaceholder title="Personnel" />} />
+          <Route path="/admin/roles" element={<AdminPlaceholder title="Roles" />} />
+          <Route path="/admin/news" element={<AdminPlaceholder title="News" />} />
+          <Route path="/admin/logs" element={<AdminPlaceholder title="Logs" />} />
           
           {/* Legacy routes - can be accessed directly but not from navigation */}
           <Route path="/case-notes" element={<CaseNotes />} />
