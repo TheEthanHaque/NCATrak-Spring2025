@@ -89,12 +89,6 @@ const PeopleInterface = () => {
     setSearchTerm(e.target.value);
   };
   
-  // Handle edit person
-  const handleEditPerson = (personId) => {
-    console.log('Edit person:', personId);
-    // Implement edit functionality here
-  };
-  
   // Handle bio view
   const handleViewBio = (personId) => {
     console.log('View bio for person:', personId);
@@ -200,7 +194,7 @@ const PeopleInterface = () => {
                             <Button
                               variant="contained"
                               size="small"
-                              onClick={() => handleEditPerson(person.person_id)}
+                              onClick={() => handleViewBio(person.person_id)}
                               sx={{ minWidth: 'auto' }}
                             >
                               Edit
