@@ -1,84 +1,99 @@
 // src/AOITracker.js
-import { useEffect, useMemo } from 'react';
+import { useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 const BASE = 'http://localhost:5001';
 
 export default function AOITracker() {
-  // Generate one session ID per mount
-  const sessionId = useMemo(() => uuidv4(), []);
+  const sessionIdRef = useRef(uuidv4());
+  const lastXRef = useRef(0);
+  const lastYRef = useRef(0);
 
   useEffect(() => {
-    let running = true;
-    const startTime = performance.now();
-    let lastX = 0,
-      lastY = 0;
-
-    // Get the AOI under the given point
+    // helper to get AOI
     const getAOI = (x, y) => {
       const el = document.elementFromPoint(x, y);
       return el?.getAttribute('data-aoi') || '';
     };
 
-    // POST helper — includes session_id
+    // universal event sender
     const sendEvent = async (body) => {
       try {
         await fetch(`${BASE}/api/aoi_event`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ session_id: sessionId, ...body }),
+          body: JSON.stringify({
+            session_id: sessionIdRef.current,
+            ...body,
+            timestamp_iso: new Date().toISOString(),
+          }),
         });
       } catch (err) {
         console.error('AOI log failed:', err);
       }
     };
 
-    // Sample every 1s (1000ms) — change back to 10 for 10ms
+    // periodic sampling every 1s
     const intervalId = setInterval(() => {
-      if (!running) return;
-      const now = performance.now();
-      const ms = Math.floor(now - startTime);
-
       sendEvent({
-        timestamp_ms: ms,
-        coordinates: { x: lastX, y: lastY },
-        mouse_aoi: getAOI(lastX, lastY),
-        mouse_click: false,
         event_type: 'sample',
+        coordinates: { x: lastXRef.current, y: lastYRef.current },
+        mouse_click: false,
+        mouse_aoi: getAOI(lastXRef.current, lastYRef.current),
+        text_input: false,
+        text_activity: '',
+        targetId: '',
+        description: '',
       });
     }, 1000);
 
-    // Track latest mouse position
+    // track mouse movements
     const handleMouseMove = (e) => {
-      lastX = e.clientX;
-      lastY = e.clientY;
+      lastXRef.current = e.clientX;
+      lastYRef.current = e.clientY;
     };
 
-    // Immediate click logging
+    // track clicks
     const handleClick = (e) => {
-      const now = performance.now();
-      const ms = Math.floor(now - startTime);
-
       sendEvent({
-        timestamp_ms: ms,
-        coordinates: { x: e.clientX, y: e.clientY },
-        mouse_aoi: getAOI(e.clientX, e.clientY),
-        mouse_click: true,
         event_type: 'click',
+        coordinates: { x: e.clientX, y: e.clientY },
+        mouse_click: true,
+        mouse_aoi: getAOI(e.clientX, e.clientY),
+        text_input: false,
+        text_activity: '',
+        targetId: '',
+        description: '',
       });
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('click', handleClick);
 
+    // handle session end on unload
+    const onUnload = () => {
+      clearInterval(intervalId);
+      sendEvent({
+        event_type: 'session_end',
+        coordinates: { x: lastXRef.current, y: lastYRef.current },
+        mouse_click: false,
+        mouse_aoi: getAOI(lastXRef.current, lastYRef.current),
+        text_input: false,
+        text_activity: '',
+        targetId: '',
+        description: '',
+      });
+    };
+    window.addEventListener('beforeunload', onUnload);
+
+    // cleanup on unmount or HMR
     return () => {
-      running = false;
       clearInterval(intervalId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('click', handleClick);
+      window.removeEventListener('beforeunload', onUnload);
     };
-  }, [sessionId]);
+  }, []);
 
   return null;
 }
-

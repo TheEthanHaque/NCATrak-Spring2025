@@ -15,17 +15,17 @@ import Lookup from './components/Lookup';
 import MHSection from './components/MHSection';
 import NewCase from './components/NewCase';
 import PersonBio from './components/PersonBio';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
-  Container, 
-  Box, 
-  IconButton, 
-  Drawer, 
-  List, 
-  ListItem, 
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+  Box,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
   ListItemText,
   useMediaQuery,
   useTheme,
@@ -78,10 +78,10 @@ const AppLayout = () => {
     >
       <List>
         {navLinks.map((link) => (
-          <ListItem 
-            button 
-            component={Link} 
-            to={link.path} 
+          <ListItem
+            button
+            component={Link}
+            to={link.path}
             key={link.title}
             selected={location.pathname === link.path}
           >
@@ -100,9 +100,9 @@ const AppLayout = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h5" sx={{ flexGrow: 0, mr: 3 }}>NCATrak Spring 2025</Typography>
-          
+
           <CaseSelector />
-          
+
           {isMobile ? (
             <>
               <IconButton
@@ -123,10 +123,10 @@ const AppLayout = () => {
               </Drawer>
             </>
           ) : (
-            <Box 
-              sx={{ 
-                flexGrow: 1, 
-                display: 'flex', 
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
                 overflowX: 'auto',
                 '&::-webkit-scrollbar': {
                   height: '8px',
@@ -141,12 +141,12 @@ const AppLayout = () => {
               }}
             >
               {navLinks.map((link) => (
-                <Button 
+                <Button
                   key={link.title}
-                  color="inherit" 
-                  component={Link} 
+                  color="inherit"
+                  component={Link}
                   to={link.path}
-                  sx={{ 
+                  sx={{
                     whiteSpace: 'nowrap',
                     minWidth: 'auto',
                     px: 1.5,
@@ -191,10 +191,10 @@ const AppLayout = () => {
 
           {/* Add the new PersonBio route */}
           <Route path="/PersonBio" element={<PersonBio />} />
-          
-          {/* Legacy routes - can be accessed directly but not from navigation */}
+
+          {/* Legacy routes */}
           <Route path="/case-notes" element={<CaseNotes />} />
-          <Route path="/lookup" element={<Lookup />} />  
+          <Route path="/lookup" element={<Lookup />} />
           <Route path="/assessment" element={<AssessmentInterface />} />
           <Route path="/mh-assessment" element={<MHAssessment />} />
           <Route path="/treatment" element={<TreatmentPlan />} />
@@ -209,7 +209,7 @@ const AppLayout = () => {
 
 const CurrentCaseInfo = () => {
   const { currentCase, cases, loading, error } = useCase();
-  
+
   if (loading) {
     return (
       <Box sx={{ textAlign: 'center', mb: 4, p: 3, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -218,7 +218,7 @@ const CurrentCaseInfo = () => {
       </Box>
     );
   }
-  
+
   if (error) {
     return (
       <Box sx={{ textAlign: 'center', mb: 4, p: 3, backgroundColor: '#ffeded', borderRadius: 2, boxShadow: 1 }}>
@@ -227,9 +227,9 @@ const CurrentCaseInfo = () => {
       </Box>
     );
   }
-  
+
   const selectedCase = cases.find(c => c.id === currentCase);
-  
+
   if (!selectedCase) {
     return (
       <Box sx={{ textAlign: 'center', mb: 4, p: 3, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: 1 }}>
@@ -238,7 +238,7 @@ const CurrentCaseInfo = () => {
       </Box>
     );
   }
-  
+
   return (
     <Box
       sx={{
@@ -263,3 +263,16 @@ const CurrentCaseInfo = () => {
     </Box>
   );
 };
+
+// Wrap the layout in Router and CaseProvider, then export
+function App() {
+  return (
+    <CaseProvider>
+      <Router>
+        <AppLayout />
+      </Router>
+    </CaseProvider>
+  );
+}
+
+export default App;
