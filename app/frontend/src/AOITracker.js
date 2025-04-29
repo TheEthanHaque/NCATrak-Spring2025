@@ -40,18 +40,22 @@ export default function AOITracker() {
     // unified sender
     const sendEvent = async ({
       eventType,
-      isClick    = false,
-      textInput  = false,
-      activity   = '',
-      targetId   = '',
-      description= ''
+      isClick     = false,
+      textInput   = false,
+      activity    = '',
+      targetId    = '',
+      description = ''
     }) => {
-      const now = new Date().toISOString();
-      const m = mouse.current, g = gaze.current;
+      const now  = new Date().toISOString();
+      const m    = mouse.current;
+      const g    = gaze.current;
+      const page = window.location.pathname;
+
       const payload = {
         session_id:    sessionId.current,
         event_type:    eventType,
         timestamp_iso: now,
+        page,                           // ← added page/tab identifier
         coordinates:   { x: m.x, y: m.y },
         mouse_aoi:     m.aoi,
         mouse_click:   isClick,
@@ -65,6 +69,7 @@ export default function AOITracker() {
         right_eye_x:   g.rightX,
         right_eye_y:   g.rightY
       };
+
       try {
         await fetch(`${BASE}/api/aoi_event`, {
           method: 'POST',
@@ -86,13 +91,13 @@ export default function AOITracker() {
     };
     const onClick = e => {
       onMouseMove(e);
-      sendEvent({ eventType:'click', isClick:true });
+      sendEvent({ eventType: 'click', isClick: true });
     };
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('click',    onClick);
 
     // 1s sampler
-    const intervalId = setInterval(() => sendEvent({ eventType:'sample' }), 1000);
+    const intervalId = setInterval(() => sendEvent({ eventType: 'sample' }), 1000);
 
     // ** new: text-input listener **
     const onInput = e => {
@@ -117,7 +122,10 @@ export default function AOITracker() {
       wg.pause();
     };
     window.addEventListener('beforeunload', cleanup);
-    return () => { cleanup(); window.removeEventListener('beforeunload', cleanup); };
+    return () => {
+      cleanup();
+      window.removeEventListener('beforeunload', cleanup);
+    };
   }, []);
 
   return null;

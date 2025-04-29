@@ -1,3 +1,4 @@
+// src/components/PeopleInterface.js
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -92,7 +93,6 @@ const PeopleInterface = () => {
   // Handle edit person
   const handleEditPerson = (personId) => {
     console.log('Edit person:', personId);
-    // Implement edit functionality here
   };
   
   // Handle bio view
@@ -104,7 +104,6 @@ const PeopleInterface = () => {
   // Handle add person
   const handleAddPerson = () => {
     console.log('Add new person');
-    // Implement add person functionality here
   };
   
   // Handle checkbox change
@@ -121,24 +120,34 @@ const PeopleInterface = () => {
   const handleSave = (e) => {
     e.preventDefault();
     console.log('Form saved');
-    // Implement save functionality here
   };
   
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} sx={{ p: 4, my: 4 }}>
-        <Typography variant="h4" gutterBottom align="center">
+    <Container maxWidth="md" data-aoi="People Interface Container">
+      <Paper elevation={3} sx={{ p: 4, my: 4 }} data-aoi="People Paper">
+        <Typography 
+          variant="h4" 
+          gutterBottom 
+          align="center" 
+          data-aoi="People Header"
+        >
           People Associated with Case
         </Typography>
         
-        <Box component="form" onSubmit={handleSave} sx={{ mt: 3 }}>
+        <Box 
+          component="form" 
+          onSubmit={handleSave} 
+          sx={{ mt: 3 }} 
+          data-aoi="People Form"
+        >
           {/* People Table Section */}
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: 4 }} data-aoi="People Table Section">
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
               <Button 
                 variant="contained" 
                 color="primary"
                 onClick={handleAddPerson}
+                data-aoi="Add Person Button"
               >
                 Add
               </Button>
@@ -153,52 +162,56 @@ const PeopleInterface = () => {
                     <InputAdornment position="start">
                       <SearchIcon />
                     </InputAdornment>
-                  )
+                  ),
+                  inputProps: {
+                    'data-aoi': 'Search People Input'
+                  }
                 }}
                 sx={{ width: '300px' }}
               />
             </Box>
             
             {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error" sx={{ mb: 2 }} data-aoi="People Error Alert">
                 {error}
               </Alert>
             )}
             
-            <TableContainer component={Paper} sx={{ mb: 3 }}>
-              <Table sx={{ minWidth: 650 }} size="small">
+            <TableContainer component={Paper} sx={{ mb: 3 }} data-aoi="People Table Container">
+              <Table sx={{ minWidth: 650 }} size="small" data-aoi="People Table">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                    <TableCell>Action</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Age</TableCell>
-                    <TableCell>Date of Birth</TableCell>
-                    <TableCell>Role</TableCell>
-                    <TableCell>Relationship To Victim</TableCell>
-                    <TableCell>Same Household</TableCell>
-                    <TableCell>Custody</TableCell>
+                    <TableCell data-aoi="Table Header Action">Action</TableCell>
+                    <TableCell data-aoi="Table Header Name">Name</TableCell>
+                    <TableCell data-aoi="Table Header Age">Age</TableCell>
+                    <TableCell data-aoi="Table Header DOB">Date of Birth</TableCell>
+                    <TableCell data-aoi="Table Header Role">Role</TableCell>
+                    <TableCell data-aoi="Table Header Relationship">Relationship To Victim</TableCell>
+                    <TableCell data-aoi="Table Header Household">Same Household</TableCell>
+                    <TableCell data-aoi="Table Header Custody">Custody</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {loading ? (
                     <TableRow>
                       <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
-                        <CircularProgress size={30} />
-                        <Typography variant="body2" sx={{ mt: 1 }}>
+                        <CircularProgress size={30} data-aoi="People Loading Spinner" />
+                        <Typography variant="body2" sx={{ mt: 1 }} data-aoi="People Loading Text">
                           Loading people...
                         </Typography>
                       </TableCell>
                     </TableRow>
                   ) : filteredPeople.length > 0 ? (
                     filteredPeople.map((person) => (
-                      <TableRow key={person.person_id} hover>
-                        <TableCell>
+                      <TableRow key={person.person_id} hover data-aoi="Person Row">
+                        <TableCell data-aoi="Person Actions">
                           <Box sx={{ display: 'flex', gap: 1 }}>
                             <Button
                               variant="contained"
                               size="small"
                               onClick={() => handleEditPerson(person.person_id)}
                               sx={{ minWidth: 'auto' }}
+                              data-aoi="Edit Person Button"
                             >
                               Edit
                             </Button>
@@ -207,24 +220,25 @@ const PeopleInterface = () => {
                               size="small"
                               onClick={() => handleViewBio(person.person_id)}
                               sx={{ minWidth: 'auto' }}
+                              data-aoi="View Bio Button"
                             >
                               Bio
                             </Button>
                           </Box>
                         </TableCell>
-                        <TableCell>{person.name}</TableCell>
-                        <TableCell>{person.age || ''}</TableCell>
-                        <TableCell>{formatDate(person.date_of_birth)}</TableCell>
-                        <TableCell>{person.role || ''}</TableCell>
-                        <TableCell>{person.relationship_id || ''}</TableCell>
-                        <TableCell align="center">
+                        <TableCell data-aoi="Person Name">{person.name}</TableCell>
+                        <TableCell data-aoi="Person Age">{person.age || ''}</TableCell>
+                        <TableCell data-aoi="Person DOB">{formatDate(person.date_of_birth)}</TableCell>
+                        <TableCell data-aoi="Person Role">{person.role || ''}</TableCell>
+                        <TableCell data-aoi="Person Relationship">{person.relationship_id || ''}</TableCell>
+                        <TableCell align="center" data-aoi="Person Same Household">
                           <Checkbox 
                             checked={Boolean(person.same_household)}
                             disabled
                             size="small"
                           />
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" data-aoi="Person Custody">
                           <Checkbox 
                             checked={Boolean(person.custody)}
                             disabled
@@ -235,7 +249,7 @@ const PeopleInterface = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={8} align="center" sx={{ py: 2 }}>
+                      <TableCell colSpan={8} align="center" sx={{ py: 2 }} data-aoi="No People Row">
                         {searchTerm ? 'No matching people found' : 'No people associated with this case'}
                       </TableCell>
                     </TableRow>
@@ -245,18 +259,21 @@ const PeopleInterface = () => {
             </TableContainer>
             
             {/* Alleged Offender Unknown section */}
-            <Box sx={{ mb: 3 }}>
+            <Box sx={{ mb: 3 }} data-aoi="Alleged Offender Section">
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Checkbox
                   checked={allegedOffenderUnknown}
                   onChange={handleCheckboxChange}
                   id="allegedOffenderUnknown"
                   name="allegedOffenderUnknown"
+                  data-aoi="Alleged Offender Unknown Checkbox"
                 />
-                <Typography>Alleged Offender Name Unknown</Typography>
+                <Typography data-aoi="Alleged Offender Unknown Label">
+                  Alleged Offender Name Unknown
+                </Typography>
               </Box>
               
-              <Typography variant="body1" sx={{ mb: 1 }}>
+              <Typography variant="body1" sx={{ mb: 1 }} data-aoi="Alleged Offender Comments Label">
                 Alleged Offender Unknown Comments
               </Typography>
               <TextField
@@ -266,30 +283,36 @@ const PeopleInterface = () => {
                 value={offenderComments}
                 onChange={handleCommentsChange}
                 variant="outlined"
+                inputProps={{ 'data-aoi': 'Alleged Offender Comments Input' }}
               />
             </Box>
           </Box>
           
           {/* Document Upload Section */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom sx={{ borderBottom: '1px solid #ddd', pb: 1 }}>
+          <Box sx={{ mb: 4 }} data-aoi="Document Upload Section">
+            <Typography 
+              variant="h6" 
+              gutterBottom 
+              sx={{ borderBottom: '1px solid #ddd', pb: 1 }}
+              data-aoi="Document Upload Header"
+            >
               Document Upload
             </Typography>
             
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} data-aoi="Document Upload Table">
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                    <TableCell>File Name</TableCell>
-                    <TableCell>Upload Date</TableCell>
-                    <TableCell>User</TableCell>
-                    <TableCell>Page</TableCell>
-                    <TableCell>Size</TableCell>
+                    <TableCell data-aoi="Upload Table Header File Name">File Name</TableCell>
+                    <TableCell data-aoi="Upload Table Header Upload Date">Upload Date</TableCell>
+                    <TableCell data-aoi="Upload Table Header User">User</TableCell>
+                    <TableCell data-aoi="Upload Table Header Page">Page</TableCell>
+                    <TableCell data-aoi="Upload Table Header Size">Size</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   <TableRow>
-                    <TableCell colSpan={5} align="center" sx={{ py: 2 }}>
+                    <TableCell colSpan={5} align="center" sx={{ py: 2 }} data-aoi="No Documents Row">
                       No items to display
                     </TableCell>
                   </TableRow>
@@ -299,13 +322,14 @@ const PeopleInterface = () => {
           </Box>
           
           {/* Form Buttons */}
-          <Grid container justifyContent="flex-end" spacing={2}>
+          <Grid container justifyContent="flex-end" spacing={2} data-aoi="Form Buttons Section">
             <Grid item>
               <Button 
                 type="submit" 
                 variant="contained" 
                 color="primary"
                 sx={{ px: 4 }}
+                data-aoi="Save Button"
               >
                 SAVE
               </Button>
@@ -316,6 +340,7 @@ const PeopleInterface = () => {
                 color="error"
                 onClick={() => navigate('/')}
                 sx={{ px: 4 }}
+                data-aoi="Cancel Button"
               >
                 CANCEL
               </Button>

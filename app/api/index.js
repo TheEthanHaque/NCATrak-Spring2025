@@ -34,22 +34,19 @@ const ts =
 const fileName = `${ts}.csv`;
 const logFilePath = path.join(logDir, fileName);
 
-// Write header (including text‐input columns)
+// Header: now includes 'page'
 const header = [
   'timestamp_iso',
+  'page',
   'mouse_x',
   'mouse_y',
   'mouse_aoi',
   'mouse_click',
-  'text_input',
-  'text_activity',
-  'targetId',
-  'description',
   'eye_aoi',
   'left_eye_x',
   'left_eye_y',
   'right_eye_x',
-  'right_eye_y'
+  'right_eye_y',
 ].join(',') + '\n';
 
 fs.writeFileSync(logFilePath, header);
@@ -69,7 +66,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// your existing routes
+// existing routes...
 app.use('/api/cases', casesRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/agencies', agenciesRouter);
@@ -81,60 +78,46 @@ app.use('/api/case-search', caseSearchRoutes);
 // AOI / eye-tracking endpoint
 app.post('/api/aoi_event', async (req, res) => {
   try {
-    // pull both styles of coordinates & AOI
     const {
       session_id,
       event_type,
-      timestamp_iso = '',
-      x: xFromBody,
-      y: yFromBody,
-      mouse_aoi: mouseAoiFromBody,
-      aoi: aoiFromBody,
-      mouse_click = false,
-      text_input = false,
-      text_activity = '',
-      targetId = '',
-      description = '',
-      eye_aoi = '',
-      left_eye_x = '',
-      left_eye_y = '',
-      right_eye_x = '',
-      right_eye_y = '',
-      coordinates = {}
+      page           = '',
+      timestamp_iso  = '',
+      coordinates    = {},
+      mouse_aoi      = '',
+      mouse_click    = false,
+      eye_aoi        = '',
+      left_eye_x     = '',
+      left_eye_y     = '',
+      right_eye_x    = '',
+      right_eye_y    = '',
     } = req.body;
 
     if (!ENABLE_AOI_LOGGING || !session_id) {
       return res.status(200).json({ message: 'Logging disabled or missing session_id' });
     }
+
     if (event_type === 'session_end') {
       console.log(`Session ${session_id} ended.`);
       return res.json({ message: 'Session ended' });
     }
 
-    // pick x/y from top‐level or coordinates
-    const x = xFromBody ?? coordinates.x ?? '';
-    const y = yFromBody ?? coordinates.y ?? '';
-
-    // pick mouse_aoi from either property
-    const mouse_aoi = (mouseAoiFromBody ?? aoiFromBody ?? '').replace(/,/g, ';');
+    const x = coordinates.x ?? '';
+    const y = coordinates.y ?? '';
     const esc = (s) => String(s).replace(/,/g, ';');
 
-    // build CSV line
     const line = [
       timestamp_iso,
+      `"${esc(page)}"`,     // write page
       x,
       y,
-      `"${mouse_aoi}"`,
+      `"${esc(mouse_aoi)}"`,
       mouse_click,
-      text_input,
-      `"${esc(text_activity)}"`,
-      `"${esc(targetId)}"`,
-      `"${esc(description)}"`,
       `"${esc(eye_aoi)}"`,
       left_eye_x,
       left_eye_y,
       right_eye_x,
-      right_eye_y,
+      right_eye_y
     ].join(',') + '\n';
 
     fs.appendFile(logFilePath, line, (err) => {
