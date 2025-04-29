@@ -15,6 +15,7 @@ import Lookup from './components/Lookup';
 import MHSection from './components/MHSection';
 import NewCase from './components/NewCase';
 import PersonBio from './components/PersonBio';
+import SearchPerson from './components/SearchPerson';
 import {
   AppBar,
   Toolbar,
@@ -34,7 +35,6 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import CaseSelector from './context/CaseSelector';
 import { CaseProvider, useCase } from './context/CaseContext';
-import SearchPerson from './components/SearchPerson';
 
 const AppLayout = () => {
   const location = useLocation();
@@ -94,11 +94,14 @@ const AppLayout = () => {
 
   return (
     <>
-      <AOITracker /> {/* ← mouse */}
+      <AOITracker /> {/* ← mouse + eye tracking */}
+
       {/* Header */}
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h5" sx={{ flexGrow: 0, mr: 3 }}>NCATrak Spring 2025</Typography>
+          <Typography variant="h5" sx={{ flexGrow: 0, mr: 3 }}>
+            NCATrak Spring 2025
+          </Typography>
 
           <CaseSelector />
 
@@ -113,11 +116,7 @@ const AppLayout = () => {
               >
                 <MenuIcon />
               </IconButton>
-              <Drawer
-                anchor="right"
-                open={drawerOpen}
-                onClose={toggleDrawer(false)}
-              >
+              <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
                 <DrawerList />
               </Drawer>
             </>
@@ -127,16 +126,9 @@ const AppLayout = () => {
                 flexGrow: 1,
                 display: 'flex',
                 overflowX: 'auto',
-                '&::-webkit-scrollbar': {
-                  height: '8px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                  borderRadius: '4px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                }
+                '&::-webkit-scrollbar': { height: '8px' },
+                '&::-webkit-scrollbar-thumb': { backgroundColor: 'rgba(255,255,255,0.3)', borderRadius: '4px' },
+                '&::-webkit-scrollbar-track': { backgroundColor: 'rgba(255,255,255,0.1)' }
               }}
             >
               {navLinks.map((link) => (
@@ -149,9 +141,7 @@ const AppLayout = () => {
                     whiteSpace: 'nowrap',
                     minWidth: 'auto',
                     px: 1.5,
-                    '&.active': {
-                      bgcolor: 'rgba(255, 255, 255, 0.2)'
-                    }
+                    '&.active': { bgcolor: 'rgba(255,255,255,0.2)' }
                   }}
                 >
                   {link.title}
@@ -164,9 +154,8 @@ const AppLayout = () => {
 
       {/* Main Content */}
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        {/* When not to show new case info*/}
+        {/* Only one render now */}
         {!isNewCasePage && !isSearchPage && <CurrentCaseInfo />}
-        {!isNewCasePage && <CurrentCaseInfo />}
 
         <Routes>
           <Route path="/" element={<Typography variant="h6">Home: NCATrak Spring 2025!</Typography>} />
@@ -188,7 +177,7 @@ const AppLayout = () => {
           {/* Search Case Route */}
           <Route path="/SearchCase" element={<SearchPerson />} />
 
-          {/* Add the new PersonBio route */}
+          {/* Person Bio */}
           <Route path="/PersonBio" element={<PersonBio />} />
 
           {/* Legacy routes */}
@@ -211,7 +200,19 @@ const CurrentCaseInfo = () => {
 
   if (loading) {
     return (
-      <Box sx={{ textAlign: 'center', mb: 4, p: 3, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box
+        sx={{
+          textAlign: 'center',
+          mb: 4,
+          p: 3,
+          backgroundColor: '#f5f5f5',
+          borderRadius: 2,
+          boxShadow: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
         <CircularProgress size={30} sx={{ mr: 2 }} />
         <Typography variant="h6">Loading case information...</Typography>
       </Box>
@@ -220,18 +221,37 @@ const CurrentCaseInfo = () => {
 
   if (error) {
     return (
-      <Box sx={{ textAlign: 'center', mb: 4, p: 3, backgroundColor: '#ffeded', borderRadius: 2, boxShadow: 1 }}>
-        <Typography variant="h6" color="error">Error loading case information</Typography>
+      <Box
+        sx={{
+          textAlign: 'center',
+          mb: 4,
+          p: 3,
+          backgroundColor: '#ffeded',
+          borderRadius: 2,
+          boxShadow: 1
+        }}
+      >
+        <Typography variant="h6" color="error">
+          Error loading case information
+        </Typography>
         <Typography variant="body1">Please try refreshing the page</Typography>
       </Box>
     );
   }
 
   const selectedCase = cases.find(c => c.id === currentCase);
-
   if (!selectedCase) {
     return (
-      <Box sx={{ textAlign: 'center', mb: 4, p: 3, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: 1 }}>
+      <Box
+        sx={{
+          textAlign: 'center',
+          mb: 4,
+          p: 3,
+          backgroundColor: '#f5f5f5',
+          borderRadius: 2,
+          boxShadow: 1
+        }}
+      >
         <Typography variant="h6">No case selected</Typography>
         <Typography variant="body1">Please select a case from the dropdown menu</Typography>
       </Box>
@@ -263,7 +283,6 @@ const CurrentCaseInfo = () => {
   );
 };
 
-// Wrap the layout in Router and CaseProvider, then export
 function App() {
   return (
     <CaseProvider>
