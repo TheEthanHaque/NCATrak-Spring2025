@@ -1,3 +1,4 @@
+// api/index.js
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
@@ -20,34 +21,37 @@ const app = express();
 const ENABLE_AOI_LOGGING = process.env.ENABLE_AOI_LOGGING !== 'false';
 console.log(`AOI logging is ${ENABLE_AOI_LOGGING ? 'ENABLED' : 'DISABLED'}`);
 
-// Create a single CSV file at server startup
+// Prepare log file
 const logDir = path.resolve(process.cwd(), 'AOI log');
 if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+
 const now = new Date();
-const pad = n => n.toString().padStart(2, '0');
-const ts = [
-  now.getFullYear(),
-  pad(now.getMonth() + 1),
-  pad(now.getDate())
-].join('') + '_' + [
-  pad(now.getHours()),
-  pad(now.getMinutes()),
-  pad(now.getSeconds())
-].join('');
+const pad = (n) => n.toString().padStart(2, '0');
+const ts =
+  [now.getFullYear(), pad(now.getMonth() + 1), pad(now.getDate())].join('') +
+  '_' +
+  [pad(now.getHours()), pad(now.getMinutes()), pad(now.getSeconds())].join('');
 const fileName = `${ts}.csv`;
 const logFilePath = path.join(logDir, fileName);
-// Write header
+
+// Write header (including text‐input columns)
 const header = [
   'timestamp_iso',
-  'x',
-  'y',
-  'aoi',
+  'mouse_x',
+  'mouse_y',
+  'mouse_aoi',
   'mouse_click',
   'text_input',
   'text_activity',
   'targetId',
-  'description'
+  'description',
+  'eye_aoi',
+  'left_eye_x',
+  'left_eye_y',
+  'right_eye_x',
+  'right_eye_y'
 ].join(',') + '\n';
+
 fs.writeFileSync(logFilePath, header);
 
 app.use(express.json());
@@ -55,7 +59,7 @@ app.use(
   cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
@@ -65,7 +69,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// existing routers
+// your existing routes
 app.use('/api/cases', casesRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/agencies', agenciesRouter);
@@ -74,45 +78,68 @@ app.use('/api/mentalhealth', mentalhealthRouter);
 app.use('/api/va', victimsAdvocacyRouter);
 app.use('/api/case-search', caseSearchRoutes);
 
-// AOI event endpoint
+// AOI / eye-tracking endpoint
 app.post('/api/aoi_event', async (req, res) => {
   try {
+    // pull both styles of coordinates & AOI
     const {
       session_id,
       event_type,
       timestamp_iso = '',
-      coordinates = {},
+      x: xFromBody,
+      y: yFromBody,
+      mouse_aoi: mouseAoiFromBody,
+      aoi: aoiFromBody,
       mouse_click = false,
       text_input = false,
       text_activity = '',
       targetId = '',
-      description = ''
+      description = '',
+      eye_aoi = '',
+      left_eye_x = '',
+      left_eye_y = '',
+      right_eye_x = '',
+      right_eye_y = '',
+      coordinates = {}
     } = req.body;
 
-    if (ENABLE_AOI_LOGGING && session_id) {
-      if (event_type === 'session_end') {
-        console.log(`Session ${session_id} ended.`);
-        return res.json({ message: 'Session ended' });
-      }
-
-      const x = coordinates.x ?? '';
-      const y = coordinates.y ?? '';
-      const esc = s => String(s).replace(/,/g, ';');
-      const line = [
-        timestamp_iso,
-        x,
-        y,
-        esc(req.body.mouse_aoi || ''),
-        mouse_click,
-        text_input,
-        esc(text_activity),
-        esc(targetId),
-        esc(description)
-      ].join(',') + '\n';
-      fs.appendFile(logFilePath, line, err => {
-        if (err) console.error('Error writing AOI event:', err);
-      });
+    if (!ENABLE_AOI_LOGGING || !session_id) {
+      return res.status(200).json({ message: 'Logging disabled or missing session_id' });
     }
+    if (event_type === 'session_end') {
+      console.log(`Session ${session_id} ended.`);
+      return res.json({ message: 'Session ended' });
+    }
+
+    // pick x/y from top‐level or coordinates
+    const x = xFromBody ?? coordinates.x ?? '';
+    const y = yFromBody ?? coordinates.y ?? '';
+
+    // pick mouse_aoi from either property
+    const mouse_aoi = (mouseAoiFromBody ?? aoiFromBody ?? '').replace(/,/g, ';');
+    const esc = (s) => String(s).replace(/,/g, ';');
+
+    // build CSV line
+    const line = [
+      timestamp_iso,
+      x,
+      y,
+      `"${mouse_aoi}"`,
+      mouse_click,
+      text_input,
+      `"${esc(text_activity)}"`,
+      `"${esc(targetId)}"`,
+      `"${esc(description)}"`,
+      `"${esc(eye_aoi)}"`,
+      left_eye_x,
+      left_eye_y,
+      right_eye_x,
+      right_eye_y,
+    ].join(',') + '\n';
+
+    fs.appendFile(logFilePath, line, (err) => {
+      if (err) console.error('Error writing AOI event:', err);
+    });
 
     console.log('AOI event received:', req.body);
     res.status(200).json({ message: 'Event received' });

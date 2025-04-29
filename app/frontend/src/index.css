@@ -11,3 +11,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Hide ALL of WebGazer’s fullscreen containers (video, overlays, etc) */
+#webgazerVideoContainer,
+#webgazerVideoFeed,
+#webgazerFaceOverlay,
+#webgazerFaceFeedbackBox {
+  display: none !important;
+}
+
+/* Only show the prediction-points canvas (the red dot) */
+#webgazerPredictionPoints {
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Make sure your React root sits on top of any residual WebGazer elements */
+#root {
+  position: relative;
+  z-index: 1000;
+}

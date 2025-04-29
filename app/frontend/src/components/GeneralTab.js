@@ -1,54 +1,14 @@
 // src/components/GeneralTab.js
-import React, { useEffect } from "react";
-import useAOILogging from "../useAOILogging";
+import React from "react";
 import AOIInput from "./AOIInput";
 import "./GeneralTab.css";
 
 function GeneralTab() {
-  const logEvent = useAOILogging("GeneralTab");
-
-  // Log page view
-  useEffect(() => {
-    logEvent("tab_view");
-  }, [logEvent]);
-
-  // Global AOI mouseover listener
-  useEffect(() => {
-    const handleMouseOver = (e) => {
-      const aoi = e.target.getAttribute("data-aoi");
-      if (aoi) {
-        logEvent("mouseover", {
-          aoi,
-          coordinates: { x: e.clientX, y: e.clientY },
-          mouse_click: false,
-          text_input: false,
-          text_activity: ""
-        });
-      }
-    };
-    document.addEventListener("mouseover", handleMouseOver);
-    return () => document.removeEventListener("mouseover", handleMouseOver);
-  }, [logEvent]);
-
-  // Button handlers
-  const handleSaveClick = (e) => {
-    logEvent("save_click", { targetId: "save-button" });
-  };
-  const handleCancelClick = (e) => {
-    logEvent("cancel_click", { targetId: "cancel-button" });
-  };
-  const handleAddButtonClick = (e, fieldName) => {
-    logEvent("add_click", {
-      targetId: e.target.id || fieldName,
-      description: `+ Add button clicked for ${fieldName}`
-    });
-  };
-  const handleEditClick = (e, context) => {
-    logEvent("edit_click", {
-      targetId: e.target.id,
-      description: `Edit button clicked in ${context}`
-    });
-  };
+  // Button handlers (now no‐ops)
+  const handleSaveClick = (e) => {};
+  const handleCancelClick = (e) => {};
+  const handleAddButtonClick = (e, fieldName) => {};
+  const handleEditClick = (e, context) => {};
 
   return (
     <div className="general-tab-container">
@@ -172,20 +132,6 @@ function GeneralTab() {
               id="case-closed-reason"
               name="caseClosedReason"
               data-aoi="Case Closed Reason Select"
-              onFocus={(e) =>
-                logEvent("field_focus", {
-                  field: "Case Closed Reason",
-                  fieldId: "case-closed-reason",
-                  coordinates: { x: e.clientX, y: e.clientY }
-                })
-              }
-              onChange={(e) =>
-                logEvent("field_change", {
-                  field: "Case Closed Reason",
-                  fieldId: "case-closed-reason",
-                  newValue: e.target.value
-                })
-              }
             >
               <option value="">Select reason...</option>
               <option value="allComplete">All Investigations/Services Completed</option>
@@ -210,20 +156,6 @@ function GeneralTab() {
               id="survey-complete"
               name="surveyComplete"
               data-aoi="Survey Complete Checkbox"
-              onFocus={(e) =>
-                logEvent("field_focus", {
-                  field: "Survey Complete",
-                  fieldId: "survey-complete",
-                  coordinates: { x: e.clientX, y: e.clientY }
-                })
-              }
-              onChange={(e) =>
-                logEvent("field_change", {
-                  field: "Survey Complete",
-                  fieldId: "survey-complete",
-                  newValue: e.target.checked
-                })
-              }
             />
           </div>
 
@@ -236,20 +168,6 @@ function GeneralTab() {
               id="followup-survey-complete"
               name="followupSurveyComplete"
               data-aoi="Follow Up Survey Checkbox"
-              onFocus={(e) =>
-                logEvent("field_focus", {
-                  field: "Follow Up Survey Complete",
-                  fieldId: "followup-survey-complete",
-                  coordinates: { x: e.clientX, y: e.clientY }
-                })
-              }
-              onChange={(e) =>
-                logEvent("field_change", {
-                  field: "Follow Up Survey Complete",
-                  fieldId: "followup-survey-complete",
-                  newValue: e.target.checked
-                })
-              }
             />
           </div>
 
@@ -273,20 +191,6 @@ function GeneralTab() {
                     type="radio"
                     name="educationProgram"
                     value={val}
-                    onFocus={(e) =>
-                      logEvent("field_focus", {
-                        field: "Education Program",
-                        fieldId: "educationProgram",
-                        coordinates: { x: e.clientX, y: e.clientY }
-                      })
-                    }
-                    onChange={() =>
-                      logEvent("field_change", {
-                        field: "Education Program",
-                        fieldId: "educationProgram",
-                        newValue: val
-                      })
-                    }
                   />
                   {val.charAt(0).toUpperCase() + val.slice(1)}
                 </label>
@@ -326,20 +230,6 @@ function GeneralTab() {
                   type="checkbox"
                   name="chapterTestField"
                   value="noTesting"
-                  onFocus={(e) =>
-                    logEvent("field_focus", {
-                      field: "Chapter Test Field",
-                      fieldId: "chapterTestField",
-                      coordinates: { x: e.clientX, y: e.clientY }
-                    })
-                  }
-                  onChange={(e) =>
-                    logEvent("field_change", {
-                      field: "Chapter Test Field",
-                      fieldId: "chapterTestField",
-                      newValue: e.target.checked
-                    })
-                  }
                 />
                 No Testing
               </label>
@@ -348,20 +238,6 @@ function GeneralTab() {
                   type="checkbox"
                   name="chapterTestField"
                   value="newClient"
-                  onFocus={(e) =>
-                    logEvent("field_focus", {
-                      field: "Chapter Test Field",
-                      fieldId: "chapterTestField",
-                      coordinates: { x: e.clientX, y: e.clientY }
-                    })
-                  }
-                  onChange={(e) =>
-                    logEvent("field_change", {
-                      field: "Chapter Test Field",
-                      fieldId: "chapterTestField",
-                      newValue: e.target.checked
-                    })
-                  }
                 />
                 New Client
               </label>
@@ -516,20 +392,6 @@ function GeneralTab() {
               id="client-received-referral"
               name="clientReceivedReferral"
               data-aoi="Client Received Referral Checkbox"
-              onFocus={(e) =>
-                logEvent("field_focus", {
-                  field: "Client Received Referral",
-                  fieldId: "client-received-referral",
-                  coordinates: { x: e.clientX, y: e.clientY }
-                })
-              }
-              onChange={(e) =>
-                logEvent("field_change", {
-                  field: "Client Received Referral",
-                  fieldId: "client-received-referral",
-                  newValue: e.target.checked
-                })
-              }
             />
           </div>
           <AOIInput label="Primary Clinic" id="primary-clinic" type="text" data-aoi="Primary Clinic Input" />

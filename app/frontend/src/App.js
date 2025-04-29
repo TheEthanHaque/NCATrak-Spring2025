@@ -94,8 +94,7 @@ const AppLayout = () => {
 
   return (
     <>
-      <AOITracker /> {/* ← NEW: start time-based AOI sampling & click logging */}
-
+      <AOITracker /> {/* ← mouse */}
       {/* Header */}
       <AppBar position="static">
         <Toolbar>

@@ -1,12 +1,12 @@
 // src/useAOILogging.js
 import { useCallback } from 'react';
-
-// adjust to match whatever port your API is running on
 const BASE = 'http://localhost:5001';
 
 export default function useAOILogging(tabName) {
   return useCallback((eventType, extra = {}) => {
+    const session_id = localStorage.getItem('aoi_session_id');
     const payload = {
+      session_id,
       event_type: eventType,
       tab: tabName,
       ...extra
@@ -21,4 +21,3 @@ export default function useAOILogging(tabName) {
     });
   }, [tabName]);
 }
-
