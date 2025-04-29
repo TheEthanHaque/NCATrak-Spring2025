@@ -2,67 +2,55 @@
 
 ## Introduction
 
-This software aims to give professors at the [University of Oklahoma Health Science Center](https://www.ouhsc.edu/) a mock database where they can simulate tests on data input to improve the data validity and quality for child advocacy centers.
+This software provides a mock database for professors at the [University of Oklahoma Health Science Center](https://www.ouhsc.edu/) to simulate data input scenarios and improve data validity and quality for child advocacy centers.
 
 ## System Requirements
 
-- Node.js v18+ for the frontend and API
-- Python 3.8+ for the data generation scripts
-- PostgreSQL 14+ for the database
+- **Node.js** v18 or later (for both frontend and API)
+- **Python** 3.8 or later (for data generation scripts)
+- **PostgreSQL** 14 or later (for the database)
+
+> **Supported Environments:** Windows 10/11, macOS 12+ (Monterey or newer)
 
 ## Installation & Setup
 
-### 1. Clone the Repository and Switch to API Branch
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/TheEthanHaque/NCATrak-Spring2025.git
 cd NCATrak-Spring2025/
-git checkout api
 ```
 
-### 2. Setting up WSL on Windows
+### 2. Install Prerequisites
 
-If you're using Windows, you can set up the Windows Subsystem for Linux (WSL) to run the project in a Linux environment:
+#### Windows
+1. **Node.js & npm**: Download and install the LTS version from [nodejs.org](https://nodejs.org/).
+2. **Python**: Download and install Python 3.8+ from [python.org](https://www.python.org/downloads/).
+3. **PostgreSQL**: Download and install from [postgresql.org](https://www.postgresql.org/download/windows/).
 
-1. Open PowerShell as Administrator
-2. Install WSL by running:
-   ```powershell
-   wsl --install
-   ```
-   This will install Ubuntu by default. If you want a different distro, you can specify it:
-   ```powershell
-   wsl --install -d Ubuntu-22.04
-   ```
-3. Restart your computer when prompted
-4. After restart, WSL will finish the setup and prompt you to create a username and password
-5. Once setup is complete, you can open your WSL terminal from the Start menu or by typing `wsl` in PowerShell
-
-### 3. PostgreSQL Installation
-
-```bash
-# For Ubuntu/Debian
-sudo apt update
-sudo apt install postgresql postgresql-contrib
-
-# For Fedora/RHEL
-sudo dnf install postgresql postgresql-server
-sudo postgresql-setup --initdb
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-```
-
-### 4. PostgreSQL Configuration
-
-After installation, configure PostgreSQL to accept local connections:
-
-1. Edit the PostgreSQL client authentication configuration file:
+#### macOS
+1. **Homebrew** (if not installed):
    ```bash
-   sudo nano /etc/postgresql/14/main/pg_hba.conf
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
-   Note: Your PostgreSQL version may differ. Replace '14' with your installed version if needed.
+2. **Node.js & npm**:
+   ```bash
+   brew install node
+   ```
+3. **Python**:
+   ```bash
+   brew install python@3.8
+   ```
+4. **PostgreSQL**:
+   ```bash
+   brew install postgresql@14
+   brew services start postgresql@14
+   ```
 
-2. Find the lines for local connections and change the authentication method from `peer` or `md5` to `trust` for development purposes:
-   ```
+### 3. Configure PostgreSQL
+
+1. Edit the `pg_hba.conf` file to allow local connections (use `trust` for development):
+   ```conf
    # IPv4 local connections:
    host    all             all             127.0.0.1/32            trust
    # IPv6 local connections:
@@ -70,213 +58,140 @@ After installation, configure PostgreSQL to accept local connections:
    # Local socket connections:
    local   all             all                                     trust
    ```
+2. Restart PostgreSQL:
+   - **Windows**: Restart the PostgreSQL service via the Services panel.
+   - **macOS**: `brew services restart postgresql@14`
 
-3. Save the file (Ctrl+O, then Enter, then Ctrl+X)
+### 4. Install Project Dependencies
 
-4. Restart PostgreSQL to apply changes:
+#### Backend Python Dependencies (Anaconda)
+
+We recommend using **Anaconda** to manage the Python environment.
+
+$11.1 **Configure Windows PATH** (Windows only - If Path is not recognized): To have PowerShell (or CMD) recognize `conda` commands, add your Anaconda root and Scripts folders to your PATH:
+
+   1. Find your Anaconda install path (default: `C:\Users\<YourWindowsUser>\Anaconda3` or `C:\ProgramData\Anaconda3`).
+   2. Open the Environment Variables editor:
+      - Press Win+R, type `sysdm.cpl`, and hit Enter.
+      - In the **System Properties** window, go to **Advanced** → **Environment Variables…**
+   3. Under **User variables for `<You>`**, select **Path** and click **Edit…**
+   4. Click **New** and add:
+      - `C:\Users\<YourWindowsUser>\Anaconda3`
+      - `C:\Users\<YourWindowsUser>\Anaconda3\Scripts`
+      - *(Optional)* `C:\Users\<YourWindowsUser>\Anaconda3\Library\bin` for additional DLLs
+   5. Click **OK** on all dialogs and **restart** PowerShell/CMD.
+   ```
+3. **Activate the environment**:
    ```bash
-   sudo systemctl restart postgresql
+   conda activate ncatrak
+   ```
+4. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
    ```
 
-### 5. Testing PostgreSQL Connection
+> **Note:** If you prefer a traditional `venv`, see the archived instructions in the project history.
 
-Test your PostgreSQL connection to ensure it's working correctly:
-
-```bash
-# Connect to PostgreSQL as postgres user
-psql -U postgres
-
-# Once connected, you should see a prompt like:
-# postgres=#
-
-# Test with some basic commands:
-\l            # List all databases
-\du           # List all users/roles
-
-# Exit PostgreSQL
-\q
-```
-
-If you can successfully connect, your PostgreSQL installation is working properly.
-
-### 6. Install Dependencies
-
-#### Backend Python Dependencies
+#### API (Node) Dependencies (Node) Dependencies
 
 ```bash
-# From the project root directory
-# Create a virtual environment
-python -m venv venv
-
-# Activate the virtual environment
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-#### API Dependencies
-
-```bash
-# From the project root directory
+# From project root
 cd app/api
 npm install
-
-# Generate Prisma client
 npx prisma generate
-
-cd ..
+cd ../..
 ```
 
 #### Frontend Dependencies
 
 ```bash
-# From the project root directory
+# From project root
 cd app/frontend
 npm install
-cd ..
+cd ../..
 ```
 
-### 7. Database Setup Using Wizard
+### 5. Database Setup Wizard
 
-The project includes a wizard script that handles all database setup automatically:
+Run the provided wizard script to create and seed the database:
 
 ```bash
-# From the project root directory
-# Make sure your virtual environment is activated
-cd app
+# From project root
 python wizard.py
 ```
 
 When prompted:
-1. Select option 1 for "Complete Install"
-2. Enter the database information:
-   - Host: localhost
-   - Database name: ncatrak (or your preferred name)
-   - Username: ncatrakuser (or your preferred username)
-   - Password: your_secure_password
+1. Choose **Complete Install**
+2. Enter database details (host, name, user, password)
 
 The wizard will:
-- Create the database configuration files
 - Create the database and user
-- Set appropriate permissions
-- Create all required tables
-- Populate the tables with sample data
-
-> Note: The wizard requires superuser access to PostgreSQL to create the database and user. Make sure you know the superuser credentials (usually `postgres`).
+- Apply permissions
+- Create tables
+- Seed sample data
 
 ## Running the Application
 
-### 1. Start the API Server
+### Start the API Server
 
 ```bash
-# From the project root directory
+# From project root
 cd app/api
 node index.js
 ```
 
-The API will run on http://localhost:5000 by default.
+The API will be available at http://localhost:5000.
 
-### 2. Start the Frontend Application
+### Start the Frontend
 
 ```bash
-# From the project root directory
+# From project root
 cd app/frontend
 npm start
 ```
 
-The frontend will run on http://localhost:3000 and should automatically open in your browser.
+The React app will run at http://localhost:3000.
 
 ## Project Structure
 
-- `app/frontend`: React frontend application
-- `app/api`: Prisma.io API server
-- `app/database`: Database configuration and schema scripts
-- `app/generator`: Mock data generation scripts
+- `app/frontend`: React frontend
+- `app/api`: Node.js API server (Prisma)
+- `wizard.py`: Database setup wizard
+- `requirements.txt`: Python dependencies
 
-## Development
+## Development Notes
 
-### API Development
-
-- The Prisma.io API is defined in `app/api/index.js`
-- API routes are defined in the `app/api/routes` directory
-- Database models are defined in `app/api/prisma/schema.prisma`
-
-### Frontend Development
-
-- The React frontend is built using React Router and Material UI
-- Main application entry point is `app/frontend/src/App.js`
-- Components are stored in `app/frontend/src/components`
-- API services are defined in `app/frontend/src/services/api.js`
-
-## Testing
-
-### API Tests
-
-```bash
-# From the project root directory
-cd app/api
-npm test
-```
-
-### Database Tests
-
-You can check the database connection using:
-
-```bash
-# From the project root directory
-cd app/api/tests
-node check-database.js
-```
+- **API routes**: `app/api/routes`
+- **Database schema**: `app/api/prisma/schema.prisma`
+- **Frontend entry**: `app/frontend/src/App.js`
 
 ## Troubleshooting
 
-### Database Connection Issues
+- **PostgreSQL Connection**:
+  - Ensure service is running
+  - Verify `pg_hba.conf` settings
+- **API Errors**:
+  - Check console for stack traces
+  - Confirm correct port (default 5000)
+- **Frontend Issues**:
+  - Ensure dependencies installed
+  - Clear cache: `rm -rf node_modules && npm install`
 
-- Ensure PostgreSQL is running: 
-  - Run `sudo systemctl status postgresql`
-- Verify the database connection by running a database test
-- If you encounter issues with the wizard script:
-  - Ensure your PostgreSQL superuser credentials are correct
-  - Check PostgreSQL logs: `/var/log/postgresql/postgresql-14-main.log`
+## Configuration
 
-### API Connection Issues
-
-- Check that the API is running on port 5000
-- Verify CORS settings in `app/api/index.js` if you're having frontend-to-API connection issues
-- Check your browser console for error messages
-
-### Frontend Build Issues
-
-- Make sure all dependencies are installed: `npm install`
-- Clear node_modules and reinstall if needed:
-  ```bash
-  rm -rf node_modules
-  npm install
+- Change API port in `app/api/index.js`:
+  ```js
+  const PORT = process.env.PORT || 5000;
   ```
-
-## Additional Configuration
-
-### Changing the API Port
-
-Edit `app/api/index.js` and modify the `PORT` constant:
-
-```javascript
-const PORT = process.env.PORT || 5000;
-```
-
-### Changing the Frontend Port
-
-Create a `.env` file in the `app/frontend` directory:
-
-```
-PORT=3001
-```
+- Change Frontend port via `.env` in `app/frontend`:
+  ```env
+  PORT=3001
+  ```
 
 ## License
 
-This software is provided as-is without any warranty. See LICENSE file for details.
+This software is provided as-is without warranty. See LICENSE for details.
 
 ## Contact
 
-For support, please contact the project maintainers.
+For support, contact the project maintainers.
