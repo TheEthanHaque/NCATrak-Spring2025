@@ -98,7 +98,12 @@ const PeopleInterface = () => {
   // Handle bio view
   const handleViewBio = (personId) => {
     console.log('View bio for person:', personId);
-    navigate('/PersonBio');
+    
+    // Find the person data
+    const person = people.find(p => p.person_id === personId);
+    
+    // Navigate to PersonBio page with the person data
+    navigate('/PersonBio', { state: { person } });
   };
   
   // Handle add person
