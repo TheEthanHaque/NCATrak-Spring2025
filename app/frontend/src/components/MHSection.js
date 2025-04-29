@@ -1,3 +1,4 @@
+// src/components/MHSection.js
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import SubNavigationBar from './SubNavigationBar';
@@ -15,17 +16,22 @@ const MHSection = () => {
   ];
 
   return (
-    <>
-      <SubNavigationBar items={subNavItems} baseRoute="/CaseMH" />
-      
-      <Routes>
-        <Route path="/" element={<MHBasicInterface />} />
-        <Route path="/treatment-plan" element={<TreatmentPlan />} />
-        <Route path="/case-notes" element={<CaseNotes />} />
-        <Route path="/assessment" element={<MHAssessment />} />
-        <Route path="*" element={<Navigate to="/CaseMH" replace />} />
-      </Routes>
-    </>
+    <div data-aoi="MH Section Container">
+      <SubNavigationBar
+        items={subNavItems}
+        baseRoute="/CaseMH"
+        data-aoi="MH SubNavigationBar"
+      />
+      <div data-aoi="MH Section Content">
+        <Routes>
+          <Route path="/" element={<MHBasicInterface />} />
+          <Route path="/treatment-plan" element={<TreatmentPlan />} />
+          <Route path="/case-notes" element={<CaseNotes />} />
+          <Route path="/assessment" element={<MHAssessment />} />
+          <Route path="*" element={<Navigate to="/CaseMH" replace />} />
+        </Routes>
+      </div>
+    </div>
   );
 };
 

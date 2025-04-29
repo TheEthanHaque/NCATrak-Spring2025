@@ -13,20 +13,22 @@ const SubNavigationBar = ({ items, baseRoute }) => {
   const currentTabIndex = items.findIndex(item => item.route === currentSubRoute);
   
   return (
-    <Box sx={{ width: '100%', mb: 3 }}>
-      <Paper elevation={2}>
-        <Tabs 
+    <Box sx={{ width: '100%', mb: 3 }} data-aoi="SubNavigationBar Container">
+      <Paper elevation={2} data-aoi="SubNavigationBar Paper">
+        <Tabs
           value={currentTabIndex !== -1 ? currentTabIndex : 0}
           indicatorColor="primary"
           textColor="primary"
           variant="fullWidth"
+          data-aoi="SubNavigationBar Tabs"
         >
           {items.map((item, index) => (
-            <Tab 
+            <Tab
               key={index}
               label={item.label}
               component={Link}
               to={`${baseRoute}${item.route}`}
+              data-aoi={`SubNavigationBar Tab ${item.label}`}
             />
           ))}
         </Tabs>
