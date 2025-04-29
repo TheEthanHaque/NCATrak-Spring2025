@@ -455,7 +455,25 @@ export const picklistsApi = {
   },
   getEducationOptions: () => {
     return fetchApi('/api/picklists/education-levels');
-  }
+  },
+  addRaceOption: (name) => {
+    return fetchApi('/api/picklists/races', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+  },
+  addRelationshipOption: (name) => {
+    return fetchApi('/api/picklists/relationships', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+  },
+  addEducationOption: (name) => {
+    return fetchApi('/api/picklists/education-levels', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+  },
 };
 
 

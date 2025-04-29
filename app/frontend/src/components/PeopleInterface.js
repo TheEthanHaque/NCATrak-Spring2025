@@ -56,6 +56,11 @@ const PeopleInterface = () => {
   const [selectedRace, setSelectedRace] = useState('');
   const [selectedRelationship, setSelectedRelationship] = useState('');
   const [selectedEducation, setSelectedEducation] = useState('');
+
+  const [newRace, setNewRace] = useState('');
+  const [newRelationship, setNewRelationship] = useState('');
+  const [newEducation, setNewEducation] = useState('');
+
   
   // Fetch people associated with the current case
   useEffect(() => {
@@ -159,12 +164,12 @@ const PeopleInterface = () => {
   };
   
   // Handle add person
-  const handleAddPerson = () => {
+  /*const handleAddPerson = () => {
     console.log('Add new person');
     setSelectedRace('');
     setSelectedEducation('');
     setSelectedRelationship('');
-  };
+  };*/
   
   // Handle checkbox change
   const handleCheckboxChange = (e) => {
@@ -179,42 +184,54 @@ const PeopleInterface = () => {
   // Handle save form
   const handleSave = async (e) => {
     e.preventDefault();
-
-  try {
-    // Find the IDs based on the selected names
-    const raceId = raceOptions.find(r => r.name === selectedRace)?.id || null;
-    const educationId = educationOptions.find(e => e.name === selectedEducation)?.id || null;
-    const relationshipId = relationshipOptions.find(r => r.name === selectedRelationship)?.id || null;
-
-    // Build the person object
-    const newPerson = {
-      // Hardcoded basic fields for now
-      first_name: "Test",
-      last_name: "User",
-      date_of_birth: "2000-01-01",
-      gender: "Male",
-      cac_id: 1, // Dummy CAC ID — replace later if needed
-
-      race_id: raceId,
-      // NOTE: educationId and relationshipId would need their own handling
-      // right now your person table schema only cares about race_id
-    };
-
-    console.log('Saving person with data:', newPerson);
-
-    await peopleApi.createPerson(newPerson);
-
-    alert('Person saved successfully!');
-
-    // Optionally clear selections after save
-    setSelectedRace('');
-    setSelectedEducation('');
-    setSelectedRelationship('');
-  } catch (error) {
-    console.error('Error saving person:', error);
-    alert('Failed to save person.');
-  }
+  
+    try {
+      // Find the ID values from dropdown selections
+      const raceId = raceOptions.find(r => r.name === selectedRace)?.id || null;
+      const educationId = educationOptions.find(e => e.name === selectedEducation)?.id || null;
+      const relationshipId = relationshipOptions.find(r => r.name === selectedRelationship)?.id || null;
+  
+      // TODO: Replace these placeholder values with actual form fields if available
+      const personPayload = {
+        first_name: "Test",
+        last_name: "User",
+        date_of_birth: "2000-01-01",
+        gender: "Male",
+        cac_id: 1, 
+  
+        race_id: raceId,
+        education_level_id: educationId
+      };
+  
+      // Step 1: Create the person
+      const createdPerson = await peopleApi.createPerson(personPayload);
+      const personId = createdPerson.person_id;
+  
+      // Step 2: Associate the person with the case and add relationship
+      await peopleApi.associatePersonWithCase({
+        person_id: personId,
+        case_id: currentCase,
+        cac_id: 1, // Or get from context
+        relationship_id: relationshipId
+      });
+  
+      // Step 3: Refresh the people list
+      const updatedPeople = await peopleApi.getPeopleByCaseId(currentCase);
+      setPeople(updatedPeople);
+      setFilteredPeople(updatedPeople);
+  
+      // Step 4: Reset form fields
+      setSelectedRace('');
+      setSelectedEducation('');
+      setSelectedRelationship('');
+  
+      alert('Person saved and linked to case successfully!');
+    } catch (error) {
+      console.error('Error saving person:', error);
+      alert('Failed to save person.');
+    }
   };
+  
   
   return (
     <Container maxWidth="md">
@@ -227,13 +244,9 @@ const PeopleInterface = () => {
           {/* People Table Section */}
           <Box sx={{ mb: 4 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-              <Button 
-                variant="contained" 
-                color="primary"
-                onClick={handleAddPerson}
-              >
-                Add
-              </Button>
+             
+              
+            
               
               <TextField
                 placeholder="Search people..."
@@ -355,6 +368,31 @@ const PeopleInterface = () => {
       ))}
     </Select>
   </FormControl>
+  <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+  <TextField
+    size="small"
+    fullWidth
+    placeholder="Add new race"
+    value={newRace}
+    onChange={(e) => setNewRace(e.target.value)}
+  />
+  <Button
+    variant="outlined"
+    onClick={async () => {
+      if (!newRace.trim()) return;
+      try {
+        await picklistsApi.addRaceOption(newRace.trim());
+        setNewRace('');
+        const races = await picklistsApi.getRaceOptions();
+        setRaceOptions(races);
+      } catch (err) {
+        console.error('Failed to add race:', err);
+      }
+    }}
+  >
+    Add
+  </Button>
+</Box>
 
   <FormControl fullWidth sx={{ mb: 2 }}>
     <InputLabel id="education-label">Education Level</InputLabel>
@@ -370,6 +408,31 @@ const PeopleInterface = () => {
       ))}
     </Select>
   </FormControl>
+  <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+  <TextField
+    size="small"
+    fullWidth
+    placeholder="Add new education level"
+    value={newEducation}
+    onChange={(e) => setNewEducation(e.target.value)}
+  />
+  <Button
+    variant="outlined"
+    onClick={async () => {
+      if (!newEducation.trim()) return;
+      try {
+        await picklistsApi.addEducationOption(newEducation.trim());
+        setNewEducation('');
+        const levels = await picklistsApi.getEducationOptions();
+        setEducationOptions(levels);
+      } catch (err) {
+        console.error('Failed to add education level:', err);
+      }
+    }}
+  >
+    Add
+  </Button>
+</Box>
 
   <FormControl fullWidth sx={{ mb: 2 }}>
     <InputLabel id="relationship-label">Relationship To Victim</InputLabel>
@@ -385,6 +448,31 @@ const PeopleInterface = () => {
       ))}
     </Select>
   </FormControl>
+  <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+  <TextField
+    size="small"
+    fullWidth
+    placeholder="Add new relationship"
+    value={newRelationship}
+    onChange={(e) => setNewRelationship(e.target.value)}
+  />
+  <Button
+    variant="outlined"
+    onClick={async () => {
+      if (!newRelationship.trim()) return;
+      try {
+        await picklistsApi.addRelationshipOption(newRelationship.trim());
+        setNewRelationship('');
+        const relationships = await picklistsApi.getRelationshipOptions();
+        setRelationshipOptions(relationships);
+      } catch (err) {
+        console.error('Failed to add relationship:', err);
+      }
+    }}
+  >
+    Add
+  </Button>
+</Box>
 </Box>
             {/* Alleged Offender Unknown section */}
             <Box sx={{ mb: 3 }}>

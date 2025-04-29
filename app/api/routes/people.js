@@ -123,18 +123,19 @@ router.post('/', async (req, res, next) => {
         person_id: newPersonId,
       cac_id: req.body.cac_id,
       first_name: req.body.first_name,
-      middle_name: req.body.middle_name || null,
+      middle_name: req.body.middle_name,
       last_name: req.body.last_name,
-      suffix: req.body.suffix || null,
-      date_of_birth: req.body.date_of_birth || null,
-      gender: req.body.gender || null,
-      religion_id: req.body.religion_id || null,
-      language_id: req.body.language_id || null,
-      prior_convictions: req.body.prior_convictions || null,
-      convicted_against_children: req.body.convicted_against_children || null,
-      sex_offender: req.body.sex_offender || null,
-      sex_predator: req.body.sex_predator || null,
-      race_id: req.body.race_id || null
+      suffix: req.body.suffix,
+      date_of_birth: req.body.date_of_birth,
+      gender: req.body.gender,
+      religion_id: req.body.religion_id,
+      language_id: req.body.language_id,
+      prior_convictions: req.body.prior_convictions,
+      convicted_against_children: req.body.convicted_against_children,
+      sex_offender: req.body.sex_offender,
+      sex_predator: req.body.sex_predator,
+      race_id: req.body.race_id,
+      education_level_id: req.body.education_level_id || null
       }
     });
     
