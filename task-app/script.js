@@ -1,100 +1,207 @@
-// Randomly associate PDFs with tasks
-const pdfOrder = Array.from({ length: 10 }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
-console.log(pdfOrder);
+// script.js
 
-// Dynamic PDF switching for tasks
+// Base URL for your AOI logging API
+const AOI_BASE = 'http://localhost:5001';
+
+// Randomly shuffle PDFs for the 10 tasks
+const pdfOrder = Array.from({ length: 10 }, (_, i) => i + 1)
+  .sort(() => Math.random() - 0.5);
+console.log('PDF order:', pdfOrder);
+
 document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('.button');
-    const tasks = document.querySelectorAll('.sidebar a');
+  try {
+    // ─── AOI TRACKING SETUP ───────────────────────────────────────────────
+
+    // Generate a session ID
+    const sessionId = crypto.randomUUID();
+    window.AOI_SESSION_ID = sessionId;
+
+    // Mouse & gaze state
+    const mouse = { x: 0, y: 0, aoi: '' };
+    const gaze  = { x: 0, y: 0, eyeAoi: '', leftX: 0, leftY: 0, rightX: 0, rightY: 0 };
+
+    const clamp = (v, max) => Math.min(Math.max(Math.round(v), 0), max);
+    const getAOI = (x, y) => 
+      document.elementFromPoint(x, y)?.getAttribute('data-aoi') || '';
+
+    // Initialize WebGazer
+    if (!window.webgazer) throw new Error('webgazer.js failed to load');
+    webgazer
+      .setRegression('ridge')
+      .showPredictionPoints(false)
+      .showVideoPreview(false)         // ← explicitly show the video feed
+      .showFaceOverlay(false)
+      .showFaceFeedbackBox(false)
+      .setGazeListener((data) => {
+        if (!data) return;
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const gx = clamp(data.x, vw), gy = clamp(data.y, vh);
+        gaze.x      = gx;
+        gaze.y      = gy;
+        gaze.eyeAoi = getAOI(gx, gy);
+        gaze.leftX  = clamp(data.xLeft  ?? gx, vw);
+        gaze.leftY  = clamp(data.yLeft  ?? gy, vh);
+        gaze.rightX = clamp(data.xRight ?? gx, vw);
+        gaze.rightY = clamp(data.yRight ?? gy, vh);
+      });
+
+    webgazer.begin();
+
+    // Unified event sender
+    async function sendEvent({
+      eventType,
+      isClick     = false,
+      textInput   = false,
+      activity    = '',
+      targetId    = '',
+      description = ''
+    }) {
+      const now  = new Date().toISOString();
+      const page = window.location.pathname;
+      const payload = {
+        session_id:    sessionId,
+        event_type:    eventType,
+        page,
+        timestamp_iso: now,
+        coordinates:   { x: mouse.x, y: mouse.y },
+        mouse_aoi:     mouse.aoi,
+        mouse_click:   isClick,
+        text_input:    textInput,
+        text_activity: activity,
+        targetId,
+        description,
+        eye_aoi:       gaze.eyeAoi,
+        left_eye_x:    gaze.leftX,
+        left_eye_y:    gaze.leftY,
+        right_eye_x:   gaze.rightX,
+        right_eye_y:   gaze.rightY
+      };
+      try {
+        await fetch(`${AOI_BASE}/api/task_aoi_event`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.error('AOI log failed:', err);
+      }
+    }
+
+    // Mouse move & click
+    function onMouseMove(e) {
+      mouse.x   = e.clientX;
+      mouse.y   = e.clientY;
+      mouse.aoi = getAOI(e.clientX, e.clientY);
+    }
+    function onClick(e) {
+      onMouseMove(e);
+      sendEvent({ eventType: 'click', isClick: true });
+    }
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('click',     onClick);
+
+    // 1s sampling
+    const samplerId = setInterval(() => sendEvent({ eventType: 'sample' }), 1000);
+
+    // Text‐input listener
+    function onInput(e) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        sendEvent({
+          eventType:   'text_input',
+          textInput:   true,
+          activity:    e.data ?? e.target.value,
+          targetId:    e.target.id || e.target.name,
+        });
+      }
+    }
+    document.addEventListener('input', onInput);
+
+    // Cleanup
+    function cleanup() {
+      clearInterval(samplerId);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('click',     onClick);
+      document.removeEventListener('input',   onInput);
+      webgazer.clearGazeListener();
+      webgazer.pause();
+    }
+    window.addEventListener('beforeunload', cleanup);
+
+    // ─── END AOI SETUP ──────────────────────────────────────────────────
+
+
+    // ─── TASK APP LOGIC ────────────────────────────────────────────────
+
+    const buttons      = document.querySelectorAll('.button');
+    const tasks        = document.querySelectorAll('.sidebar a');
     const instructions = document.getElementById('instrxns');
-    const pdfViewer = document.querySelector('.pdf-viewer');
-  
+    const pdfViewer    = document.querySelector('.pdf-viewer');
+
     let interactionLocked = false;
-    let currentTask = 1;
-    let maxTaskReached = 1;
-  
-    // Shadow timer: disable interaction after 2 minutes
+    let currentTask       = 1;
+    let maxTaskReached    = 1;
+
+    // Lock after 60 minutes
     setTimeout(() => {
       interactionLocked = true;
-      disableAllInteractions();
-      alert("You have completed 60 minutes of task time. You have already finished this study.");
-    }, 60 * 60 * 1000); // 60 minutes
-  
-    function disableAllInteractions() {
-      buttons.forEach(btn => {
-        btn.style.opacity = '0.5';
-      });
-      tasks.forEach(task => {
-        task.style.opacity = '0.5';
-      });
-    }
-  
-    // Disable previous task tasks
+      buttons.forEach(b => b.style.opacity = 0.5);
+      tasks.forEach(t   => t.style.opacity = 0.5);
+      alert("60 minutes elapsed. Study is over.");
+    }, 60 * 60 * 1000);
+
     function updateTask() {
-      tasks.forEach((task, index) => {
-        const taskNum = index + 1;
-        if (taskNum == currentTask) {
-          task.classList.add('current-task');
-        }
-        if (taskNum < maxTaskReached) {
-          task.style.opacity = '0.5';
-        }
+      tasks.forEach((task, i) => {
+        const num = i + 1;
+        task.classList.toggle('current-task', num === currentTask);
+        if (num < maxTaskReached) task.style.opacity = 0.5;
       });
     }
-  
-    // Button click feedback
+
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
         if (interactionLocked) return;
-  
         if (btn.textContent === 'Next') {
-            if (currentTask < tasks.length) {
-              currentTask++;
-              maxTaskReached = Math.max(maxTaskReached, currentTask);
-              updateTask();
-              instructions.textContent = `Please read the instructions for Task ${currentTask} carefully before proceeding.`;
-              pdfViewer.src = `${pdfOrder[currentTask-1]}.pdf`;
-              tasks.forEach(l => l.classList.remove('current-task'));
-              tasks[currentTask - 1].classList.add('current-task');
-
-              if (currentTask === 10) {
-                btn.style.display = 'none'; // Remove the Next button on task 10
-              }
-            }
-        }
-  
-        else if (btn.textContent === 'Finished') {
-          if(currentTask === 10) alert('Finished!');
-          else alert('Are you sure you have completed this task? If so, please click next. ')
+          if (currentTask < 10) {
+            currentTask++;
+            maxTaskReached = Math.max(maxTaskReached, currentTask);
+            updateTask();
+            instructions.textContent = `Please read the instructions for Task ${currentTask} carefully before proceeding.`;
+            pdfViewer.src = `${pdfOrder[currentTask - 1]}.pdf`;
+            if (currentTask === 10) btn.style.display = 'none';
+          }
+        } else if (btn.textContent === 'Finished') {
+          alert(currentTask === 10 ? 'Finished!' : 'Complete then Next.');
         }
       });
     });
-  
-    // Update PDF and instruction text based on selected task
-    tasks.forEach((task, index) => {
+
+    tasks.forEach((task, i) => {
       task.addEventListener('click', (e) => {
         if (interactionLocked) return;
         e.preventDefault();
-        const taskNum = index + 1;
-        if (taskNum >= maxTaskReached) {
-          currentTask = taskNum;
-          instructions.textContent = `Please read the instructions for Task ${taskNum} carefully before proceeding.`;
-          pdfViewer.src = `${pdfOrder[taskNum-1]}.pdf`;
-          tasks.forEach(l => l.classList.remove('current-task'));
-          tasks[index].classList.add('current-task');
+        const num = i + 1;
+        if (num >= maxTaskReached) {
+          currentTask = num;
+          instructions.textContent = `Please read the instructions for Task ${num} carefully before proceeding.`;
+          pdfViewer.src = `${pdfOrder[num - 1]}.pdf`;
           updateTask();
         }
       });
     });
-  
-    updateTask();
-  });
 
-// Function to handle start page
+    updateTask();
+
+  } catch (err) {
+    console.error('Task‐app init error:', err);
+    alert('Initialization error—check console.');
+  }
+});
+
+// Start‐button handler
 function startTasks() {
-    document.querySelector('.start-page').style.display = 'none';
-    document.querySelector('.container').style.display = 'flex';
-    document.querySelector('.instructions').textContent = 'Please read the instructions carefully before proceeding.';
-    document.querySelector('.pdf-viewer').src = `${pdfOrder[0]}.pdf`;
-    document.querySelector('.sidebar').style.display = 'block';
+  document.querySelector('.start-page').style.display   = 'none';
+  document.querySelector('.container').style.display    = 'flex';
+  document.querySelector('#instrxns').textContent      = 'Read instructions before proceeding.';
+  document.querySelector('.pdf-viewer').src            = `${pdfOrder[0]}.pdf`;
+  document.querySelector('.sidebar').style.display     = 'block';
 }

@@ -21,7 +21,7 @@ const app = express();
 const ENABLE_AOI_LOGGING = process.env.ENABLE_AOI_LOGGING !== 'false';
 console.log(`AOI logging is ${ENABLE_AOI_LOGGING ? 'ENABLED' : 'DISABLED'}`);
 
-// Prepare log file
+// Prepare main log file
 const logDir = path.resolve(process.cwd(), 'AOI log');
 if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
 
@@ -51,6 +51,39 @@ const header = [
 
 fs.writeFileSync(logFilePath, header);
 
+
+/* ─── NEW: TASK-APP LOG SETUP ────────────────────────────────────────────────── */
+// Prepare a separate folder & CSV for the task-app AOI data
+const taskLogDir = path.join(logDir, 'task-app');
+if (!fs.existsSync(taskLogDir)) fs.mkdirSync(taskLogDir, { recursive: true });
+
+// Use the same timestamp or generate a new one if you prefer
+const taskTs = ts;
+const taskFileName = `task_${taskTs}.csv`;
+const taskLogFilePath = path.join(taskLogDir, taskFileName);
+
+// Header for the task-app events
+const taskHeader = [
+  'timestamp_iso',
+  'mouse_x',
+  'mouse_y',
+  'mouse_aoi',
+  'mouse_click',
+  'text_input',
+  'text_activity',
+  'targetId',
+  'description',
+  'eye_aoi',
+  'left_eye_x',
+  'left_eye_y',
+  'right_eye_x',
+  'right_eye_y'
+].join(',') + '\n';
+
+fs.writeFileSync(taskLogFilePath, taskHeader);
+/* ──────────────────────────────────────────────────────────────────────────── */
+
+
 app.use(express.json());
 app.use(
   cors({
@@ -66,7 +99,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// existing routes...
+// existing routes
 app.use('/api/cases', casesRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/agencies', agenciesRouter);
@@ -75,7 +108,7 @@ app.use('/api/mentalhealth', mentalhealthRouter);
 app.use('/api/va', victimsAdvocacyRouter);
 app.use('/api/case-search', caseSearchRoutes);
 
-// AOI / eye-tracking endpoint
+// AOI / eye-tracking endpoint for main app
 app.post('/api/aoi_event', async (req, res) => {
   try {
     const {
@@ -108,7 +141,7 @@ app.post('/api/aoi_event', async (req, res) => {
 
     const line = [
       timestamp_iso,
-      `"${esc(page)}"`,     // write page
+      `"${esc(page)}"`,
       x,
       y,
       `"${esc(mouse_aoi)}"`,
@@ -131,6 +164,64 @@ app.post('/api/aoi_event', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// ─── NEW: TASK-APP AOI endpoint ──────────────────────────────────────────────
+app.post('/api/task_aoi_event', async (req, res) => {
+  try {
+    const {
+      session_id,
+      event_type,
+      timestamp_iso = '',
+      coordinates    = {},
+      mouse_aoi      = '',
+      mouse_click    = false,
+      text_input     = false,
+      text_activity  = '',
+      targetId       = '',
+      description    = '',
+      eye_aoi        = '',
+      left_eye_x     = '',
+      left_eye_y     = '',
+      right_eye_x    = '',
+      right_eye_y    = '',
+    } = req.body;
+
+    // Always log task-app events
+    const x = coordinates.x ?? '';
+    const y = coordinates.y ?? '';
+    const esc = (s) => String(s).replace(/,/g, ';');
+
+    const line = [
+      timestamp_iso,
+      x,
+      y,
+      `"${esc(mouse_aoi)}"`,
+      mouse_click,
+      text_input,
+      `"${esc(text_activity)}"`,
+      targetId,
+      description,
+      `"${esc(eye_aoi)}"`,
+      left_eye_x,
+      left_eye_y,
+      right_eye_x,
+      right_eye_y
+    ].join(',') + '\n';
+
+    try {
+            fs.appendFileSync(taskLogFilePath, line);
+          } catch (err) {
+            console.error('Error writing TASK AOI event:', err);
+         }
+
+    console.log('TASK AOI event received:', req.body);
+    res.status(200).json({ message: 'Task event received' });
+  } catch (err) {
+    console.error('Error in /api/task_aoi_event:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+// ────────────────────────────────────────────────────────────────────────────
 
 // health check
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
