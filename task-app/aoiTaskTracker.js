@@ -1,6 +1,6 @@
 // task-app/aoiTaskTracker.js
 (function(){
-    const BASE = 'http://localhost:5001';
+    const BASE = 'http://localhost:5000';
     const sessionId = localStorage.getItem('AOI_TASK_SESSION') || crypto.randomUUID();
     localStorage.setItem('AOI_TASK_SESSION', sessionId);
   

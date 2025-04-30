@@ -1,7 +1,7 @@
 // script.js
 
 // Base URL for your AOI logging API
-const AOI_BASE = 'http://localhost:5001';
+const AOI_BASE = 'http://localhost:5000';
 
 // Randomly shuffle PDFs for the 10 tasks
 const pdfOrder = Array.from({ length: 10 }, (_, i) => i + 1)

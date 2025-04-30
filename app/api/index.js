@@ -227,7 +227,7 @@ app.post('/api/task_aoi_event', async (req, res) => {
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // start server
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`API server running on port ${PORT}`);
 });

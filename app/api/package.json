@@ -6,12 +6,8 @@
     "supertest": "^7.0.0"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@prisma/client": "^6.6.0",
-=======
     "@prisma/client": "^6.5.0",
     "cors": "^2.8.5",
->>>>>>> origin/api
     "express": "^4.21.2"
   },
   "scripts": {

@@ -78,7 +78,6 @@ const PeopleInterface = () => {
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-<<<<<<< HEAD
     if (isNaN(date.getTime())) return '';
     return date.toLocaleDateString();
   };
@@ -118,19 +117,8 @@ const PeopleInterface = () => {
     e.preventDefault();
     console.log('Form saved');
     // Implement save functionality here
-=======
-    return isNaN(date.getTime()) ? '' : date.toLocaleDateString();
->>>>>>> origin/api
   };
   
-  // Handlers
-  const handleSearchChange = e => setSearchTerm(e.target.value);
-  const handleEditPerson  = id => console.log('Edit person:', id);
-  const handleViewBio     = id => { console.log('View bio:', id); navigate('/PersonBio'); };
-  const handleAddPerson   = () => console.log('Add new person');
-  const handleCheckboxChange = e => setAllegedOffenderUnknown(e.target.checked);
-  const handleCommentsChange = e => setOffenderComments(e.target.value);
-  const handleSave = e => { e.preventDefault(); console.log('Form saved'); };
 
   return (
     <Container maxWidth="md" data-aoi="People Interface Container">
@@ -227,13 +215,8 @@ const PeopleInterface = () => {
                             <Button
                               variant="contained"
                               size="small"
-<<<<<<< HEAD
                               onClick={() => handleViewBio(person.person_id)}
                               sx={{ minWidth: 'auto' }}
-=======
-                              onClick={() => handleEditPerson(person.person_id)}
-                              data-aoi="Edit Person Button"
->>>>>>> origin/api
                             >
                               Edit
                             </Button>

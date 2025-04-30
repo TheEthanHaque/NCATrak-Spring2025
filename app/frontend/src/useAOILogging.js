@@ -1,6 +1,6 @@
 // src/useAOILogging.js
 import { useCallback } from 'react';
-const BASE = 'http://localhost:5001';
+const BASE = 'http://localhost:5000';
 
 export default function useAOILogging(tabName) {
   return useCallback((eventType, extra = {}) => {

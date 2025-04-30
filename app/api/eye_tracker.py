@@ -3,7 +3,7 @@ import time
 import requests
 import your_eye_tracker_sdk  # ← replace with the real SDK import
 
-API = "http://localhost:5001/api/aoi_event"
+API = "http://localhost:5000/api/aoi_event"
 SESSION_ID = "YOUR-SESSION-ID"  # generate or pass in
 
 def main():
