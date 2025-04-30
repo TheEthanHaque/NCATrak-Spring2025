@@ -80,17 +80,13 @@ $11.1 **Configure Windows PATH** (Windows only - If Path is not recognized): To 
       - `C:\Users\<YourWindowsUser>\Anaconda3\Scripts`
       - *(Optional)* `C:\Users\<YourWindowsUser>\Anaconda3\Library\bin` for additional DLLs
    5. Click **OK** on all dialogs and **restart** PowerShell/CMD.
-   ```
-3. **Activate the environment**:
-   ```bash
-   conda activate ncatrak
-   ```
-4. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
 
-> **Note:** If you prefer a traditional `venv`, see the archived instructions in the project history.
+If you did not have issues with the path simply do steps 7 & 8 to run the project.
+
+   7. `conda env create -n 'ncatrak' --file environment.yml`
+   8. `conda activate 'ncatrak'`
+
+> **Note:** If you prefer a traditional `venv`, feel free to use requirements.txt by creating a python environment and doing `pip install -r requirements.txt`
 
 #### API (Node) Dependencies (Node) Dependencies
 
@@ -185,7 +181,7 @@ The React app will run at http://localhost:3000.
   ```
 - Change Frontend port via `.env` in `app/frontend`:
   ```env
-  PORT=3001
+  PORT=3000
   ```
 
 ## License
