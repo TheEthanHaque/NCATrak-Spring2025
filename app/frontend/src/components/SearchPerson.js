@@ -1,3 +1,4 @@
+// src/components/SearchPerson.js
 import React, { useState } from 'react';
 import {
   Box,
@@ -263,13 +264,13 @@ const SearchPerson = () => {
   };
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h5" gutterBottom>
+    <Box sx={{ p: 2 }} data-aoi="SearchPerson Container">
+      <Typography variant="h5" gutterBottom data-aoi="SearchPerson Header">
         Search Person
       </Typography>
       
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
+      <Paper elevation={3} sx={{ p: 3, mb: 4 }} data-aoi="Search Form Paper">
+        <Typography variant="h6" gutterBottom data-aoi="Search Prompt">
           Please enter search criteria below
         </Typography>
         
@@ -284,6 +285,7 @@ const SearchPerson = () => {
               onKeyPress={handleKeyPress}
               variant="outlined"
               required
+              inputProps={{ 'data-aoi': 'Search LastName Input' }}
             />
           </Grid>
           
@@ -296,6 +298,7 @@ const SearchPerson = () => {
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               variant="outlined"
+              inputProps={{ 'data-aoi': 'Search FirstName Input' }}
             />
           </Grid>
           
@@ -311,6 +314,7 @@ const SearchPerson = () => {
               InputLabelProps={{
                 shrink: true,
               }}
+              inputProps={{ 'data-aoi': 'Search DOB Input' }}
             />
           </Grid>
           
@@ -323,6 +327,7 @@ const SearchPerson = () => {
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               variant="outlined"
+              inputProps={{ 'data-aoi': 'Search Phone Number Input' }}
             />
           </Grid>
           
@@ -332,6 +337,7 @@ const SearchPerson = () => {
               startIcon={<ResetIcon />}
               onClick={handleReset}
               sx={{ mr: 2 }}
+              data-aoi="Search Reset Button"
             >
               Reset
             </Button>
@@ -341,6 +347,7 @@ const SearchPerson = () => {
               startIcon={<SearchIcon />}
               onClick={handleSearch}
               disabled={loading}
+              data-aoi="Search Execute Button"
             >
               Search
             </Button>
@@ -349,33 +356,33 @@ const SearchPerson = () => {
       </Paper>
       
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3 }} data-aoi="Search Error Alert">
           {error}
         </Alert>
       )}
       
-      <Paper elevation={3} sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>
+      <Paper elevation={3} sx={{ p: 3 }} data-aoi="Results Paper">
+        <Typography variant="h6" gutterBottom data-aoi="Results Header">
           Search Results
         </Typography>
         
-        <TableContainer sx={{ maxHeight: 400, mb: 2 }}>
-          <Table stickyHeader>
-                          <TableHead>
-              <TableRow>
-                <TableCell>Person's Name</TableCell>
-                <TableCell>Alias</TableCell>
-                <TableCell>CAC Case</TableCell>
-                <TableCell>Role on Case</TableCell>
-                <TableCell>Date of Birth</TableCell>
+        <TableContainer sx={{ maxHeight: 400, mb: 2 }} data-aoi="Results Table Container">
+          <Table stickyHeader data-aoi="Results Table">
+            <TableHead>
+              <TableRow data-aoi="Results Table Header Row">
+                <TableCell data-aoi="Results Table Header Name">Person's Name</TableCell>
+                <TableCell data-aoi="Results Table Header Alias">Alias</TableCell>
+                <TableCell data-aoi="Results Table Header Case">CAC Case</TableCell>
+                <TableCell data-aoi="Results Table Header Role">Role on Case</TableCell>
+                <TableCell data-aoi="Results Table Header DOB">Date of Birth</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
-                <TableRow>
+                <TableRow data-aoi="Results Loading Row">
                   <TableCell colSpan={5} align="center">
-                    <CircularProgress size={40} sx={{ my: 2 }} />
-                    <Typography variant="body2" display="block">
+                    <CircularProgress size={40} sx={{ my: 2 }} data-aoi="Results Loading Spinner" />
+                    <Typography variant="body2" display="block" data-aoi="Results Loading Text">
                       Searching...
                     </Typography>
                   </TableCell>
@@ -384,23 +391,23 @@ const SearchPerson = () => {
                 paginatedResults.map((person, index) => (
                   <TableRow 
                     key={person.id} 
-                    sx={{ 
-                      bgcolor: index % 2 !== 0 ? '#f5f5f5' : 'white',
-                    }}
+                    sx={{ bgcolor: index % 2 !== 0 ? '#f5f5f5' : 'white' }}
+                    data-aoi="Results Row"
                   >
-                    <TableCell>
+                    <TableCell data-aoi="Result Person Name">
                       <Link
                         component="button"
                         variant="body2"
                         onClick={() => handlePersonClick(person)}
                         underline="hover"
                         sx={{ cursor: 'pointer' }}
+                        data-aoi="Result Person Link"
                       >
                         {`${person.lastName}, ${person.firstName}`}
                       </Link>
                     </TableCell>
-                    <TableCell>{person.alias || ''}</TableCell>
-                    <TableCell>
+                    <TableCell data-aoi="Result Alias Cell">{person.alias || ''}</TableCell>
+                    <TableCell data-aoi="Result Case Cell">
                       {person.caseId ? (
                         <Link
                           component="button"
@@ -409,6 +416,7 @@ const SearchPerson = () => {
                           underline="hover"
                           color="primary"
                           sx={{ cursor: 'pointer' }}
+                          data-aoi="Result Case Link"
                         >
                           {person.caseNumber || person.caseId}
                         </Link>
@@ -416,12 +424,12 @@ const SearchPerson = () => {
                         'No case assigned'
                       )}
                     </TableCell>
-                    <TableCell>{person.role}</TableCell>
-                    <TableCell>{formatDate(person.dateOfBirth)}</TableCell>
+                    <TableCell data-aoi="Result Role Cell">{person.role}</TableCell>
+                    <TableCell data-aoi="Result DOB Cell">{formatDate(person.dateOfBirth)}</TableCell>
                   </TableRow>
                 ))
               ) : (
-                <TableRow>
+                <TableRow data-aoi="Results Empty Row">
                   <TableCell colSpan={6} align="center">
                     {searchCriteria.lastName || searchCriteria.firstName || 
                      searchCriteria.dateOfBirth || searchCriteria.phoneNumber ? 
@@ -434,12 +442,13 @@ const SearchPerson = () => {
         </TableContainer>
         
         {paginatedResults.length > 0 && (
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} data-aoi="Pagination Section">
             <Box sx={{ display: "flex" }}>
               <Button 
                 sx={{ minWidth: 40, height: 40, border: '1px solid #ccc', borderRadius: 0 }}
                 onClick={() => handleChangePage(0)}
                 disabled={page === 0}
+                data-aoi="Pagination First Page Button"
               >
                 <KeyboardDoubleArrowLeftIcon fontSize="small" />
               </Button>
@@ -447,6 +456,7 @@ const SearchPerson = () => {
                 sx={{ minWidth: 40, height: 40, border: '1px solid #ccc', borderRadius: 0 }}
                 onClick={() => handleChangePage(page - 1)}
                 disabled={page === 0}
+                data-aoi="Pagination Prev Page Button"
               >
                 <KeyboardArrowLeftIcon fontSize="small" />
               </Button>
@@ -468,6 +478,7 @@ const SearchPerson = () => {
                       color: pageNum === page ? 'white' : 'inherit'
                     }}
                     onClick={() => handleChangePage(pageNum)}
+                    data-aoi={`Pagination Page ${pageNum + 1} Button`}
                   >
                     {pageNum + 1}
                   </Button>
@@ -478,6 +489,7 @@ const SearchPerson = () => {
                 sx={{ minWidth: 40, height: 40, border: '1px solid #ccc', borderRadius: 0 }}
                 onClick={() => handleChangePage(page + 1)}
                 disabled={page >= totalPages - 1}
+                data-aoi="Pagination Next Page Button"
               >
                 <KeyboardArrowRightIcon fontSize="small" />
               </Button>
@@ -485,13 +497,14 @@ const SearchPerson = () => {
                 sx={{ minWidth: 40, height: 40, border: '1px solid #ccc', borderRadius: 0 }}
                 onClick={() => handleChangePage(totalPages - 1)}
                 disabled={page >= totalPages - 1}
+                data-aoi="Pagination Last Page Button"
               >
                 <KeyboardDoubleArrowRightIcon fontSize="small" />
               </Button>
             </Box>
-            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }} data-aoi="Pagination Info">
               {totalItems > 0 ? `${startIndex} - ${endIndex} of ${totalItems} items` : 'No items'}
-              <IconButton size="small" sx={{ ml: 1 }} onClick={handleSearch} disabled={loading}>
+              <IconButton size="small" sx={{ ml: 1 }} onClick={handleSearch} disabled={loading} data-aoi="Pagination Refresh Button">
                 <RefreshIcon />
               </IconButton>
             </Typography>

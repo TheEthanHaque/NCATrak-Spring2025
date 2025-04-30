@@ -1,6 +1,8 @@
+// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation,} from 'react-router-dom';
 import AOIEventViewer from './AOIEventViewer';
+import AOITracker from './AOITracker';               // ← NEW
 import GeneralTab from './components/GeneralTab';  
 import MHBasicInterface from './components/MHBasicInterface';  
 import PeopleInterface from './components/PeopleInterface';  
@@ -16,6 +18,7 @@ import PersonBio from './components/PersonBio';
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminPlaceholder from './components/admin/AdminPlaceholder';
 import PickLists from './components/admin/PickLists';
+import SearchPerson from './components/SearchPerson';
 import { 
   AppBar, 
   Toolbar, 
@@ -35,7 +38,6 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import CaseSelector from './context/CaseSelector';
 import { CaseProvider, useCase } from './context/CaseContext';
-import SearchPerson from './components/SearchPerson';
 
 const AppLayout = () => {
   const location = useLocation();
@@ -81,10 +83,10 @@ const AppLayout = () => {
     >
       <List>
         {navLinks.map((link) => (
-          <ListItem 
-            button 
-            component={Link} 
-            to={link.path} 
+          <ListItem
+            button
+            component={Link}
+            to={link.path}
             key={link.title}
             selected={location.pathname === link.path}
           >
@@ -97,6 +99,8 @@ const AppLayout = () => {
 
   return (
     <>
+      <AOITracker /> {/* ← mouse + eye tracking */}
+
       {/* Header */}
       <AppBar position="static">
         <Toolbar>
@@ -115,45 +119,32 @@ const AppLayout = () => {
               >
                 <MenuIcon />
               </IconButton>
-              <Drawer
-                anchor="right"
-                open={drawerOpen}
-                onClose={toggleDrawer(false)}
-              >
+              <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
                 <DrawerList />
               </Drawer>
             </>
           ) : (
-            <Box 
-              sx={{ 
-                flexGrow: 1, 
-                display: 'flex', 
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
                 overflowX: 'auto',
-                '&::-webkit-scrollbar': {
-                  height: '8px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                  borderRadius: '4px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                }
+                '&::-webkit-scrollbar': { height: '8px' },
+                '&::-webkit-scrollbar-thumb': { backgroundColor: 'rgba(255,255,255,0.3)', borderRadius: '4px' },
+                '&::-webkit-scrollbar-track': { backgroundColor: 'rgba(255,255,255,0.1)' }
               }}
             >
               {navLinks.map((link) => (
-                <Button 
+                <Button
                   key={link.title}
-                  color="inherit" 
-                  component={Link} 
+                  color="inherit"
+                  component={Link}
                   to={link.path}
-                  sx={{ 
+                  sx={{
                     whiteSpace: 'nowrap',
                     minWidth: 'auto',
                     px: 1.5,
-                    '&.active': {
-                      bgcolor: 'rgba(255, 255, 255, 0.2)'
-                    }
+                    '&.active': { bgcolor: 'rgba(255,255,255,0.2)' }
                   }}
                 >
                   {link.title}
@@ -169,7 +160,6 @@ const AppLayout = () => {
         {/* When not to show case info */}
         {!isNewCasePage && !isSearchPage && !isAdminPage && <CurrentCaseInfo />}
 
-        {/* Routes */}
         <Routes>
           <Route path="/" element={<Typography variant="h6">Home: NCATrak Spring 2025!</Typography>} />
           <Route path="/CaseGeneral" element={<GeneralTab />} />
@@ -183,19 +173,14 @@ const AppLayout = () => {
           <Route path="/CaseProsecution" element={<Typography variant="h6">Prosecution Component (Under Development)</Typography>} />
           <Route path="/CaseReport" element={<Typography variant="h6">Report Component (Under Development)</Typography>} />
           <Route path="/CaseAttachments" element={<Typography variant="h6">Case Attachments Component (Under Development)</Typography>} />
-
-          {/* Create New Case Route */}
           <Route path="/NewCase" element={<NewCase />} />
-          
-          {/* MH Section with sub-navigation */}
           <Route path="/CaseMH/*" element={<MHSection />} />
-          
           <Route path="/CaseVA/*" element={<VALogInterface />} />
 
           {/* Search Case Route */}
           <Route path="/SearchCase" element={<SearchPerson />} />
 
-          {/* Add the new PersonBio route */}
+          {/* Person Bio */}
           <Route path="/PersonBio" element={<PersonBio />} />
           <Route path="/PersonBio/:personId" element={<PersonBio />} />
           
@@ -213,7 +198,7 @@ const AppLayout = () => {
           
           {/* Legacy routes - can be accessed directly but not from navigation */}
           <Route path="/case-notes" element={<CaseNotes />} />
-          <Route path="/lookup" element={<Lookup />} />  
+          <Route path="/lookup" element={<Lookup />} />
           <Route path="/assessment" element={<AssessmentInterface />} />
           <Route path="/mh-assessment" element={<MHAssessment />} />
           <Route path="/treatment" element={<TreatmentPlan />} />
@@ -226,77 +211,86 @@ const AppLayout = () => {
   );
 };
 
-// Component to display current case information
 const CurrentCaseInfo = () => {
   const { currentCase, cases, loading, error } = useCase();
-  
+
   if (loading) {
     return (
-      <Box sx={{ 
-        textAlign: 'center', 
-        mb: 4, 
-        p: 3, 
-        backgroundColor: '#f5f5f5', 
-        borderRadius: 2,
-        boxShadow: 1,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
+      <Box
+        sx={{
+          textAlign: 'center',
+          mb: 4,
+          p: 3,
+          backgroundColor: '#f5f5f5',
+          borderRadius: 2,
+          boxShadow: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
         <CircularProgress size={30} sx={{ mr: 2 }} />
         <Typography variant="h6">Loading case information...</Typography>
       </Box>
     );
   }
-  
+
   if (error) {
     return (
-      <Box sx={{ 
-        textAlign: 'center', 
-        mb: 4, 
-        p: 3, 
-        backgroundColor: '#ffeded', 
-        borderRadius: 2,
-        boxShadow: 1
-      }}>
-        <Typography variant="h6" color="error">Error loading case information</Typography>
+      <Box
+        sx={{
+          textAlign: 'center',
+          mb: 4,
+          p: 3,
+          backgroundColor: '#ffeded',
+          borderRadius: 2,
+          boxShadow: 1
+        }}
+      >
+        <Typography variant="h6" color="error">
+          Error loading case information
+        </Typography>
         <Typography variant="body1">Please try refreshing the page</Typography>
       </Box>
     );
   }
-  
+
   const selectedCase = cases.find(c => c.id === currentCase);
-  
   if (!selectedCase) {
     return (
-      <Box sx={{ 
-        textAlign: 'center', 
-        mb: 4, 
-        p: 3, 
-        backgroundColor: '#f5f5f5', 
-        borderRadius: 2,
-        boxShadow: 1
-      }}>
+      <Box
+        sx={{
+          textAlign: 'center',
+          mb: 4,
+          p: 3,
+          backgroundColor: '#f5f5f5',
+          borderRadius: 2,
+          boxShadow: 1
+        }}
+      >
         <Typography variant="h6">No case selected</Typography>
         <Typography variant="body1">Please select a case from the dropdown menu</Typography>
       </Box>
     );
   }
-  
+
   return (
-    <Box sx={{ 
-      textAlign: 'center', 
-      mb: 4, 
-      p: 3, 
-      backgroundColor: '#f5f5f5', 
-      borderRadius: 2,
-      boxShadow: 1
-    }}>
+    <Box
+      sx={{
+        textAlign: 'center',
+        mb: 4,
+        p: 3,
+        backgroundColor: '#f5f5f5',
+        borderRadius: 2,
+        boxShadow: 1
+      }}
+    >
       <Typography variant="h4" gutterBottom>
-        {selectedCase.name} 
+        {selectedCase.name}
       </Typography>
       <Typography variant="h6" color="text.secondary" gutterBottom>
         Case {selectedCase.number}
+        {selectedCase.cacName && ` – ${selectedCase.cacName}`}
       </Typography>
       <Typography variant="body1" color="text.secondary">
         Currently viewing data for this case. Use the dropdown in the navigation bar to switch cases.
