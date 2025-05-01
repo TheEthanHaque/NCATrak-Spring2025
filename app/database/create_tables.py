@@ -24,7 +24,10 @@ tables_to_create = [
     "case_mh_treatment_models",
     "case_mh_treatment_plans",
     "case_mh_provider",
-    "case_mh_service_barriers"
+    "case_mh_service_barriers",
+    "pick_list_category",   
+    "pick_list",            
+    "pick_list_item"        
 ]
 
 # Wrapper function to simplify syntax for calling a try-except block with the database connection

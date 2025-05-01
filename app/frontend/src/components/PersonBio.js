@@ -27,6 +27,7 @@ const PersonBio = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentCase } = useCase();
+
   
   // Get personId from location state or URL params
   const getPersonIdFromLocation = () => {
@@ -52,8 +53,9 @@ const PersonBio = () => {
     };
   
   // Race options
-  const raceOptions = ['American Indian/Alaska Native', 'Asian', 'Black/African American', 'Hispanic/Latino', 'Native Hawaiian/Pacific Islander', 'White', 'Multi-racial', 'Other', 'Unknown'];
-  
+  const [raceOptions, setRaceOptions] = useState([]);
+  const [loadingPickLists, setLoadingPickLists] = useState(false);
+
   // Religion options
   const religionOptions = ['Agnostic', 'Atheist', 'Buddhist', 'Christian', 'Hindu', 'Jewish', 'Muslim', 'Other', 'Unknown'];
   
@@ -84,6 +86,63 @@ const PersonBio = () => {
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
   
+  useEffect(() => {
+    const fetchRacePickList = async () => {
+      try {
+        setLoadingPickLists(true);
+        
+        // First, find the People category
+        const categories = await pickListsApi.getAllCategories();
+        const peopleCategory = categories.find(c => c.category_name === 'People Tab');
+        
+        if (peopleCategory) {
+          // Get pick lists for this category
+          const pickLists = await pickListsApi.getPickListsByCategoryId(peopleCategory.category_id);
+          
+          // Find the Race pick list
+          const raceList = pickLists.find(list => list.list_name === 'Race');
+          
+          if (raceList) {
+            // Get the items for this pick list
+            const items = await pickListsApi.getItemsByListId(raceList.list_id);
+            setRaceOptions(items.map(item => item.value));
+          } else {
+            // Fallback to default options if Race pick list not found
+            setRaceOptions([
+              'American Indian/Alaska Native', 
+              'Asian', 
+              'Black/African American', 
+              'Hispanic/Latino', 
+              'Native Hawaiian/Pacific Islander', 
+              'White', 
+              'Multi-racial', 
+              'Other', 
+              'Unknown'
+            ]);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load race pick list:', err);
+        // Fallback to default options if API call fails
+        setRaceOptions([
+          'American Indian/Alaska Native', 
+          'Asian', 
+          'Black/African American', 
+          'Hispanic/Latino', 
+          'Native Hawaiian/Pacific Islander', 
+          'White', 
+          'Multi-racial', 
+          'Other', 
+          'Unknown'
+        ]);
+      } finally {
+        setLoadingPickLists(false);
+      }
+    };
+    
+    fetchRacePickList();
+  }, []);
+
   // Load person data when component mounts or personId/currentCase changes
   useEffect(() => {
     const fetchPersonData = async () => {
@@ -435,13 +494,25 @@ const PersonBio = () => {
             </Grid>
             <Grid item xs={12} sm={9}>
               <FormControl fullWidth>
+                <InputLabel id="race-select-label">Race</InputLabel>
                 <Select
+                  labelId="race-select-label"
                   name="race"
-                  value={formData.race}
+                  value={formData.race || ''}
                   onChange={handleChange}
                   displayEmpty
+                  label="Race"
                 >
-                  <MenuItem value="">Select Race</MenuItem>
+                  <MenuItem value="">
+                    {loadingPickLists ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <CircularProgress size={20} sx={{ mr: 1 }} />
+                        Loading options...
+                      </Box>
+                    ) : (
+                      'Select Race'
+                    )}
+                  </MenuItem>
                   {raceOptions.map(option => (
                     <MenuItem key={option} value={option}>{option}</MenuItem>
                   ))}

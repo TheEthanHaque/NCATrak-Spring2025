@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from rich import print
 from rich.prompt import Prompt
@@ -175,6 +176,13 @@ If you haven't yet, please read the [red]README.MD [blue]file in the home direct
         print("[green]Database tables generated.")
         populate_database()
         print("[green]Database tables populated.")
+        print("[yellow]Populating pick lists...")
+        try:
+            # Run the populate_picklists.js script using Node.js
+            subprocess.check_call(["node", os.path.join(cwd, "database", "populate_picklists.js")])
+            print("[green]Pick lists populated successfully.")
+        except subprocess.CalledProcessError as e:
+            print("[red]Error populating pick lists:", e)
         print("[green][bold]Installation complete. Database has been populated.")
 
     # Add New Generated Data
@@ -183,6 +191,14 @@ If you haven't yet, please read the [red]README.MD [blue]file in the home direct
         run_generator_menu()
         print("[green]Database tables generated.")
         populate_database()
+        print("[green]Database tables populated.")
+        print("[yellow]Populating pick lists...")
+        try:
+            # Run the populate_picklists.js script using Node.js
+            subprocess.check_call(["node", os.path.join(cwd, "database", "populate_picklists.js")])
+            print("[green]Pick lists populated successfully.")
+        except subprocess.CalledProcessError as e:
+            print("[red]Error populating pick lists:", e)
         print("[bold green]Additional data added.")
         
     # Load a predefined scenario

@@ -373,6 +373,28 @@ model person {
   child_advocacy_center      child_advocacy_center      @relation(fields: [cac_id], references: [cac_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model pick_list_category {
+  category_id   Int          @id @default(autoincrement())
+  category_name String       @db.VarChar(100)
+  pick_lists    pick_list[]
+}
+
+model pick_list {
+  list_id       Int               @id @default(autoincrement())
+  category_id   Int
+  list_name     String            @db.VarChar(100)
+  category      pick_list_category @relation(fields: [category_id], references: [category_id])
+  list_items    pick_list_item[]
+}
+
+model pick_list_item {
+  item_id     Int       @id @default(autoincrement())
+  list_id     Int
+  value       String    @db.VarChar(255)
+  display_order Int     @default(0)
+  pick_list   pick_list @relation(fields: [list_id], references: [list_id])
+}
+
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model state_table {
   state_abbr String? @unique @db.VarChar(2)
@@ -380,3 +402,5 @@ model state_table {
 
   @@ignore
 }
+
+
