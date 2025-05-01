@@ -13,7 +13,7 @@ def create(data):
 
     # Superuser creds (pg should pick up PGPASSWORD)
     superuser = "postgres"
-    superpass = os.getenv("PGPASSWORD")
+    superpass = new_pass
     if not superpass:
         print("ERROR: Please set PGPASSWORD to your Postgres superuser password.")
         sys.exit(1)
