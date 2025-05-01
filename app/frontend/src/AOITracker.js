@@ -109,7 +109,7 @@ export default function AOITracker() {
     window.addEventListener('click',     onClick);
 
     // 1 s sampler
-    const intervalId = setInterval(() => sendEvent({ eventType: 'sample' }), 10);
+    const intervalId = setInterval(() => sendEvent({ eventType: 'sample' }), 1000);
 
     // text‐input listener
     const onInput = e => {
