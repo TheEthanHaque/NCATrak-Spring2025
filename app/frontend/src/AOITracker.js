@@ -2,12 +2,13 @@
 import { useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-const BASE = 'http://localhost:5000';
+const BASE = 'http://localhost:5001';
 
 export default function AOITracker() {
-  const sessionId = useRef(uuidv4());
-  const mouse     = useRef({ x: 0, y: 0, aoi: '' });
-  const gaze      = useRef({ x:0, y:0, eyeAoi:'', leftX:0, leftY:0, rightX:0, rightY:0 });
+  const sessionId      = useRef(uuidv4());
+  const firstEventTime = useRef(null);             // ← new
+  const mouse          = useRef({ x: 0, y: 0, aoi: '' });
+  const gaze           = useRef({ x:0, y:0, eyeAoi:'', leftX:0, leftY:0, rightX:0, rightY:0 });
 
   useEffect(() => {
     window.AOI_SESSION_ID = sessionId.current;
@@ -27,10 +28,11 @@ export default function AOITracker() {
       const vw = window.innerWidth, vh = window.innerHeight;
       const gx = clamp(data.x, vw), gy = clamp(data.y, vh);
       gaze.current = {
-        x: gx, y: gy,
+        x:      gx,
+        y:      gy,
         eyeAoi: getAOI(gx, gy),
-        leftX: clamp(data.xLeft  ?? gx, vw),
-        leftY: clamp(data.yLeft  ?? gy, vh),
+        leftX:  clamp(data.xLeft  ?? gx, vw),
+        leftY:  clamp(data.yLeft  ?? gy, vh),
         rightX: clamp(data.xRight ?? gx, vw),
         rightY: clamp(data.yRight ?? gy, vh)
       };
@@ -40,22 +42,32 @@ export default function AOITracker() {
     // unified sender
     const sendEvent = async ({
       eventType,
-      isClick     = false,
-      textInput   = false,
-      activity    = '',
-      targetId    = '',
-      description = ''
+      isClick=false,
+      textInput=false,
+      activity='',
+      targetId='',
+      description='',
+      key=''
     }) => {
-      const now  = new Date().toISOString();
-      const m    = mouse.current;
-      const g    = gaze.current;
-      const page = window.location.pathname;
+      const nowMs = Date.now();
+      // initialize firstEventTime on very first call
+      if (firstEventTime.current === null) {
+        firstEventTime.current = nowMs;
+      }
+      const offsetMs = nowMs - firstEventTime.current;
+
+      const nowIso = new Date(nowMs).toISOString();
+      const m     = mouse.current;
+      const g     = gaze.current;
+      const page  = window.location.pathname;
 
       const payload = {
         session_id:    sessionId.current,
         event_type:    eventType,
-        timestamp_iso: now,
-        page,                           // ← added page/tab identifier
+        timestamp_iso: nowIso,
+        offset_ms:     offsetMs,
+        key,            // new: individual key logged
+        page,
         coordinates:   { x: m.x, y: m.y },
         mouse_aoi:     m.aoi,
         mouse_click:   isClick,
@@ -84,8 +96,8 @@ export default function AOITracker() {
     // mouse movement & click
     const onMouseMove = e => {
       mouse.current = {
-        x: e.clientX,
-        y: e.clientY,
+        x:   e.clientX,
+        y:   e.clientY,
         aoi: getAOI(e.clientX, e.clientY)
       };
     };
@@ -94,12 +106,12 @@ export default function AOITracker() {
       sendEvent({ eventType: 'click', isClick: true });
     };
     window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('click',    onClick);
+    window.addEventListener('click',     onClick);
 
-    // 1s sampler
-    const intervalId = setInterval(() => sendEvent({ eventType: 'sample' }), 1000);
+    // 1 s sampler
+    const intervalId = setInterval(() => sendEvent({ eventType: 'sample' }), 10);
 
-    // ** new: text-input listener **
+    // text‐input listener
     const onInput = e => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         sendEvent({
@@ -112,12 +124,23 @@ export default function AOITracker() {
     };
     document.addEventListener('input', onInput);
 
+    // key‐press listener
+    const onKeyDown = e => {
+      sendEvent({
+        eventType: 'key_press',
+        key:       e.key,
+        targetId:  e.target.id || e.target.name
+      });
+    };
+    document.addEventListener('keydown', onKeyDown);
+
     // teardown
     const cleanup = () => {
       clearInterval(intervalId);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('click',     onClick);
       document.removeEventListener('input',   onInput);
+      document.removeEventListener('keydown', onKeyDown);
       wg.clearGazeListener();
       wg.pause();
     };
