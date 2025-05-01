@@ -26,41 +26,81 @@ router.get('/', async (req, res, next) => {
 });
 
 /**
- * @route GET /api/people/:id
- * @desc Get a person by id
+ * @route GET /api/people/search/:lastName
+ * @desc Search people by last name with case information
  */
-router.put('/:id', async (req, res, next) => {
+router.get('/search/:lastName', async (req, res, next) => {
   try {
-    const personId = parseInt(req.params.id);
+    const lastName = req.params.lastName;
+    console.log(`Searching for people with last name containing: ${lastName}`);
     
-    // Log the update for debugging
-    console.log(`Updating person ${personId} with data:`, req.body);
-    
-    const updatedPerson = await req.prisma.person.update({
-      where: { person_id: personId },
-      data: {
-        first_name: req.body.first_name,
-        middle_name: req.body.middle_name || null,
-        last_name: req.body.last_name,
-        suffix: req.body.suffix || null,
-        date_of_birth: req.body.date_of_birth ? new Date(req.body.date_of_birth) : null,
-        gender: req.body.gender,
-        religion_id: req.body.religion_id,
-        language_id: req.body.language_id,
-        prior_convictions: req.body.prior_convictions,
-        convicted_against_children: req.body.convicted_against_children,
-        sex_offender: req.body.sex_offender,
-        sex_predator: req.body.sex_predator,
-        race_id: req.body.race_id
+    // First, find all people matching the last name
+    const people = await req.prisma.person.findMany({
+      where: { 
+        last_name: {
+          contains: lastName,
+          mode: 'insensitive'
+        }
+      },
+      orderBy: {
+        last_name: 'asc'
+      },
+      select: {
+        person_id: true,
+        first_name: true,
+        middle_name: true,
+        last_name: true,
+        suffix: true,
+        date_of_birth: true,
+        gender: true,
+        prior_convictions: true,
+        convicted_against_children: true,
+        sex_offender: true,
+        sex_predator: true,
       }
     });
     
-    // Log success
-    console.log(`Successfully updated person ${personId}`);
+    console.log(`Found ${people.length} people matching the search criteria`);
     
-    res.json(updatedPerson);
+    // For each person, fetch their case information
+    const peopleWithCases = await Promise.all(people.map(async (person) => {
+      try {
+        // Find all cases associated with this person
+        const casePerson = await req.prisma.case_person.findMany({
+          where: { 
+            person_id: person.person_id 
+          },
+          include: {
+            cac_case: {
+              select: {
+                case_id: true,
+                case_number: true
+              }
+            }
+          },
+          orderBy: {
+            role_id: 'asc' // Prioritize victims (role_id = 1) first
+          }
+        });
+        
+        // Add case information to the person object
+        return {
+          ...person,
+          case_person: casePerson
+        };
+      } catch (err) {
+        console.error(`Error fetching case info for person ID ${person.person_id}:`, err);
+        // Return the person without case information
+        return {
+          ...person,
+          case_person: []
+        };
+      }
+    }));
+    
+    res.json(peopleWithCases);
   } catch (error) {
-    console.error(`Error updating person:`, error);
+    console.error("Error in /api/people/search/:lastName:", error);
     next(error);
   }
 });
@@ -96,6 +136,58 @@ router.get('/case/:caseId', async (req, res, next) => {
     
     res.json(formattedPeople);
   } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /api/people/cases-for-person/:personId
+ * @desc Get all cases associated with a person with detailed information
+ */
+router.get('/cases-for-person/:personId', async (req, res, next) => {
+  try {
+    const personId = parseInt(req.params.personId);
+    console.log(`Fetching cases for person ID: ${personId}`);
+    
+    const casePerson = await req.prisma.case_person.findMany({
+      where: { 
+        person_id: personId 
+      },
+      include: {
+        cac_case: {
+          include: {
+            child_advocacy_center: {
+              select: {
+                cac_name: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        role_id: 'asc' // Prioritize victims (role_id = 1) first
+      }
+    });
+    
+    // Format the response to be more useful
+    const formattedCases = casePerson.map(cp => {
+      return {
+        case_id: cp.case_id,
+        case_number: cp.cac_case.case_number || `Case #${cp.case_id}`,
+        cac_name: cp.cac_case.child_advocacy_center?.cac_name || `CAC ID: ${cp.cac_id}`,
+        role_id: cp.role_id,
+        relationship_id: cp.relationship_id,
+        same_household: cp.same_household,
+        custody: cp.custody,
+        victim_status_id: cp.victim_status_id,
+        created_date: cp.cac_case.created_date
+      };
+    });
+    
+    console.log(`Found ${casePerson.length} cases for person ID ${personId}`);
+    res.json(formattedCases);
+  } catch (error) {
+    console.error(`Error fetching cases for person ID ${req.params.personId}:`, error);
     next(error);
   }
 });
@@ -152,14 +244,17 @@ router.put('/:id', async (req, res, next) => {
   try {
     const personId = parseInt(req.params.id);
     
+    // Log the update for debugging
+    console.log(`Updating person ${personId} with data:`, req.body);
+    
     const updatedPerson = await req.prisma.person.update({
       where: { person_id: personId },
       data: {
         first_name: req.body.first_name,
-        middle_name: req.body.middle_name,
+        middle_name: req.body.middle_name || null,
         last_name: req.body.last_name,
-        suffix: req.body.suffix,
-        date_of_birth: req.body.date_of_birth,
+        suffix: req.body.suffix || null,
+        date_of_birth: req.body.date_of_birth ? new Date(req.body.date_of_birth) : null,
         gender: req.body.gender,
         religion_id: req.body.religion_id,
         language_id: req.body.language_id,
@@ -171,8 +266,12 @@ router.put('/:id', async (req, res, next) => {
       }
     });
     
+    // Log success
+    console.log(`Successfully updated person ${personId}`);
+    
     res.json(updatedPerson);
   } catch (error) {
+    console.error(`Error updating person:`, error);
     next(error);
   }
 });
@@ -184,6 +283,23 @@ router.put('/:id', async (req, res, next) => {
 router.post('/case', async (req, res, next) => {
   try {
     const { person_id, case_id, cac_id } = req.body;
+    
+    // Validate that person and case exist
+    const person = await req.prisma.person.findUnique({
+      where: { person_id: parseInt(person_id) }
+    });
+    
+    if (!person) {
+      return res.status(404).json({ message: 'Person not found' });
+    }
+    
+    const caseData = await req.prisma.cac_case.findUnique({
+      where: { case_id: parseInt(case_id) }
+    });
+    
+    if (!caseData) {
+      return res.status(404).json({ message: 'Case not found' });
+    }
     
     // Check if the person is already associated with the case
     const existingAssociation = await req.prisma.case_person.findUnique({
@@ -209,6 +325,7 @@ router.post('/case', async (req, res, next) => {
     
     res.status(201).json(association);
   } catch (error) {
+    console.error('Error associating person with case:', error);
     next(error);
   }
 });
@@ -222,6 +339,20 @@ router.delete('/case/:personId/:caseId', async (req, res, next) => {
     const personId = parseInt(req.params.personId);
     const caseId = parseInt(req.params.caseId);
     
+    // Check if the association exists
+    const existingAssociation = await req.prisma.case_person.findUnique({
+      where: {
+        person_id_case_id: {
+          person_id: personId,
+          case_id: caseId
+        }
+      }
+    });
+    
+    if (!existingAssociation) {
+      return res.status(404).json({ message: 'Association not found' });
+    }
+    
     await req.prisma.case_person.delete({
       where: {
         person_id_case_id: {
@@ -233,6 +364,7 @@ router.delete('/case/:personId/:caseId', async (req, res, next) => {
     
     res.status(204).send();
   } catch (error) {
+    console.error('Error removing person from case:', error);
     next(error);
   }
 });
@@ -331,122 +463,9 @@ router.put('/case/:personId/:caseId', async (req, res, next) => {
 });
 
 /**
- * @route GET /api/people/search/:lastName
- * @desc Search people by last name with case information
- */
-router.get('/search/:lastName', async (req, res, next) => {
-  try {
-    const lastName = req.params.lastName;
-    console.log(`Searching for people with last name containing: ${lastName}`);
-    
-    // First, find all people matching the last name
-    const people = await req.prisma.person.findMany({
-      where: { 
-        last_name: {
-          contains: lastName,
-          mode: 'insensitive'
-        }
-      },
-      orderBy: {
-        last_name: 'asc'
-      },
-      select: {
-        person_id: true,
-        first_name: true,
-        middle_name: true,
-        last_name: true,
-        suffix: true,
-        date_of_birth: true,
-        gender: true,
-        prior_convictions: true,
-        convicted_against_children: true,
-        sex_offender: true,
-        sex_predator: true,
-      }
-    });
-    
-    console.log(`Found ${people.length} people matching the search criteria`);
-    
-    // For each person, fetch their case information
-    const peopleWithCases = await Promise.all(people.map(async (person) => {
-      try {
-        // Find all cases associated with this person
-        const casePerson = await req.prisma.case_person.findMany({
-          where: { 
-            person_id: person.person_id 
-          },
-          include: {
-            cac_case: {
-              select: {
-                case_id: true,
-                case_number: true
-              }
-            }
-          },
-          orderBy: {
-            role_id: 'asc' // Prioritize victims (role_id = 1) first
-          }
-        });
-        
-        // Add case information to the person object
-        return {
-          ...person,
-          case_person: casePerson
-        };
-      } catch (err) {
-        console.error(`Error fetching case info for person ID ${person.person_id}:`, err);
-        // Return the person without case information
-        return {
-          ...person,
-          case_person: []
-        };
-      }
-    }));
-    
-    res.json(peopleWithCases);
-  } catch (error) {
-    console.error("Error in /api/people/search/:lastName:", error);
-    next(error);
-  }
-});
-
-/**
- * @route GET /api/people/case/:personId
- * @desc Get all cases associated with a person
- */
-router.get('/case/:personId', async (req, res, next) => {
-  try {
-    const personId = parseInt(req.params.personId);
-    console.log(`Fetching cases for person ID: ${personId}`);
-    
-    const casePerson = await req.prisma.case_person.findMany({
-      where: { 
-        person_id: personId 
-      },
-      include: {
-        cac_case: {
-          select: {
-            case_id: true,
-            case_number: true
-          }
-        }
-      },
-      orderBy: {
-        role_id: 'asc' // Prioritize victims (role_id = 1) first
-      }
-    });
-    
-    console.log(`Found ${casePerson.length} cases for person ID ${personId}`);
-    res.json(casePerson);
-  } catch (error) {
-    console.error(`Error fetching cases for person ID ${req.params.personId}:`, error);
-    next(error);
-  }
-});
-
-/**
  * @route GET /api/people/:id
  * @desc Get a person by id with detailed information
+ * NOTE: This route must be defined last to avoid conflicts with other routes
  */
 router.get('/:id', async (req, res, next) => {
   try {
