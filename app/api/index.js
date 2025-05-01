@@ -4,6 +4,9 @@ import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { execFile } from 'child_process';
 
 import casesRouter from './routes/cases.js';
 import peopleRouter from './routes/people.js';
@@ -12,6 +15,11 @@ import employeesRouter from './routes/employee.js';
 import mentalhealthRouter from './routes/mentalhealth.js';
 import victimsAdvocacyRouter from './routes/victimadvocacy.js';
 import caseSearchRoutes from './routes/case-search.js';
+
+// ———————— ESM __dirname shim —————————
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = dirname(__filename);
+// ——————————————————————————————————————————
 
 const prisma = new PrismaClient();
 const app = express();
@@ -86,7 +94,6 @@ const taskHeader = [
 fs.writeFileSync(taskLogFilePath, taskHeader);
 /* ──────────────────────────────────────────────────────────────────────────── */
 
-
 app.use(express.json());
 app.use(
   cors({
@@ -110,7 +117,6 @@ app.use('/api/employees', employeesRouter);
 app.use('/api/mentalhealth', mentalhealthRouter);
 app.use('/api/va', victimsAdvocacyRouter);
 app.use('/api/case-search', caseSearchRoutes);
-
 
 // ─── MAIN APP AOI ENDPOINT ────────────────────────────────────────────────
 app.post('/api/aoi_event', async (req, res) => {
@@ -172,7 +178,6 @@ app.post('/api/aoi_event', async (req, res) => {
   }
 });
 
-
 // ─── TASK APP AOI ENDPOINT ────────────────────────────────────────────────
 app.post('/api/task_aoi_event', async (req, res) => {
   try {
@@ -229,11 +234,22 @@ app.post('/api/task_aoi_event', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-// ────────────────────────────────────────────────────────────────────────────
-
 
 // health check
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+// ─── PYTHON SMOKE-TEST ENDPOINT ─────────────────────────────────────────────
+app.get('/api/python_test', (req, res) => {
+  const script = path.join(__dirname, 'test_script.py');
+  execFile('python3', [ script ], (err, stdout, stderr) => {
+    if (err) {
+      console.error('Python test error:', stderr);
+      return res.status(500).json({ status: 'error', error: stderr });
+    }
+    res.json({ status: 'ok', message: stdout.trim() });
+  });
+});
+// ────────────────────────────────────────────────────────────────────────────
 
 // start server
 const PORT = process.env.PORT || 5001;
