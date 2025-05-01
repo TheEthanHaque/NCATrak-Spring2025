@@ -1,25 +1,38 @@
 import psycopg2
 from psycopg2 import sql
-import os, platform
+import os
+from rich import print
 
 def create_user(data):
+    """
+    Create a database user and grant necessary permissions
+    data is [host, database, username, password]
+    """
     curr_host = data[0]
     new_database = data[1]
     new_user = data[2]
     new_pass = data[3]
-    super_user = os.getenv('USER') if platform.system() in ['Linux', 'Darwin'] else os.getenv('USERNAME') if platform.system() == 'Windows' else None
     
-    print(f"Creating user {new_user} and granting permissions...")
+    # Get superuser credentials from environment
+    super_user = os.getenv("PG_SUPERUSER", "postgres")
+    super_pass = os.getenv("PGPASSWORD")
+    port = os.getenv("PG_PORT", "5432")
+    
+    if not super_pass:
+        print("[red]ERROR: PGPASSWORD environment variable not set.[/red]")
+        return
+    
+    print(f"[yellow]Creating/updating user {new_user} and granting permissions...[/yellow]")
     
     # Connection for user creation (connect as superuser to postgres database)
     try:
-        # First connect to postgres database to create user
+        # First connect to postgres database to create/update user
         connection_postgres = psycopg2.connect(
             dbname="postgres",  
-            user="postgres",  
-            password="securepassword",  
+            user=super_user,  
+            password=super_pass,  
             host=curr_host,
-            port="5432"
+            port=port
         )
         connection_postgres.autocommit = True
         cursor_postgres = connection_postgres.cursor()
@@ -29,18 +42,22 @@ def create_user(data):
         user_exists = cursor_postgres.fetchone()
         
         if not user_exists:
-            print(f"Creating user {new_user}...")
+            print(f"[yellow]Creating user {new_user}...[/yellow]")
             # Create the new user
             create_user_query = sql.SQL("CREATE USER {} WITH PASSWORD %s").format(sql.Identifier(new_user))
             cursor_postgres.execute(create_user_query, [new_pass])
-            print(f"User {new_user} created successfully")
+            print(f"[green]User {new_user} created successfully[/green]")
         else:
-            print(f"User {new_user} already exists")
+            print(f"[yellow]User {new_user} already exists, updating password...[/yellow]")
+            # Update password
+            alter_pass_query = sql.SQL("ALTER USER {} WITH PASSWORD %s").format(sql.Identifier(new_user))
+            cursor_postgres.execute(alter_pass_query, [new_pass])
+            print(f"[green]Password updated for {new_user}[/green]")
 
         # Grant createdb privilege to the user
         alter_role_query = sql.SQL("ALTER ROLE {} CREATEDB").format(sql.Identifier(new_user))
         cursor_postgres.execute(alter_role_query)
-        print(f"CREATEDB privilege granted to {new_user}")
+        print(f"[green]CREATEDB privilege granted to {new_user}[/green]")
         
         # Grant connection privileges to the database
         cursor_postgres.execute(
@@ -49,7 +66,7 @@ def create_user(data):
                 sql.Identifier(new_user)
             )
         )
-        print(f"Connection privileges to {new_database} granted to {new_user}")
+        print(f"[green]Connection privileges to {new_database} granted to {new_user}[/green]")
         
         # Close connection to postgres database
         cursor_postgres.close()
@@ -58,10 +75,10 @@ def create_user(data):
         # Now connect to the specific database to grant table privileges
         connection = psycopg2.connect(
             dbname=new_database,  
-            user="postgres",  
-            password="",  
+            user=super_user,  
+            password=super_pass,  
             host=curr_host,
-            port="5432"
+            port=port
         )
         connection.autocommit = True
         cursor = connection.cursor()
@@ -72,7 +89,7 @@ def create_user(data):
                 sql.Identifier(new_user)
             )
         )
-        print("Schema usage privileges granted")
+        print("[green]Schema usage privileges granted[/green]")
         
         # Grant privileges on all tables
         cursor.execute(
@@ -80,7 +97,7 @@ def create_user(data):
                 sql.Identifier(new_user)
             )
         )
-        print("Table privileges granted")
+        print("[green]Table privileges granted[/green]")
         
         # Grant privileges on all sequences
         cursor.execute(
@@ -88,7 +105,7 @@ def create_user(data):
                 sql.Identifier(new_user)
             )
         )
-        print("Sequence privileges granted")
+        print("[green]Sequence privileges granted[/green]")
         
         # Set default privileges for future tables
         cursor.execute(
@@ -96,7 +113,7 @@ def create_user(data):
                 sql.Identifier(new_user)
             )
         )
-        print("Default privileges set for future tables")
+        print("[green]Default privileges set for future tables[/green]")
         
         # Set default privileges for future sequences
         cursor.execute(
@@ -104,12 +121,12 @@ def create_user(data):
                 sql.Identifier(new_user)
             )
         )
-        print("Default privileges set for future sequences")
+        print("[green]Default privileges set for future sequences[/green]")
         
-        print(f"All necessary permissions have been granted to user {new_user}")
+        print(f"[green]All necessary permissions have been granted to user {new_user}[/green]")
         
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"[red]Error: {e}[/red]")
     finally:
         # Close the connections
         if 'cursor' in locals() and cursor:
@@ -123,4 +140,14 @@ def create_user(data):
 
 # Run the function to create the user and grant permissions
 def main(data):
+    create_user(data)
+
+if __name__ == "__main__":
+    # For manual testing
+    import sys
+    if len(sys.argv) < 5:
+        print("Usage: python create_user.py <host> <database> <user> <password>")
+        sys.exit(1)
+    
+    data = sys.argv[1:5]
     create_user(data)

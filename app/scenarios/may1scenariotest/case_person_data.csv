@@ -1,0 +1,11 @@
+person_id,case_id,cac_id,age,age_unit,address_line_1,address_line_2,city,state_abbr,zip,cell_phone_number,home_phone_number,work_phone_number,custody,education_level_id,income_level_id,marital_status_id,relationship_id,role_id,same_household,school_or_employer,victim_status_id
+444913703,390744223,10,29,year,97750 Freeman Port,,East Johntown,WI,24693,(085)679-4843,(635)549-7379,(051)079-6321,False,,,,,,True,"Engineer, maintenance (IT)",8844306
+735277354,72475755,6,38,year,936 Gentry Squares,,Welchland,CO,43890,(099)482-9339,(675)801-2052,(403)210-7997,True,,,,,,False,"Teacher, secondary school",53809488
+735277354,547161195,6,38,year,11718 Jaclyn Common Suite 832,,Jacobsonport,GA,26975,(796)227-4128,(228)762-7584,(089)749-0682,False,,,,,,False,Educational psychologist,25640386
+735277354,781630948,6,38,year,091 Anna Trace,,West Julia,UT,17980,(338)351-2219,(352)077-1748,(294)490-4770,True,,,,,,False,"Development worker, international aid",67242008
+735277354,638130417,6,38,year,81022 Kent Estates Apt. 818,,Jamesport,TX,60204,(792)701-5449,(636)214-7436,(310)250-4422,False,,,,,,False,Insurance account manager,15022558
+735277354,770406495,6,38,year,8313 Hopkins Green Suite 203,,North Nathaniel,AL,37502,(717)421-0338,(681)634-7774,(553)541-7588,True,,,,,,True,Claims inspector/assessor,80774326
+735277354,918671123,6,38,year,28163 Nicholas Square Suite 282,,Port Nicole,AR,20987,(615)826-3394,(755)386-2719,(986)673-5265,False,,,,,,True,Trade union research officer,40387720
+735277354,576522040,6,38,year,381 Shelia Landing,,Johnsonland,DE,40295,(497)084-5984,(394)155-5450,(226)903-8639,True,,,,,,False,Sport and exercise psychologist,43742887
+444913703,576155147,10,29,year,66519 Andrew Loaf Apt. 305,,North Tami,FL,50405,(517)677-6155,(966)558-1223,(372)530-3274,False,,,,,,True,Politician's assistant,47459485
+735277354,72417858,6,38,year,72433 Lawrence Forge Apt. 984,,Daniellefurt,VT,66951,(860)787-7878,(487)685-1965,(745)775-8568,True,,,,,,False,Armed forces logistics/support/administrative officer,6530608

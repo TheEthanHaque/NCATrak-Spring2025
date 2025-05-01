@@ -225,11 +225,12 @@ def generate_cac_agency():
         cac = {}
         # Data to be generated
         cac["cac_id"] = fake.unique.random_int(min = 1, max = CAC_TO_GENERATE + CAC_TO_GENERATE)
-        city = fake.unique.city()
+        # Limit city name to 20 characters to avoid data insertion errors
+        city = fake.unique.city()[:15]  # Truncate to 15 chars to leave room for " Child Advocacy Center" suffix
         cac["agency_name"] = city + " Child Advocacy Center"
         cac["address_line_1"] = fake.street_address()
         cac["address_line_2"] = None
-        cac["city"] = city
+        cac["city"] = city  # Use the truncated city name
         cac["state_abbr"] = random.choice(state_abbreviations)
         cac["phone_number"] = fake.unique.numerify("(###)###-####")
         cac["zip"] = fake.postalcode()
@@ -246,11 +247,12 @@ def generate_child_advocacy_center():
             # Data to be generated
             agency["agency_id"] = fake.unique.random_number(digits=8)
             agency["cac_id"] = cac["cac_id"]
-            city = fake.unique.city()                     
+            # Limit city name to 20 characters
+            city = fake.unique.city()[:15]  # Truncate to 15 chars to leave room for " Agency" suffix
             agency["agency_name"] = city + " Agency"
             agency["addr_line_1"] = fake.street_address()
             agency["addr_line_2"] = None
-            agency["city"] = city
+            agency["city"] = city  # Use the truncated city name
             agency["state_abbr"] = random.choice(state_abbreviations)
             agency["phone_number"] = fake.unique.numerify("(###)###-####")
             agency["zip_code"] = fake.postalcode()
@@ -383,8 +385,15 @@ def generator_case_va_session_log(amount: int):
         session["case_va_session_id"] = fake.unique.random_number(digits = 9)
         session["start_time"] = fake.date_time_between(start_date=person["cac_recieved_date"])
         session["end_time"] = util.generate_meeting_times(start_datetime=session["start_time"])
-        session["va_provider_agency_id"] = util.find_column(key = person["cac_id"], column="cac_id", table=cac_agency_data, value="agency_id")
-        #[ ] Not sure if this is the right format for this object, need to check.
+        
+        # Get a valid agency ID for this CAC to avoid foreign key constraint violations
+        valid_agencies = [agency["agency_id"] for agency in cac_agency_data if agency["cac_id"] == person["cac_id"]]
+        if valid_agencies:
+            session["va_provider_agency_id"] = random.choice(valid_agencies)
+        else:
+            # If no valid agencies for this CAC, use any valid agency ID to avoid foreign key issues
+            session["va_provider_agency_id"] = random.choice(cac_agency_data)["agency_id"] if cac_agency_data else None
+            
         session["session_date"] = fake.date_time_between(start_date=person["cac_recieved_date"])
         session["session_status"] = fake.random_int(min=1, max=6)
         

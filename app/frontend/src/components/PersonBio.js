@@ -13,6 +13,7 @@ import {
   TextField,
   Radio,
   RadioGroup,
+  InputLabel,
   FormControl,
   Select,
   MenuItem,
@@ -20,7 +21,7 @@ import {
   Tab
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { peopleApi } from '../services/api';
+import { peopleApi, pickListsApi } from '../services/api';
 import { useCase } from '../context/CaseContext';
 
 const PersonBio = () => {
