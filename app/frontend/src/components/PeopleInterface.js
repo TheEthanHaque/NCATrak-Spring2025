@@ -18,11 +18,14 @@ import {
   CircularProgress,
   Alert,
   InputAdornment,
+  Dialog,
+  DialogContent
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCase } from '../context/CaseContext';
 import { peopleApi } from '../services/api';
+import Lookup from './Lookup';
 
 const PeopleInterface = () => {
   const navigate = useNavigate();
@@ -34,6 +37,9 @@ const PeopleInterface = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // State for Lookup dialog
+  const [lookupOpen, setLookupOpen] = useState(false);
   
   // State for form fields
   const [allegedOffenderUnknown, setAllegedOffenderUnknown] = useState(false);
@@ -99,8 +105,23 @@ const PeopleInterface = () => {
   // Handle add person
   const handleAddPerson = () => {
     console.log('Add new person');
+    setLookupOpen(true);
     // Implement add person functionality here
   };
+
+    // Callback when a person is selected in Lookup
+    const onPersonSelect = personData => {
+      setLookupOpen(false);
+      // After selection, you can push a new person into your state or navigate to a form
+      console.log('Selected person:', personData);
+      // Example: refresh people list or navigate to a detail page
+    };
+  
+    // Handle closing the Lookup dialog
+    const onLookupClose = () => {
+      setLookupOpen(false);
+    };
+  
   
   // Handle checkbox change
   const handleCheckboxChange = (e) => {
@@ -121,6 +142,7 @@ const PeopleInterface = () => {
   
 
   return (
+    <>
     <Container maxWidth="md" data-aoi="People Interface Container">
       <Paper elevation={3} sx={{ p: 4, my: 4 }} data-aoi="People Paper">
         <Typography
@@ -372,6 +394,15 @@ const PeopleInterface = () => {
         </Box>
       </Paper>
     </Container>
+
+
+      {/* Lookup Dialog */}
+      <Dialog open={lookupOpen} onClose={onLookupClose} fullWidth maxWidth="md">
+        <DialogContent>
+          <Lookup onPersonSelect={onPersonSelect} onClose={onLookupClose} />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

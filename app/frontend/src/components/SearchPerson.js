@@ -1,518 +1,275 @@
-// src/components/SearchPerson.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  Container,
   Paper,
-  IconButton,
+  Box,
+  Tabs,
+  Tab,
+  Typography,
   CircularProgress,
   Alert,
-  Grid,
-  Link
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton,
+  Collapse,
+  Checkbox
 } from '@mui/material';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import SearchIcon from '@mui/icons-material/Search';
-import ResetIcon from '@mui/icons-material/Refresh';
-import { useNavigate } from 'react-router-dom';
-import { useCase } from '../context/CaseContext';
+import {
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon
+} from '@mui/icons-material';
 
-const API_BASE_URL = 'http://localhost:5000';
-
-const SearchPerson = () => {
+const PersonCases = () => {
+  const location = useLocation();
   const navigate = useNavigate();
-  const { setCurrentCase } = useCase();
-  
-  // State for search criteria
-  const [searchCriteria, setSearchCriteria] = useState({
-    lastName: '',
-    firstName: '',
-    dateOfBirth: '',
-    phoneNumber: ''
-  });
-  
-  // State for search results and pagination
-  const [searchResults, setSearchResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(0);
-  const rowsPerPage = 10;
-  
-  // Handle input change
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setSearchCriteria(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
-  // Reset search form
-  const handleReset = () => {
-    setSearchCriteria({
-      lastName: '',
-      firstName: '',
-      dateOfBirth: '',
-      phoneNumber: ''
-    });
-    setSearchResults([]);
+  const getPersonId = () => {
+    if (location.state?.personId) return location.state.personId;
+    const params = new URLSearchParams(location.search);
+    return params.get('personId');
   };
+  const personId = getPersonId();
 
-  // Helper function to map role_id to human-readable role
-  const getPersonRole = (roleId) => {
-    if (!roleId) return 'Unknown Role';
-    
-    const roles = {
-      1: 'Victim',
-      2: 'Guardian',
-      3: 'Suspect', 
-      4: 'Witness',
-      5: 'Family Member'
-    };
-    
-    return roles[roleId] || 'Unknown Role';
-  };
-
-  // Handle search
-  const handleSearch = async () => {
-    // Validate at least last name is provided
-    if (!searchCriteria.lastName) {
-      setError("Please enter at least a last name to search");
-      return;
+  const currentTab = 1;
+  const handleTabChange = (_e, newTab) => {
+    if (newTab === 0) {
+      navigate('/PersonBio', { state: { personId } });
     }
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Make direct API call to search endpoint
-      const response = await fetch(`${API_BASE_URL}/api/people/search/${encodeURIComponent(searchCriteria.lastName)}`);
-      
-      if (!response.ok) {
-        throw new Error(`Search failed with status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('Search API response:', data);
-      
-      // Filter results if other criteria are provided
-      let filteredResults = [...data];
-      
-      if (searchCriteria.firstName) {
-        filteredResults = filteredResults.filter(person => 
-          person.first_name?.toLowerCase().includes(searchCriteria.firstName.toLowerCase())
-        );
-      }
-      
-      if (searchCriteria.dateOfBirth) {
-        const searchDate = new Date(searchCriteria.dateOfBirth).toISOString().split('T')[0];
-        filteredResults = filteredResults.filter(person => {
-          if (!person.date_of_birth) return false;
-          const personDob = new Date(person.date_of_birth).toISOString().split('T')[0];
-          return personDob === searchDate;
-        });
-      }
-      
-      // For each person, get their cases
-      const enhancedResults = await Promise.all(
-        filteredResults.map(async (person) => {
-          try {
-            // If the person has case_person data already, use it
-            if (person.case_person && person.case_person.length > 0) {
-              const caseInfo = person.case_person[0];
-              
-              return {
-                id: person.person_id.toString(),
-                firstName: person.first_name || '',
-                lastName: person.last_name || '',
-                alias: '', // No nick_name field in database
-                caseId: caseInfo?.case_id?.toString() || '',
-                caseNumber: caseInfo?.cac_case?.case_number || '',
-                role: getPersonRole(caseInfo?.role_id),
-                dateOfBirth: person.date_of_birth || '',
-                // Removed ssn field which doesn't exist in the database
-              };
-            }
-            
-            // If no case_person data, try to fetch it
-            const caseResponse = await fetch(`${API_BASE_URL}/api/people/case/${person.person_id}`);
-            
-            if (caseResponse.ok) {
-              const caseData = await caseResponse.json();
-              console.log(`Case data for person ${person.person_id}:`, caseData);
-              
-              if (caseData && caseData.length > 0) {
-                const caseInfo = caseData[0];
-                
-                return {
-                  id: person.person_id.toString(),
-                  firstName: person.first_name || '',
-                  lastName: person.last_name || '',
-                  alias: '', // No nick_name field in database
-                  caseId: caseInfo.case_id?.toString() || '',
-                  caseNumber: caseInfo.cac_case?.case_number || '',
-                  role: getPersonRole(caseInfo.role_id),
-                  dateOfBirth: person.date_of_birth || '',
-                  // Removed ssn field which doesn't exist in the database
-                };
-              }
-            }
-            
-            // If no case data found, return person without case info
-            return {
-              id: person.person_id.toString(),
-              firstName: person.first_name || '',
-              lastName: person.last_name || '',
-              alias: '', // No nick_name field in database
-              caseId: '',
-              caseNumber: '',
-              role: 'Unknown Role',
-              dateOfBirth: person.date_of_birth || '',
-              // Removed ssn field which doesn't exist in the database
-            };
-          } catch (err) {
-            console.error(`Error processing case info for person ${person.person_id}:`, err);
-            
-            // Return basic person info if case info processing fails
-            return {
-              id: person.person_id.toString(),
-              firstName: person.first_name || '',
-              lastName: person.last_name || '',
-              alias: '', // No nick_name field in database
-              caseId: '',
-              caseNumber: '',
-              role: 'Unknown Role',
-              dateOfBirth: person.date_of_birth || '',
-              // Removed ssn field which doesn't exist in the database
-            };
-          }
-        })
-      );
-      
-      console.log('Processed search results:', enhancedResults);
-      setSearchResults(enhancedResults);
-      setPage(0); // Reset to first page
-    } catch (err) {
-      console.error('Search error:', err);
-      setError(`Failed to search for people: ${err.message}`);
-    } finally {
+  };
+
+  const [cases, setCases] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState(null);
+  const [openMap, setOpenMap] = useState({});
+
+  useEffect(() => {
+    if (!personId) {
+      setError('No person selected.');
       setLoading(false);
-    }
-  };
-
-  // Handle Enter key press in search fields
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  // Handle clicking on a person name
-  const handlePersonClick = (person) => {
-    console.log('Person clicked:', person);
-    navigate('/PersonBio');
-  };
-
-  // Handle clicking on a case
-  const handleCaseClick = (caseId, caseNumber) => {
-    if (!caseId) {
-      console.log('No case ID available for this person');
       return;
     }
-    
-    console.log(`Navigating to case ${caseNumber} (ID: ${caseId})`);
-    // Set the current case in context
-    setCurrentCase(caseId);
-    // Navigate to the General tab
-    navigate('/CaseGeneral');
-  };
 
-  // Pagination handlers
-  const handleChangePage = (newPage) => {
-    setPage(newPage);
-  };
-  
-  // Get current page of data
-  const paginatedResults = searchResults.slice(
-    page * rowsPerPage, 
-    page * rowsPerPage + rowsPerPage
-  );
-  
-  // Calculate pagination info
-  const startIndex = searchResults.length > 0 ? page * rowsPerPage + 1 : 0;
-  const endIndex = Math.min((page + 1) * rowsPerPage, searchResults.length);
-  const totalItems = searchResults.length;
-  const totalPages = Math.ceil(totalItems / rowsPerPage);
+    const fetchAll = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/people/case/${personId}`);;
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const casePersons = await res.json();
 
-  // Format date for display (convert ISO to MM/DD/YYYY)
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
-    return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
-  };
+        const detailed = await Promise.all(
+          casePersons.map(async (cp) => {
+            const r2 = await fetch(`/api/cases/${cp.case_id}`);
+            if (!r2.ok) throw new Error(`Case ${cp.case_id} not found`);
+            const details = await r2.json();
+            return { ...cp, details };
+          })
+        );
+
+        setCases(detailed);
+        setError(null);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || 'Failed to load cases.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAll();
+  }, [personId]);
+
+  if (loading) {
+    return (
+      <Container maxWidth="md">
+        <Box sx={{ textAlign: 'center', mt: 8 }}>
+          <CircularProgress />
+        </Box>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="md">
+        <Box sx={{ mt: 4 }}>
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      </Container>
+    );
+  }
+
+  const fmt = (iso) => iso ? new Date(iso).toLocaleDateString() : '';
 
   return (
-    <Box sx={{ p: 2 }} data-aoi="SearchPerson Container">
-      <Typography variant="h5" gutterBottom data-aoi="SearchPerson Header">
-        Search Person
-      </Typography>
-      
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }} data-aoi="Search Form Paper">
-        <Typography variant="h6" gutterBottom data-aoi="Search Prompt">
-          Please enter search criteria below
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Paper sx={{ p: 3 }} elevation={3}>
+        {/* Tabs bar */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+          <Tabs value={currentTab} onChange={handleTabChange}>
+            <Tab label="Personal Profile" />
+            <Tab label="Cases" />
+          </Tabs>
+        </Box>
+
+        <Typography variant="h5" gutterBottom>
+          PERSON CASES
         </Typography>
-        
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Last Name"
-              name="lastName"
-              value={searchCriteria.lastName}
-              onChange={handleInputChange}
-              onKeyPress={handleKeyPress}
-              variant="outlined"
-              required
-              inputProps={{ 'data-aoi': 'Search LastName Input' }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="First Name"
-              name="firstName"
-              value={searchCriteria.firstName}
-              onChange={handleInputChange}
-              onKeyPress={handleKeyPress}
-              variant="outlined"
-              inputProps={{ 'data-aoi': 'Search FirstName Input' }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Date of Birth"
-              name="dateOfBirth"
-              type="date"
-              value={searchCriteria.dateOfBirth}
-              onChange={handleInputChange}
-              variant="outlined"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              inputProps={{ 'data-aoi': 'Search DOB Input' }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Phone Number"
-              name="phoneNumber"
-              value={searchCriteria.phoneNumber}
-              onChange={handleInputChange}
-              onKeyPress={handleKeyPress}
-              variant="outlined"
-              inputProps={{ 'data-aoi': 'Search Phone Number Input' }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-            <Button
-              variant="outlined"
-              startIcon={<ResetIcon />}
-              onClick={handleReset}
-              sx={{ mr: 2 }}
-              data-aoi="Search Reset Button"
-            >
-              Reset
-            </Button>
-            
-            <Button
-              variant="contained"
-              startIcon={<SearchIcon />}
-              onClick={handleSearch}
-              disabled={loading}
-              data-aoi="Search Execute Button"
-            >
-              Search
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
-      
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }} data-aoi="Search Error Alert">
-          {error}
-        </Alert>
-      )}
-      
-      <Paper elevation={3} sx={{ p: 3 }} data-aoi="Results Paper">
-        <Typography variant="h6" gutterBottom data-aoi="Results Header">
-          Search Results
-        </Typography>
-        
-        <TableContainer sx={{ maxHeight: 400, mb: 2 }} data-aoi="Results Table Container">
-          <Table stickyHeader data-aoi="Results Table">
+
+        <TableContainer>
+          <Table size="small">
             <TableHead>
-              <TableRow data-aoi="Results Table Header Row">
-                <TableCell data-aoi="Results Table Header Name">Person's Name</TableCell>
-                <TableCell data-aoi="Results Table Header Alias">Alias</TableCell>
-                <TableCell data-aoi="Results Table Header Case">CAC Case</TableCell>
-                <TableCell data-aoi="Results Table Header Role">Role on Case</TableCell>
-                <TableCell data-aoi="Results Table Header DOB">Date of Birth</TableCell>
+              <TableRow>
+                <TableCell />
+                <TableCell>CAC Case Number</TableCell>
+                <TableCell>CAC Received Date</TableCell>
+                <TableCell>Relationship</TableCell>
+                <TableCell>Role</TableCell>
+                <TableCell>Age</TableCell>
+                <TableCell>Same Household</TableCell>
+                <TableCell>Custody</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {loading ? (
-                <TableRow data-aoi="Results Loading Row">
-                  <TableCell colSpan={5} align="center">
-                    <CircularProgress size={40} sx={{ my: 2 }} data-aoi="Results Loading Spinner" />
-                    <Typography variant="body2" display="block" data-aoi="Results Loading Text">
-                      Searching...
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ) : paginatedResults.length > 0 ? (
-                paginatedResults.map((person, index) => (
-                  <TableRow 
-                    key={person.id} 
-                    sx={{ bgcolor: index % 2 !== 0 ? '#f5f5f5' : 'white' }}
-                    data-aoi="Results Row"
-                  >
-                    <TableCell data-aoi="Result Person Name">
-                      <Link
-                        component="button"
-                        variant="body2"
-                        onClick={() => handlePersonClick(person)}
-                        underline="hover"
-                        sx={{ cursor: 'pointer' }}
-                        data-aoi="Result Person Link"
+              {cases.map((c) => (
+                <React.Fragment key={c.case_id}>
+                  {/* Summary row */}
+                  <TableRow hover>
+                    <TableCell>
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          setOpenMap((o) => ({
+                            ...o,
+                            [c.case_id]: !o[c.case_id]
+                          }))
+                        }
                       >
-                        {`${person.lastName}, ${person.firstName}`}
-                      </Link>
+                        {openMap[c.case_id]
+                          ? <KeyboardArrowUpIcon />
+                          : <KeyboardArrowDownIcon />}
+                      </IconButton>
                     </TableCell>
-                    <TableCell data-aoi="Result Alias Cell">{person.alias || ''}</TableCell>
-                    <TableCell data-aoi="Result Case Cell">
-                      {person.caseId ? (
-                        <Link
-                          component="button"
-                          variant="body2"
-                          onClick={() => handleCaseClick(person.caseId, person.caseNumber)}
-                          underline="hover"
-                          color="primary"
-                          sx={{ cursor: 'pointer' }}
-                          data-aoi="Result Case Link"
-                        >
-                          {person.caseNumber || person.caseId}
-                        </Link>
-                      ) : (
-                        'No case assigned'
-                      )}
+                    <TableCell>{c.details.case_number}</TableCell>
+                    <TableCell>{fmt(c.details.cac_received_date)}</TableCell>
+                    <TableCell>{c.relationship_id}</TableCell>
+                    <TableCell>{c.role_id}</TableCell>
+                    <TableCell>
+                      {c.age} {c.age_unit}
                     </TableCell>
-                    <TableCell data-aoi="Result Role Cell">{person.role}</TableCell>
-                    <TableCell data-aoi="Result DOB Cell">{formatDate(person.dateOfBirth)}</TableCell>
+                    <TableCell>
+                      <Checkbox disabled checked={c.same_household} />
+                    </TableCell>
+                    <TableCell>
+                      <Checkbox disabled checked={c.custody} />
+                    </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow data-aoi="Results Empty Row">
-                  <TableCell colSpan={6} align="center">
-                    {searchCriteria.lastName || searchCriteria.firstName || 
-                     searchCriteria.dateOfBirth || searchCriteria.phoneNumber ? 
-                      'No matching results found' : 'Enter search criteria to find people'}
-                  </TableCell>
-                </TableRow>
-              )}
+
+                  {/* Expanded details */}
+                  <TableRow>
+                    <TableCell style={{ padding: 0 }} colSpan={8}>
+                      <Collapse in={openMap[c.case_id]} timeout="auto" unmountOnExit>
+                        <Box sx={{ p: 2 }}>
+                          {/* Two-column grid of details */}
+                          <Box sx={{ display: 'flex', mb: 2 }}>
+                            <Box sx={{ flex: 1, pr: 1 }}>
+                              <Table size="small">
+                                <TableBody>
+                                  <TableRow>
+                                    <TableCell>Address Line 1</TableCell>
+                                    <TableCell>{c.details.address_line1}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>Address Line 2</TableCell>
+                                    <TableCell>{c.details.address_line2}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>City</TableCell>
+                                    <TableCell>{c.details.city}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>County</TableCell>
+                                    <TableCell>{c.details.county}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>State</TableCell>
+                                    <TableCell>{c.details.state}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>Zip</TableCell>
+                                    <TableCell>{c.details.zip}</TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
+                            </Box>
+
+                            <Box sx={{ flex: 1, pl: 1 }}>
+                              <Table size="small">
+                                <TableBody>
+                                  <TableRow>
+                                    <TableCell>Home Phone</TableCell>
+                                    <TableCell>{c.details.home_phone}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>Cell Phone</TableCell>
+                                    <TableCell>{c.details.cell_phone}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>Work Phone</TableCell>
+                                    <TableCell>{c.details.work_phone}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>School or Employer</TableCell>
+                                    <TableCell>{c.details.school_employer}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>Marital Status</TableCell>
+                                    <TableCell>{c.details.marital_status}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>Education Level</TableCell>
+                                    <TableCell>{c.details.education_level}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>Income Level of Household</TableCell>
+                                    <TableCell>{c.details.income_level}</TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
+                            </Box>
+                          </Box>
+
+                          {/* Bottom header row for other people */}
+                          <Table size="small">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>Other People in Case</TableCell>
+                                <TableCell>Relationship to Victim</TableCell>
+                                <TableCell>Role</TableCell>
+                                <TableCell>Age</TableCell>
+                                <TableCell>Same Household</TableCell>
+                                <TableCell>Custody</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {/* Map additional people if available */}
+                            </TableBody>
+                          </Table>
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
-        
-        {paginatedResults.length > 0 && (
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} data-aoi="Pagination Section">
-            <Box sx={{ display: "flex" }}>
-              <Button 
-                sx={{ minWidth: 40, height: 40, border: '1px solid #ccc', borderRadius: 0 }}
-                onClick={() => handleChangePage(0)}
-                disabled={page === 0}
-                data-aoi="Pagination First Page Button"
-              >
-                <KeyboardDoubleArrowLeftIcon fontSize="small" />
-              </Button>
-              <Button 
-                sx={{ minWidth: 40, height: 40, border: '1px solid #ccc', borderRadius: 0 }}
-                onClick={() => handleChangePage(page - 1)}
-                disabled={page === 0}
-                data-aoi="Pagination Prev Page Button"
-              >
-                <KeyboardArrowLeftIcon fontSize="small" />
-              </Button>
-              
-              {/* Page numbers */}
-              {[...Array(Math.min(totalPages, 5))].map((_, i) => {
-                const pageNum = page < 2 ? i : page - 2 + i;
-                if (pageNum >= totalPages) return null;
-                
-                return (
-                  <Button 
-                    key={pageNum}
-                    sx={{ 
-                      minWidth: 40, 
-                      height: 40, 
-                      border: '1px solid #ccc', 
-                      borderRadius: 0,
-                      bgcolor: pageNum === page ? '#1976d2' : 'white',
-                      color: pageNum === page ? 'white' : 'inherit'
-                    }}
-                    onClick={() => handleChangePage(pageNum)}
-                    data-aoi={`Pagination Page ${pageNum + 1} Button`}
-                  >
-                    {pageNum + 1}
-                  </Button>
-                );
-              })}
-              
-              <Button 
-                sx={{ minWidth: 40, height: 40, border: '1px solid #ccc', borderRadius: 0 }}
-                onClick={() => handleChangePage(page + 1)}
-                disabled={page >= totalPages - 1}
-                data-aoi="Pagination Next Page Button"
-              >
-                <KeyboardArrowRightIcon fontSize="small" />
-              </Button>
-              <Button 
-                sx={{ minWidth: 40, height: 40, border: '1px solid #ccc', borderRadius: 0 }}
-                onClick={() => handleChangePage(totalPages - 1)}
-                disabled={page >= totalPages - 1}
-                data-aoi="Pagination Last Page Button"
-              >
-                <KeyboardDoubleArrowRightIcon fontSize="small" />
-              </Button>
-            </Box>
-            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }} data-aoi="Pagination Info">
-              {totalItems > 0 ? `${startIndex} - ${endIndex} of ${totalItems} items` : 'No items'}
-              <IconButton size="small" sx={{ ml: 1 }} onClick={handleSearch} disabled={loading} data-aoi="Pagination Refresh Button">
-                <RefreshIcon />
-              </IconButton>
-            </Typography>
-          </Box>
-        )}
       </Paper>
-    </Box>
+    </Container>
   );
 };
 
-export default SearchPerson;
+export default PersonCases;

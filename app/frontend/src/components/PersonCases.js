@@ -116,7 +116,7 @@ const PersonCases = () => {
         </Box>
 
         <Typography variant="h5" gutterBottom>
-          PERSON CASES
+          CASES
         </Typography>
 
         <TableContainer>
