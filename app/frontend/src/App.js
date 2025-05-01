@@ -15,6 +15,7 @@ import Lookup from './components/Lookup';
 import MHSection from './components/MHSection';
 import NewCase from './components/NewCase';
 import PersonBio from './components/PersonBio';
+import PersonCases from './components/PersonCases'; 
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminPlaceholder from './components/admin/AdminPlaceholder';
 import PickLists from './components/admin/PickLists';
@@ -183,6 +184,10 @@ const AppLayout = () => {
           {/* Person Bio */}
           <Route path="/PersonBio" element={<PersonBio />} />
           <Route path="/PersonBio/:personId" element={<PersonBio />} />
+
+          {/* Person Cases (NEW) */}
+          <Route path="/PersonCases" element={<PersonCases />} />
+          <Route path="/PersonCases/:personId" element={<PersonCases />} />
           
           {/* Admin routes */}
           <Route path="/admin" element={<AdminDashboard />} />
