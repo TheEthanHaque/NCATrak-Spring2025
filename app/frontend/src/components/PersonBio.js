@@ -15,7 +15,9 @@ import {
   RadioGroup,
   FormControl,
   Select,
-  MenuItem
+  MenuItem,
+  Tabs,
+  Tab
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { peopleApi } from '../services/api';
@@ -39,6 +41,15 @@ const PersonBio = () => {
   };
   
   const personId = getPersonIdFromLocation();
+
+    // Tab state & handler
+    const currentTab = 0; // we’re on Personal Profile
+    const handleTabChange = (_event, newValue) => {
+      if (newValue === 1) {
+        // switch to the Cases view, carrying personId
+        navigate('/PersonCases', { state: { personId } });
+      }
+    };
   
   // Race options
   const raceOptions = ['American Indian/Alaska Native', 'Asian', 'Black/African American', 'Hispanic/Latino', 'Native Hawaiian/Pacific Islander', 'White', 'Multi-racial', 'Other', 'Unknown'];
@@ -237,6 +248,13 @@ const PersonBio = () => {
   return (
     <Container maxWidth="md">
       <Paper elevation={3} sx={{ p: 4, my: 4 }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+          <Tabs value={currentTab} onChange={handleTabChange} aria-label="Person Profile Tabs">
+            <Tab label="Personal Profile" />
+            <Tab label="Cases" />
+          </Tabs>
+        </Box>
+
         <Typography variant="h5" gutterBottom align="left" sx={{ mb: 3 }}>
           PERSONAL PROFILE
         </Typography>
