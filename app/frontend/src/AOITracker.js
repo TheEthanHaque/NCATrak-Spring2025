@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-const BASE = 'http://localhost:5001';
+const BASE = 'http://localhost:5000';
 
 export default function AOITracker() {
   const sessionId      = useRef(uuidv4());

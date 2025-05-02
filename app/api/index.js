@@ -254,7 +254,7 @@ app.get('/api/python_test', (req, res) => {
 // ────────────────────────────────────────────────────────────────────────────
 
 // start server
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`API server running on port ${PORT}`);
 });

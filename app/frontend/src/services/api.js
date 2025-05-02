@@ -1,5 +1,5 @@
 // Base URL for API requests
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = 'http://localhost:5000';
 
 // Generic fetch wrapper with error handling
 async function fetchApi(endpoint, options = {}) {
