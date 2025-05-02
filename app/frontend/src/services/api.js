@@ -555,8 +555,33 @@ export const pickListsApi = {
   
   // Delete a pick list item
   deleteItem: (itemId) => {
-    return fetchApi(`/api/picklists/items/${itemId}`, {
-      method: 'DELETE'
+    // Ensure itemId is an integer
+    const parsedId = parseInt(itemId);
+    
+    if (isNaN(parsedId)) {
+      console.error('Invalid item ID:', itemId);
+      return Promise.reject(new Error('Invalid item ID'));
+    }
+    
+    console.log(`Attempting to delete item with ID: ${parsedId}`);
+    
+    return fetch(`${API_BASE_URL}/api/picklists/items/${parsedId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => {
+      if (response.status === 204) {
+        // Success with no content, return an empty object
+        return {};
+      }
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+      
+      // For other successful responses, parse JSON
+      return response.json();
     });
   },
   

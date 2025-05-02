@@ -19,22 +19,19 @@ import {
   Collapse,
   Checkbox
 } from '@mui/material';
-import {
-  KeyboardArrowDown as KeyboardArrowDownIcon,
-  KeyboardArrowUp as KeyboardArrowUpIcon
-} from '@mui/icons-material';
+import { KeyboardArrowDown as DownIcon, KeyboardArrowUp as UpIcon } from '@mui/icons-material';
+import { peopleApi } from '../services/api';
 
 const PersonCases = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const getPersonId = () => {
-    if (location.state?.personId) return location.state.personId;
-    const params = new URLSearchParams(location.search);
-    return params.get('personId');
-  };
-  const personId = getPersonId();
+  // pull personId from state or query string
+  const personId =
+    location.state?.personId ||
+    new URLSearchParams(location.search).get('personId');
 
+  // tab control
   const currentTab = 1;
   const handleTabChange = (_e, newTab) => {
     if (newTab === 0) {
@@ -42,9 +39,10 @@ const PersonCases = () => {
     }
   };
 
-  const [cases, setCases] = useState([]);
+  // data state
+  const [cases, setCases]     = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
+  const [error, setError]     = useState(null);
   const [openMap, setOpenMap] = useState({});
 
   useEffect(() => {
@@ -53,71 +51,52 @@ const PersonCases = () => {
       setLoading(false);
       return;
     }
-
-    const fetchAll = async () => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const res = await fetch(`http://localhost:5000/api/people/case/${personId}`);;
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        const casePersons = await res.json();
-
-        const detailed = await Promise.all(
-          casePersons.map(async (cp) => {
-            const r2 = await fetch(`/api/cases/${cp.case_id}`);
-            if (!r2.ok) throw new Error(`Case ${cp.case_id} not found`);
-            const details = await r2.json();
-            return { ...cp, details };
-          })
-        );
-
-        setCases(detailed);
-        setError(null);
+        const cpList = await peopleApi.getPeopleByCaseId(personId);
+        setCases(cpList);
       } catch (err) {
         console.error(err);
-        setError(err.message || 'Failed to load cases.');
+        setError('Failed to load cases.');
       } finally {
         setLoading(false);
       }
     };
-
-    fetchAll();
+    load();
   }, [personId]);
 
   if (loading) {
     return (
       <Container maxWidth="md">
-        <Box sx={{ textAlign: 'center', mt: 8 }}>
+        <Box sx={{ textAlign:'center', mt:8 }}>
           <CircularProgress />
         </Box>
       </Container>
     );
   }
-
   if (error) {
     return (
       <Container maxWidth="md">
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt:4 }}>
           <Alert severity="error">{error}</Alert>
         </Box>
       </Container>
     );
   }
 
-  const fmt = (iso) => iso ? new Date(iso).toLocaleDateString() : '';
-
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Paper sx={{ p: 3 }} elevation={3}>
-        {/* Tabs bar */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+    <Container maxWidth="lg" sx={{ mt:4 }}>
+      <Paper sx={{ p:3 }} elevation={3}>
+        <Box sx={{ borderBottom:1, borderColor:'divider', mb:2 }}>
           <Tabs value={currentTab} onChange={handleTabChange}>
             <Tab label="Personal Profile" />
             <Tab label="Cases" />
           </Tabs>
         </Box>
 
-        <Typography variant="h5" gutterBottom>
-          PERSON CASES
-        </Typography>
+        <Typography variant="h5" gutterBottom>CASES</Typography>
 
         <TableContainer>
           <Table size="small">
@@ -125,8 +104,8 @@ const PersonCases = () => {
               <TableRow>
                 <TableCell />
                 <TableCell>CAC Case Number</TableCell>
-                <TableCell>CAC Received Date</TableCell>
-                <TableCell>Relationship</TableCell>
+                <TableCell>CAC Date Received</TableCell>
+                <TableCell>Relationship to Victim</TableCell>
                 <TableCell>Role</TableCell>
                 <TableCell>Age</TableCell>
                 <TableCell>Same Household</TableCell>
@@ -134,130 +113,49 @@ const PersonCases = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {cases.map((c) => (
-                <React.Fragment key={c.case_id}>
-                  {/* Summary row */}
+              {cases.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    No cases found for this person
+                  </TableCell>
+                </TableRow>
+              ) : cases.map(cp => (
+                <React.Fragment key={cp.case_id}>
                   <TableRow hover>
                     <TableCell>
                       <IconButton
                         size="small"
                         onClick={() =>
-                          setOpenMap((o) => ({
-                            ...o,
-                            [c.case_id]: !o[c.case_id]
-                          }))
+                          setOpenMap(o => ({ ...o, [cp.case_id]: !o[cp.case_id] }))
                         }
                       >
-                        {openMap[c.case_id]
-                          ? <KeyboardArrowUpIcon />
-                          : <KeyboardArrowDownIcon />}
+                        {openMap[cp.case_id] ? <UpIcon/> : <DownIcon/>}
                       </IconButton>
                     </TableCell>
-                    <TableCell>{c.details.case_number}</TableCell>
-                    <TableCell>{fmt(c.details.cac_received_date)}</TableCell>
-                    <TableCell>{c.relationship_id}</TableCell>
-                    <TableCell>{c.role_id}</TableCell>
+                    <TableCell>{cp.cac_case?.case_number}</TableCell>
+                    <TableCell>{cp.relationship_id}</TableCell>
+                    <TableCell>{cp.role_id}</TableCell>
                     <TableCell>
-                      {c.age} {c.age_unit}
+                      {cp.age}{cp.age_unit && ` ${cp.age_unit}`}
                     </TableCell>
                     <TableCell>
-                      <Checkbox disabled checked={c.same_household} />
+                      <Checkbox checked={Boolean(cp.same_household)} disabled />
                     </TableCell>
                     <TableCell>
-                      <Checkbox disabled checked={c.custody} />
+                      <Checkbox checked={Boolean(cp.custody)} disabled />
                     </TableCell>
                   </TableRow>
 
-                  {/* Expanded details */}
                   <TableRow>
-                    <TableCell style={{ padding: 0 }} colSpan={8}>
-                      <Collapse in={openMap[c.case_id]} timeout="auto" unmountOnExit>
-                        <Box sx={{ p: 2 }}>
-                          {/* Two-column grid of details */}
-                          <Box sx={{ display: 'flex', mb: 2 }}>
-                            <Box sx={{ flex: 1, pr: 1 }}>
-                              <Table size="small">
-                                <TableBody>
-                                  <TableRow>
-                                    <TableCell>Address Line 1</TableCell>
-                                    <TableCell>{c.details.address_line1}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>Address Line 2</TableCell>
-                                    <TableCell>{c.details.address_line2}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>City</TableCell>
-                                    <TableCell>{c.details.city}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>County</TableCell>
-                                    <TableCell>{c.details.county}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>State</TableCell>
-                                    <TableCell>{c.details.state}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>Zip</TableCell>
-                                    <TableCell>{c.details.zip}</TableCell>
-                                  </TableRow>
-                                </TableBody>
-                              </Table>
-                            </Box>
-
-                            <Box sx={{ flex: 1, pl: 1 }}>
-                              <Table size="small">
-                                <TableBody>
-                                  <TableRow>
-                                    <TableCell>Home Phone</TableCell>
-                                    <TableCell>{c.details.home_phone}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>Cell Phone</TableCell>
-                                    <TableCell>{c.details.cell_phone}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>Work Phone</TableCell>
-                                    <TableCell>{c.details.work_phone}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>School or Employer</TableCell>
-                                    <TableCell>{c.details.school_employer}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>Marital Status</TableCell>
-                                    <TableCell>{c.details.marital_status}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>Education Level</TableCell>
-                                    <TableCell>{c.details.education_level}</TableCell>
-                                  </TableRow>
-                                  <TableRow>
-                                    <TableCell>Income Level of Household</TableCell>
-                                    <TableCell>{c.details.income_level}</TableCell>
-                                  </TableRow>
-                                </TableBody>
-                              </Table>
-                            </Box>
-                          </Box>
-
-                          {/* Bottom header row for other people */}
-                          <Table size="small">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell>Other People in Case</TableCell>
-                                <TableCell>Relationship to Victim</TableCell>
-                                <TableCell>Role</TableCell>
-                                <TableCell>Age</TableCell>
-                                <TableCell>Same Household</TableCell>
-                                <TableCell>Custody</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {/* Map additional people if available */}
-                            </TableBody>
-                          </Table>
+                    <TableCell colSpan={7} sx={{ p:0 }}>
+                      <Collapse in={openMap[cp.case_id]} timeout="auto" unmountOnExit>
+                        <Box sx={{ p:2 }}>
+                          <Typography variant="subtitle2" gutterBottom>
+                            Raw Case-Person JSON
+                          </Typography>
+                          <pre style={{ whiteSpace:'pre-wrap' }}>
+                            {JSON.stringify(cp, null, 2)}
+                          </pre>
                         </Box>
                       </Collapse>
                     </TableCell>

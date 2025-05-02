@@ -223,15 +223,38 @@ router.put('/items/:id', async (req, res, next) => {
  */
 router.delete('/items/:id', async (req, res, next) => {
   try {
+    // Parse as integer and log
     const itemId = parseInt(req.params.id);
+    console.log(`Attempting to delete item with ID: ${itemId}, type: ${typeof itemId}`);
     
-    await req.prisma.pick_list_item.delete({
+    if (isNaN(itemId)) {
+      console.error('Invalid item ID:', req.params.id);
+      return res.status(400).json({ message: 'Invalid item ID format' });
+    }
+    
+    // Check if item exists before trying to delete
+    const item = await req.prisma.pick_list_item.findUnique({
       where: { item_id: itemId }
     });
     
+    if (!item) {
+      console.error(`Item with ID ${itemId} not found`);
+      return res.status(404).json({ message: 'Item not found' });
+    }
+    
+    console.log(`Found item to delete:`, item);
+    
+    // Try direct SQL for deletion to bypass Prisma validation
+    await req.prisma.$executeRaw`DELETE FROM pick_list_item WHERE item_id = ${itemId}`;
+    
     res.status(204).send();
   } catch (error) {
-    next(error);
+    console.error('Error deleting item:', error);
+    res.status(500).json({ 
+      message: 'Failed to delete item',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
@@ -258,59 +281,60 @@ router.put('/items/reorder', async (req, res, next) => {
       return res.status(400).json({ message: 'item_orders must be a non-empty array' });
     }
     
-    // Instead of using map which might lead to undefined values,
-    // manually build the updates array with proper validation
-    const updates = [];
+    // Process each update individually without transactions
+    const results = [];
     
     for (const item of item_orders) {
-      // Skip items with missing or invalid item_id
-      if (item.item_id === undefined || item.item_id === null) {
-        console.warn('Skipping item with missing item_id:', item);
-        continue;
+      try {
+        // Skip items with missing or invalid item_id
+        if (item.item_id === undefined || item.item_id === null) {
+          console.warn('Skipping item with missing item_id:', item);
+          continue;
+        }
+        
+        // Skip items with missing or invalid display_order
+        if (item.display_order === undefined || item.display_order === null) {
+          console.warn('Skipping item with missing display_order:', item);
+          continue;
+        }
+        
+        const itemId = parseInt(item.item_id);
+        const displayOrder = parseInt(item.display_order);
+        
+        // Validate that the values are valid numbers after parsing
+        if (isNaN(itemId) || isNaN(displayOrder)) {
+          console.warn('Skipping item with invalid id or display order:', { itemId, displayOrder, original: item });
+          continue;
+        }
+        
+        console.log(`Updating item_id ${itemId} to display_order ${displayOrder}`);
+        
+        // Execute a raw SQL update to bypass Prisma issues
+        await req.prisma.$executeRaw`
+          UPDATE pick_list_item 
+          SET display_order = ${displayOrder} 
+          WHERE item_id = ${itemId}
+        `;
+        
+        results.push({ 
+          item_id: itemId, 
+          display_order: displayOrder, 
+          success: true 
+        });
+      } catch (itemError) {
+        console.error(`Error updating item:`, item, itemError);
+        results.push({
+          ...item,
+          success: false,
+          error: itemError.message
+        });
       }
-      
-      // Skip items with missing or invalid display_order
-      if (item.display_order === undefined || item.display_order === null) {
-        console.warn('Skipping item with missing display_order:', item);
-        continue;
-      }
-      
-      const itemId = parseInt(item.item_id);
-      const displayOrder = parseInt(item.display_order);
-      
-      // Validate that the values are valid numbers after parsing
-      if (isNaN(itemId) || isNaN(displayOrder)) {
-        console.warn('Skipping item with invalid id or display order:', { itemId, displayOrder, original: item });
-        continue;
-      }
-      
-      console.log(`Adding update operation for item_id ${itemId} to set display_order to ${displayOrder}`);
-      
-      // Add a valid update operation
-      updates.push(
-        req.prisma.pick_list_item.update({
-          where: { item_id: itemId },
-          data: { display_order: displayOrder }
-        })
-      );
     }
-    
-    // Only proceed if we have valid updates to perform
-    if (updates.length === 0) {
-      return res.status(400).json({ 
-        message: 'No valid items to update',
-        originalRequest: { list_id, item_orders }
-      });
-    }
-    
-    console.log(`Executing ${updates.length} update operations in transaction`);
-    
-    // Execute the transaction with the valid updates
-    await req.prisma.$transaction(updates);
     
     // Fetch the updated items
+    const listIdInt = parseInt(list_id);
     const updatedItems = await req.prisma.pick_list_item.findMany({
-      where: { list_id: parseInt(list_id) },
+      where: { list_id: listIdInt },
       orderBy: {
         display_order: 'asc'
       }
@@ -320,8 +344,11 @@ router.put('/items/reorder', async (req, res, next) => {
     res.json(updatedItems);
   } catch (error) {
     console.error('Error in reorder endpoint:', error);
-    next(error);
+    res.status(500).json({ 
+      message: 'Failed to reorder items', 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
-
 export default router;
