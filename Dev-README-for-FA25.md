@@ -33,6 +33,24 @@ This script handles the database population process and testing. It's important 
 
 ## Future Suggestions
 
+# Known Issues & Bug Reports
+
+As of the end of Spring 2025, the following issues have been identified and remain unresolved. These should be reviewed and prioritized by future development teams.
+
+## Scenario 1 and Scenario 3 – Case Retrieval
+
+There is an active bug affecting case retrieval for certain individuals in Scenario 1 and Scenario 3. This may be related to the way **Case CAC numbers** and **Case IDs** are associated with people in the database. Further investigation into the schema relationships and query logic is recommended.
+
+## Scenario 2 – Add Person Feature
+
+The "Add Person" functionality in Scenario 2 has not been implemented. The team encountered blockers that prevented successful completion. Implementing and testing this feature would be an ideal first task for the next group.
+
+## Scenario 5 – Pick List Sorting
+
+In Scenario 5, the sorting of pick list items is not functioning correctly. While this is not critical to the application's core logic, it does create a discrepancy between the expected behavior (based on the mock system) and the current implementation in NCATrak.
+
+The issue appears to stem from the improper handling of `item_id` values when items are moved or reordered. Addressing this bug would improve usability and bring the application closer to parity with its original mock-up.
+
 ### Update Script
 
 Consider writing an update script that can handle database migrations, schema updates, and test reinitialization. This will make development and deployment more streamlined.
