@@ -115,6 +115,8 @@ Run the provided wizard script to create and seed the database:
 # From project root
 python wizard.py
 ```
+> **Note:** If `Error during database creation, CREATE DATABASE can not run inside a transation block` log into psql and do `CREATE DATABASE ncatrak;`
+
 
 When prompted:
 1. Choose **Complete Install**

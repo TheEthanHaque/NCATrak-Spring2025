@@ -14,9 +14,6 @@ def create(data):
     # Superuser creds (pg should pick up PGPASSWORD)
     superuser = "postgres"
     superpass = new_pass
-    if not superpass:
-        print("ERROR: Please set PGPASSWORD to your Postgres superuser password.")
-        sys.exit(1)
 
     # Phase 1: CREATE DATABASE if it doesn't exist
     try:
