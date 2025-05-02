@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation,} from 'react-router-dom';
 import AOIEventViewer from './AOIEventViewer';
 import AOITracker from './AOITracker';               // ← NEW
-import GeneralTab from './components/GeneralTab';  
+//import GeneralTab from './components/GeneralTab';  
 import MHBasicInterface from './components/MHBasicInterface';  
 import PeopleInterface from './components/PeopleInterface';  
 import CaseNotes from './components/CaseNotes';  
@@ -163,7 +163,7 @@ const AppLayout = () => {
 
         <Routes>
           <Route path="/" element={<Typography variant="h6">Home: NCATrak Spring 2025!</Typography>} />
-          <Route path="/CaseGeneral" element={<GeneralTab />} />
+          <Route path="/CaseGeneral" element={<Typography variant="h6">General Component (Under Development)</Typography>} />
           <Route path="/CasePeople" element={<PeopleInterface />} />
           <Route path="/CaseMDT" element={<Typography variant="h6">MDT Component (Under Development)</Typography>} />
           <Route path="/CasePresenting" element={<Typography variant="h6">Presenting Component (Under Development)</Typography>} />
