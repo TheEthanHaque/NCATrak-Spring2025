@@ -1,5 +1,8 @@
 # NCATrak-Spring2025 Complete Project Structure
 
+## Note This file may be broken in github view, just click view as code or open as a file.
+
+
 NCATrak-Spring2025/
 │
 ├── app/
