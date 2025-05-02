@@ -1,5 +1,5 @@
 // src/components/PersonProfile.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -13,10 +13,44 @@ import {
   RadioGroup,
   FormControlLabel,
   Paper,
-  Box
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Divider,
+  CircularProgress
 } from '@mui/material';
+import { peopleApi } from '../services/api';
 
 const PersonProfile = ({ open, person, onClose }) => {
+  const [personCases, setPersonCases] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  useEffect(() => {
+    // Fetch person's cases when the modal opens and person is available
+    if (open && person && person.person_id) {
+      const fetchPersonCases = async () => {
+        try {
+          setLoading(true);
+          const casesData = await peopleApi.getPeopleByCaseId(person.person_id);
+          setPersonCases(casesData);
+          setError(null);
+        } catch (err) {
+          console.error('Failed to fetch person cases:', err);
+          setError('Failed to load associated cases');
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      fetchPersonCases();
+    }
+  }, [open, person]);
+  
   if (!person) return null;
   
   // Format date in MM/DD/YYYY format
@@ -406,6 +440,91 @@ const PersonProfile = ({ open, person, onClose }) => {
               </Box>
             </Grid>
           </Grid>
+          
+          {/* Associated Cases Section */}
+          <Divider sx={{ my: 3 }} />
+          
+          <Typography 
+            variant="h6" 
+            sx={{ mb: 2, fontWeight: 'bold' }}
+            data-aoi="Associated Cases Header"
+          >
+            ASSOCIATED CASES
+          </Typography>
+          
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+              <CircularProgress size={30} />
+            </Box>
+          ) : error ? (
+            <Typography color="error" data-aoi="Cases Error Message">
+              {error}
+            </Typography>
+          ) : (
+            <TableContainer component={Paper} variant="outlined" data-aoi="Cases Table Container">
+              <Table size="small" data-aoi="Cases Table">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                    <TableCell data-aoi="Cases Table Header CAC Number">CAC Case Number</TableCell>
+                    <TableCell data-aoi="Cases Table Header CAC Date">CAC Received Date</TableCell>
+                    <TableCell data-aoi="Cases Table Header Relationship">Relationship to Victim</TableCell>
+                    <TableCell data-aoi="Cases Table Header Role">Role</TableCell>
+                    <TableCell data-aoi="Cases Table Header Age">Age</TableCell>
+                    <TableCell data-aoi="Cases Table Header Household">Same Household</TableCell>
+                    <TableCell data-aoi="Cases Table Header Custody">Custody</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {personCases.length > 0 ? (
+                    personCases.map((caseInfo) => (
+                      <TableRow key={caseInfo.case_id}>
+                        <TableCell data-aoi="Case Row CAC Number">
+                          {caseInfo.case_number || `#${caseInfo.case_id}`}
+                        </TableCell>
+                        <TableCell data-aoi="Case Row CAC Date">
+                          {formatDate(caseInfo.cac_received_date)}
+                        </TableCell>
+                        <TableCell data-aoi="Case Row Relationship">
+                          {caseInfo.relationship_id || 'Not specified'}
+                        </TableCell>
+                        <TableCell data-aoi="Case Row Role">
+                          {caseInfo.role_id === 1 ? 'Victim' : 
+                           caseInfo.role_id === 2 ? 'Guardian' : 
+                           caseInfo.role_id === 3 ? 'Suspect' : 
+                           caseInfo.role_id === 4 ? 'Witness' : 
+                           caseInfo.role_id === 5 ? 'Family Member' : 
+                           'Unknown'}
+                        </TableCell>
+                        <TableCell data-aoi="Case Row Age">
+                          {caseInfo.age || ''}
+                        </TableCell>
+                        <TableCell data-aoi="Case Row Household" align="center">
+                          <Checkbox 
+                            checked={Boolean(caseInfo.same_household)} 
+                            disabled
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell data-aoi="Case Row Custody" align="center">
+                          <Checkbox 
+                            checked={Boolean(caseInfo.custody)} 
+                            disabled
+                            size="small"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center" data-aoi="No Cases Message">
+                        No associated cases found
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </Paper>
       </DialogContent>
       
