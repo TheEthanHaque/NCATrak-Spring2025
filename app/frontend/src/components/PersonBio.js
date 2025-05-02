@@ -22,13 +22,13 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { peopleApi, pickListsApi } from '../services/api';
 import { useCase } from '../context/CaseContext';
+import ConfirmationModal from './ConfirmationModal'; // Import the ConfirmationModal component
 
 const PersonBio = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentCase } = useCase();
 
-  
   // Get personId from location state or URL params
   const getPersonIdFromLocation = () => {
     // Check if we have personId in the location state
@@ -43,14 +43,14 @@ const PersonBio = () => {
   
   const personId = getPersonIdFromLocation();
 
-    // Tab state & handler
-    const currentTab = 0; // we’re on Personal Profile
-    const handleTabChange = (_event, newValue) => {
-      if (newValue === 1) {
-        // switch to the Cases view, carrying personId
-        navigate('/PersonCases', { state: { personId } });
-      }
-    };
+  // Tab state & handler
+  const currentTab = 0; // we're on Personal Profile
+  const handleTabChange = (_event, newValue) => {
+    if (newValue === 1) {
+      // switch to the Cases view, carrying personId
+      navigate('/PersonCases', { state: { personId } });
+    }
+  };
   
   // Race options
   const [raceOptions, setRaceOptions] = useState([]);
@@ -85,6 +85,10 @@ const PersonBio = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
+  
+  // Add confirmation modal state
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [pendingChanges, setPendingChanges] = useState(null);
   
   useEffect(() => {
     const fetchRacePickList = async () => {
@@ -255,29 +259,24 @@ const PersonBio = () => {
     }));
   };
   
-  // Handle save
+  // Modified handleSave to show confirmation modal
   const handleSave = async () => {
     try {
-      setSaving(true);
-      
       // Get race_id from race selection
       let raceId = null;
       if (formData.race) {
         try {
           // Find the race ID by looking up the list items
-          const categories = await fetch('http://localhost:5000/api/picklists/categories');
-          const categoriesData = await categories.json();
-          const peopleCategory = categoriesData.find(c => c.category_name === 'People Tab');
+          const categories = await pickListsApi.getAllCategories();
+          const peopleCategory = categories.find(c => c.category_name === 'People Tab');
           
           if (peopleCategory) {
-            const pickListsResponse = await fetch(`http://localhost:5000/api/picklists/lists/category/${peopleCategory.category_id}`);
-            const pickListsData = await pickListsResponse.json();
-            const raceList = pickListsData.find(list => list.list_name === 'Race');
+            const pickLists = await pickListsApi.getPickListsByCategoryId(peopleCategory.category_id);
+            const raceList = pickLists.find(list => list.list_name === 'Race');
             
             if (raceList) {
-              const itemsResponse = await fetch(`http://localhost:5000/api/picklists/items/list/${raceList.list_id}`);
-              const itemsData = await itemsResponse.json();
-              const raceItem = itemsData.find(item => item.value === formData.race);
+              const items = await pickListsApi.getItemsByListId(raceList.list_id);
+              const raceItem = items.find(item => item.value === formData.race);
               if (raceItem) {
                 raceId = raceItem.item_id;
               }
@@ -301,8 +300,50 @@ const PersonBio = () => {
         race_id: raceId // Use the ID rather than the string value
       };
       
+      // Check if any changes were made
+      const isDataChanged = 
+        originalData.first_name !== personData.first_name ||
+        originalData.middle_name !== personData.middle_name ||
+        originalData.last_name !== personData.last_name ||
+        originalData.suffix !== personData.suffix ||
+        originalData.date_of_birth !== personData.date_of_birth ||
+        originalData.gender !== personData.gender ||
+        originalData.race_id !== personData.race_id;
+      
+      if (isDataChanged) {
+        // Store pending changes and show confirmation modal
+        setPendingChanges(personData);
+        setConfirmModalOpen(true);
+      } else {
+        // No changes were made, just show a notification
+        setNotification({
+          show: true,
+          message: 'No changes were made to the person information',
+          type: 'info'
+        });
+        
+        setTimeout(() => {
+          setNotification({ show: false, message: '', type: 'success' });
+        }, 3000);
+      }
+    } catch (err) {
+      console.error('Error preparing data for save:', err);
+      setNotification({
+        show: true,
+        message: 'Error preparing data for save',
+        type: 'error'
+      });
+    }
+  };
+  
+  // New function to handle actual save after confirmation
+  const handleConfirmSave = async () => {
+    try {
+      setSaving(true);
+      setConfirmModalOpen(false);
+      
       // Update person in API
-      await peopleApi.updatePerson(personId, personData);
+      await peopleApi.updatePerson(personId, pendingChanges);
       
       // Show success notification
       setNotification({
@@ -314,7 +355,7 @@ const PersonBio = () => {
       // Update original data
       setOriginalData({
         ...originalData,
-        ...personData
+        ...pendingChanges
       });
       
       setTimeout(() => {
@@ -329,10 +370,17 @@ const PersonBio = () => {
       });
     } finally {
       setSaving(false);
+      setPendingChanges(null);
     }
   };
   
-  // Handle cancel
+  // Handle cancellation of modal
+  const handleCancelSave = () => {
+    setConfirmModalOpen(false);
+    setPendingChanges(null);
+  };
+  
+  // Handle cancel button
   const handleCancel = () => {
     navigate('/CasePeople');
   };
@@ -640,6 +688,15 @@ const PersonBio = () => {
           </Box>
         </Box>
       </Paper>
+      
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        open={confirmModalOpen}
+        title="Update Person Information"
+        message={`You are attempting to change the information of a person already in NCATrak. This will change the person's information on all cases in NCATrak. Are you sure you want to do this?`}
+        onConfirm={handleConfirmSave}
+        onCancel={handleCancelSave}
+      />
     </Container>
   );
 };
