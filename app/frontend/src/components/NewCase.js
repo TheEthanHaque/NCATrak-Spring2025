@@ -268,9 +268,57 @@ const NewCase = () => {
     interviewDate: ''
   });
 
+  const [raceOptions, setRaceOptions] = useState([
+    'American Indian/Alaska Native', 
+    'Asian', 
+    'Black/African American', 
+    'Hispanic/Latino', 
+    'Native Hawaiian/Pacific Islander', 
+    'White', 
+    'Multi-racial', 
+    'Other', 
+    'Unknown'
+  ]);
+  const [, setLoadingPickLists] = useState(false);
+  
+  // Add this useEffect
+  useEffect(() => {
+    const fetchRacePickList = async () => {
+      try {
+        setLoadingPickLists(true);
+        
+        // First, find the People category
+        const categories = await fetch('http://localhost:5000/api/picklists/categories');
+        const categoriesData = await categories.json();
+        const peopleCategory = categoriesData.find(c => c.category_name === 'People Tab');
+        
+        if (peopleCategory) {
+          // Get pick lists for this category
+          const pickListsResponse = await fetch(`http://localhost:5000/api/picklists/lists/category/${peopleCategory.category_id}`);
+          const pickListsData = await pickListsResponse.json();
+          
+          // Find the Race pick list
+          const raceList = pickListsData.find(list => list.list_name === 'Race');
+          
+          if (raceList) {
+            // Get the items for this pick list
+            const itemsResponse = await fetch(`http://localhost:5000/api/picklists/items/list/${raceList.list_id}`);
+            const itemsData = await itemsResponse.json();
+            setRaceOptions(itemsData.map(item => item.value));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load race pick list:', err);
+        // Keep default options if API call fails
+      } finally {
+        setLoadingPickLists(false);
+      }
+    };
+    
+    fetchRacePickList();
+  }, []);
 
   // Dropdown options
-  const raceOptions = ['American Indian/Alaska Native', 'Asian', 'Black/African American', 'Hispanic/Latino', 'Native Hawaiian/Pacific Islander', 'White', 'Multi-racial', 'Other', 'Unknown'];
   const religionOptions = ['Agnostic', 'Atheist', 'Buddhist', 'Christian', 'Hindu', 'Jewish', 'Muslim', 'Other', 'Unknown'];
   const languageOptions = ['English', 'Spanish', 'French', 'Chinese', 'Arabic', 'Other', 'Unknown'];
 

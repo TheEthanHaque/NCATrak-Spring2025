@@ -168,6 +168,37 @@ const PersonBio = () => {
         // Set original data for comparison when saving
         setOriginalData(personData);
         
+        // Fetch race information to map race_id to race name
+        let raceName = '';
+        if (personData.race_id) {
+          try {
+            // First, find the People category
+            const categories = await pickListsApi.getAllCategories();
+            const peopleCategory = categories.find(c => c.category_name === 'People Tab');
+            
+            if (peopleCategory) {
+              // Get pick lists for this category
+              const pickLists = await pickListsApi.getPickListsByCategoryId(peopleCategory.category_id);
+              
+              // Find the Race pick list
+              const raceList = pickLists.find(list => list.list_name === 'Race');
+              
+              if (raceList) {
+                // Get the items for this pick list
+                const items = await pickListsApi.getItemsByListId(raceList.list_id);
+                
+                // Find the race name by ID
+                const raceItem = items.find(item => item.item_id === personData.race_id);
+                if (raceItem) {
+                  raceName = raceItem.value;
+                }
+              }
+            }
+          } catch (err) {
+            console.error('Failed to map race ID to name:', err);
+          }
+        }
+        
         // Set form data
         setFormData({
           firstName: personData.first_name || '',
@@ -180,7 +211,7 @@ const PersonBio = () => {
           unknownDateOfBirth: !formattedDob,
           dateOfDeath: personData.date_of_death ? new Date(personData.date_of_death).toISOString().split('T')[0] : '',
           biologicalSex: personData.gender === 'M' ? 'Male' : personData.gender === 'F' ? 'Female' : '',
-          race: personData.race_id || '',
+          race: raceName, // Use the mapped race name instead of ID
           religion: personData.religion_id || '',
           language: personData.language_id || ''
         });
