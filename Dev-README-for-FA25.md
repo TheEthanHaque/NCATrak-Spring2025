@@ -1,25 +1,76 @@
-Hello, this is Victor, I worked on this project over Spring 2025. I will have graduated after this but here are some directions and ideas for the future of the project.
+# Introduction
 
-Areas that need work:
+Hello, this is Victor. I worked on this project over Spring 2025. Here are some directions and ideas for the future of the project.
 
-It will be worth your time to famaliarze yourself with the file system
+This document includes my recommendations based on my work and experience with the codebase. If you have any questions, please consult mentors or refer to the previous semester’s documentation.
 
-The main file for populating the database is wizard.py
+# Systems
 
-You will need to update it and ensure it works with testing so that when other download and run the project they can continue to use new features as they are implemented.
+## File System Overview
 
-Newer and more detailed scenarios provided by the mentors will require more additions to the existitng database schema. Keeping an up to date ER diagram will help with visualizing where data will need to go.
+It's worth your time to familiarize yourself with the file system. Here’s a quick overview of important parts:
 
-As for future plans focus on what is directed by mentors first as well as bug fixing anything in the existing code. I suggest starting with what seemes most important development wise. 
+- **wizard.py**: Main script for populating the database. Keep this updated and functional with any new changes to ensure compatibility with ongoing development.
+- **app/api/**: API files are located here.
+- **frontend/api/**: Frontend-related API files.
+- **AOI Files**: Currently also reside under `app/api/`.
 
-From there the API files are in the app/api file system, Frontend files are in the frontend/api system.
-AOI files are also in the api area at the moment. 
+## Database
 
-I think one direction to go from the start is try to make an update script to handle all of this together. 
+New and more detailed scenarios from mentors may require changes to the existing database schema. Keep an updated ER diagram as a visual reference for schema changes.
 
-You can also refer back to Fall 2024's guides as Zane's group was very througough as well. Their code is in a seperate repository linked here: https://github.com/ZaneLesley/NCATrak-Mock-System
+Make sure to:
 
-As you work throughout the semester make sure you use proper version control such as creating branches for features as with a project like this, changing an api call or port number can happen despite working on somewhat opposite sides of the project.
+- Test the schema frequently, especially after changes.
+- Maintain compatibility with legacy data while integrating new data structures.
 
-One thing to keep in mind is documentation.
-I encourage strong documentation habits early on as it can come back to bite you later on and it is very helpful to the mentors as well. 
+## wizard.py
+
+This script handles the database population process and testing. It's important that:
+
+- New features are integrated into this pipeline.
+- It remains functional and up to date with the rest of the codebase.
+
+## Future Suggestions
+
+### Update Script
+
+Consider writing an update script that can handle database migrations, schema updates, and test reinitialization. This will make development and deployment more streamlined.
+
+### Refer to Fall 2024 Docs
+
+Zane’s group created thorough documentation that you can find here: [Fall 2024 Repository](https://github.com/ZaneLesley/NCATrak-Mock-System). Reviewing this will save time and prevent duplicate efforts.
+
+# Recommendations
+
+## Version Control
+
+- Use version control responsibly.
+- Create feature branches and pull requests for better tracking and review.
+- Even changes to ports or API endpoints can break functionality—treat each change with care.
+
+## Documentation
+
+- Start early and document often.
+- Good documentation is invaluable to mentors and future developers.
+- Focus on documenting structure, expectations, and known bugs.
+
+## Interface & AOIs
+
+The interface is expected to evolve to support AOI (Area of Interest) tracking. Be ready to:
+
+- Divide screens into grid/box zones.
+- Track keylogging and mouse movement in those areas.
+- Log these events in a detailed format.
+
+## Prioritization
+
+Work on mentor-assigned tasks first, and fix existing bugs before implementing new features. Suggested workflow:
+
+1. Address mentor goals.
+2. Fix bugs or stability issues.
+3. Add quality-of-life tools like update scripts or database utilities.
+
+# Final Thoughts
+
+Good luck! Keep communication open with mentors and your team. A clean commit history, organized project structure, and consistent documentation will make your life and the next developer's much easier.
