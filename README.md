@@ -138,6 +138,14 @@ node index.js
 
 The API will be available at http://localhost:5000.
 
+If you want to run the API without the AOI stuff, do 
+
+(For Powershell)
+```bash
+$env:ENABLE_AOI_LOGGING = "false"
+node index.js
+```
+
 ### Start the Frontend
 
 ```bash

@@ -315,26 +315,112 @@ const PickLists = () => {
     }
   };
   
+  const validateItemsBeforeSend = (items) => {
+    // Check for missing or invalid item_id values
+    const invalidItems = items.filter(item => 
+      item.item_id === undefined || 
+      item.item_id === null ||
+      isNaN(parseInt(item.item_id))
+    );
+    
+    if (invalidItems.length > 0) {
+      console.error('Found invalid items:', invalidItems);
+      throw new Error(`Found ${invalidItems.length} items with missing or invalid item_id`);
+    }
+    
+    // Check for missing or invalid display_order values
+    const invalidDisplayOrders = items.filter(item => 
+      item.display_order === undefined || 
+      item.display_order === null ||
+      isNaN(parseInt(item.display_order))
+    );
+    
+    if (invalidDisplayOrders.length > 0) {
+      console.error('Found items with invalid display_order:', invalidDisplayOrders);
+      throw new Error(`Found ${invalidDisplayOrders.length} items with missing or invalid display_order`);
+    }
+    
+    return true;
+  };
+  
+
   // Handle sorting the list alphabetically
   const handleSortAlphabetically = async () => {
     try {
       setLoading(true);
       
-      // Sort items alphabetically and reassign display_order
+      // Log the original list items for debugging
+      console.log('Original list items:', listItems);
+      
+      // Make sure we have items to sort
+      if (!Array.isArray(listItems) || listItems.length <= 1) {
+        setNotification({
+          open: true,
+          message: 'Not enough items to sort',
+          severity: 'warning'
+        });
+        return;
+      }
+      
+      // Sort items alphabetically
       const sortedItems = [...listItems].sort((a, b) => 
         a.value.localeCompare(b.value)
       );
       
-      // Assign new display orders
-      const itemOrders = sortedItems.map((item, index) => ({
-        item_id: item.item_id,
-        display_order: index
-      }));
+      console.log('Sorted list items:', sortedItems);
+      
+      // Validate each item has an item_id before proceeding
+      const invalidItems = sortedItems.filter(item => 
+        !item.item_id || isNaN(parseInt(item.item_id))
+      );
+      
+      if (invalidItems.length > 0) {
+        console.error('Found items with missing or invalid item_id:', invalidItems);
+        setError('Some items have invalid IDs. Please reload the page and try again.');
+        setNotification({
+          open: true,
+          message: 'Cannot sort: Some items have missing or invalid IDs',
+          severity: 'error'
+        });
+        return;
+      }
+      
+      // Create item orders with explicit type conversion and validation
+      const itemOrders = [];
+      
+      for (let i = 0; i < sortedItems.length; i++) {
+        const item = sortedItems[i];
+        const itemId = parseInt(item.item_id);
+        
+        if (!isNaN(itemId)) {
+          itemOrders.push({
+            item_id: itemId,
+            display_order: i
+          });
+        }
+      }
+      
+      console.log('Item orders to send:', itemOrders);
+      
+      // Only proceed if we have valid items to update
+      if (itemOrders.length === 0) {
+        setError('No valid items to update.');
+        setNotification({
+          open: true,
+          message: 'Cannot sort: No valid items to update',
+          severity: 'error'
+        });
+        return;
+      }
       
       // Update in API
-      await pickListsApi.reorderItems(parseInt(selectedPickList), itemOrders);
+      const listId = parseInt(selectedPickList);
+      console.log(`Sending reorder request for list ${listId} with ${itemOrders.length} items`);
       
-      // Update local state with new display orders
+      const result = await pickListsApi.reorderItems(listId, itemOrders);
+      console.log('Reorder API response:', result);
+      
+      // Update the display order in the local state
       const updatedItems = sortedItems.map((item, index) => ({
         ...item,
         display_order: index
@@ -351,11 +437,13 @@ const PickLists = () => {
       
     } catch (err) {
       console.error('Failed to sort items:', err);
-      setError('Failed to sort items. Please try again.');
+      console.error('Error details:', err.message);
+      
+      setError(`Failed to sort items: ${err.message || 'Unknown error'}`);
       
       setNotification({
         open: true,
-        message: 'Failed to sort items',
+        message: `Failed to sort items: ${err.message || 'Unknown error'}`,
         severity: 'error'
       });
     } finally {

@@ -562,11 +562,47 @@ export const pickListsApi = {
   
   // Reorder pick list items
   reorderItems: (listId, itemOrders) => {
+    // Validate inputs before sending
+    if (!listId || isNaN(parseInt(listId))) {
+      console.error('Invalid listId:', listId);
+      return Promise.reject(new Error('Invalid listId'));
+    }
+    
+    if (!Array.isArray(itemOrders) || itemOrders.length === 0) {
+      console.error('Invalid itemOrders:', itemOrders);
+      return Promise.reject(new Error('itemOrders must be a non-empty array'));
+    }
+    
+    // Filter out items with missing or invalid ids or display_orders
+    const validatedItemOrders = itemOrders.filter(item => 
+      item && 
+      item.item_id !== undefined && 
+      item.item_id !== null &&
+      !isNaN(parseInt(item.item_id)) &&
+      item.display_order !== undefined && 
+      item.display_order !== null &&
+      !isNaN(parseInt(item.display_order))
+    ).map(item => ({
+      item_id: parseInt(item.item_id),
+      display_order: parseInt(item.display_order)
+    }));
+    
+    if (validatedItemOrders.length === 0) {
+      console.error('No valid items to reorder');
+      return Promise.reject(new Error('No valid items to reorder'));
+    }
+    
+    console.log("Sending reorder request:", {
+      list_id: parseInt(listId),
+      item_orders: validatedItemOrders
+    });
+    
+    // Send the API request with validated data
     return fetchApi('/api/picklists/items/reorder', {
       method: 'PUT',
       body: JSON.stringify({
-        list_id: listId,
-        item_orders: itemOrders
+        list_id: parseInt(listId),
+        item_orders: validatedItemOrders
       })
     });
   }
