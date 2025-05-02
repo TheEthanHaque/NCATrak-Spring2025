@@ -1,25 +1,41 @@
+// ConfirmationModal.js
 import React from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+import { 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogContentText, 
+  DialogActions, 
   Button,
+  Box,
   Typography
 } from '@mui/material';
 
 const ConfirmationModal = ({ open, title, message, onConfirm, onCancel }) => {
   return (
-    <Dialog open={open} onClose={onCancel}>
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onCancel}
+      aria-labelledby="confirmation-dialog-title"
+      aria-describedby="confirmation-dialog-description"
+    >
+      <DialogTitle id="confirmation-dialog-title">
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="h6" component="div">
+            {title}
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
-        <Typography>{message}</Typography>
+        <DialogContentText id="confirmation-dialog-description">
+          {message}
+        </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel} color="primary">
+        <Button onClick={onCancel} color="primary" variant="outlined">
           Cancel
         </Button>
-        <Button onClick={onConfirm} color="primary" variant="contained">
+        <Button onClick={onConfirm} color="primary" variant="contained" autoFocus>
           Confirm
         </Button>
       </DialogActions>

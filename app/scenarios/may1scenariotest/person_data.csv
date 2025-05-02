@@ -1,0 +1,6 @@
+cac_id,person_id,first_name,middle_initial,last_name,suffix,date_of_birth,gender,language_id,race_id,religion_id,prior_convictions,convicted_against_children,sexual_offender,sexual_predator
+5,405677396,Susan,Lisa,Henry,,2017-05-23,F,,,,False,False,False,False
+6,735277354,Tracy,Alyssa,Ward,,1987-03-26,F,,,,False,False,False,False
+6,156838521,Robert,James,Dunn,,2002-06-14,M,,,,False,False,False,False
+6,362399150,Stephen,Edward,Silva,,1997-04-09,M,,,,False,False,False,False
+10,444913703,Brandon,Matthew,Cochran,,1995-06-15,M,,,,False,False,True,False

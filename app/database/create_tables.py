@@ -29,15 +29,15 @@ tables_to_create = [
 
 # Wrapper function to simplify syntax for calling a try-except block with the database connection
 def execute_command(command):
-
     try:
         config = load_config()
         with psycopg2.connect(**config) as conn:
+            conn.autocommit = True  # Important for table creation/deletion
             with conn.cursor() as cur:
                 cur.execute(command)
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
-
+        
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
@@ -48,11 +48,10 @@ def main():
         commands = delete_tables_file.read().split(";")
         for command in commands:
             try:
-                if not command == "":
+                if command.strip() != "":
                     execute_command(command)
             except Exception as error:
                 print(f"Error: {error}\nIf tables never existed, this can be ignored.")
-        delete_tables_file.close()
     
     # Create new tables from the above list
     for table_name in tables_to_create:
@@ -61,7 +60,7 @@ def main():
         with open(sql_file_path, "r") as sql_file:
             commands = sql_file.read().split(";")
             for command in commands:
-                if not command == "":
+                if command.strip() != "":
                     execute_command(command)
 
-    # print("All database tables created. Databases will need to be repopulated using generated data.")
+    print("All database tables created successfully.")

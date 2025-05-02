@@ -15,6 +15,7 @@ import employeesRouter from './routes/employee.js';
 import mentalhealthRouter from './routes/mentalhealth.js';
 import victimsAdvocacyRouter from './routes/victimadvocacy.js';
 import caseSearchRoutes from './routes/case-search.js';
+import picklistsRouter from './routes/picklists.js';
 
 // ———————— ESM __dirname shim —————————
 const __filename = fileURLToPath(import.meta.url);
@@ -117,6 +118,7 @@ app.use('/api/employees', employeesRouter);
 app.use('/api/mentalhealth', mentalhealthRouter);
 app.use('/api/va', victimsAdvocacyRouter);
 app.use('/api/case-search', caseSearchRoutes);
+app.use('/api/picklists', picklistsRouter);
 
 // ─── MAIN APP AOI ENDPOINT ────────────────────────────────────────────────
 app.post('/api/aoi_event', async (req, res) => {

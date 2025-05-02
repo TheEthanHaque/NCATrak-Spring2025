@@ -490,6 +490,148 @@ export const victimAdvocacyApi = {
     });
   }
 };
+export const pickListsApi = {
+  // Get all categories
+  getAllCategories: () => {
+    return fetchApi('/api/picklists/categories');
+  },
+  
+  // Get a category by ID
+  getCategoryById: (categoryId) => {
+    return fetchApi(`/api/picklists/categories/${categoryId}`);
+  },
+  
+  // Create a new category
+  createCategory: (categoryData) => {
+    return fetchApi('/api/picklists/categories', {
+      method: 'POST',
+      body: JSON.stringify(categoryData)
+    });
+  },
+  
+  // Get all pick lists
+  getAllPickLists: () => {
+    return fetchApi('/api/picklists/lists');
+  },
+  
+  // Get pick lists by category ID
+  getPickListsByCategoryId: (categoryId) => {
+    return fetchApi(`/api/picklists/lists/category/${categoryId}`);
+  },
+  
+  // Get a pick list by ID
+  getPickListById: (listId) => {
+    return fetchApi(`/api/picklists/lists/${listId}`);
+  },
+  
+  // Create a new pick list
+  createPickList: (listData) => {
+    return fetchApi('/api/picklists/lists', {
+      method: 'POST',
+      body: JSON.stringify(listData)
+    });
+  },
+  
+  // Get items for a pick list by ID
+  getItemsByListId: (listId) => {
+    return fetchApi(`/api/picklists/items/list/${listId}`);
+  },
+  
+  // Create a new pick list item
+  createItem: (itemData) => {
+    return fetchApi('/api/picklists/items', {
+      method: 'POST',
+      body: JSON.stringify(itemData)
+    });
+  },
+  
+  // Update a pick list item
+  updateItem: (itemId, itemData) => {
+    return fetchApi(`/api/picklists/items/${itemId}`, {
+      method: 'PUT',
+      body: JSON.stringify(itemData)
+    });
+  },
+  
+  // Delete a pick list item
+  deleteItem: (itemId) => {
+    // Ensure itemId is an integer
+    const parsedId = parseInt(itemId);
+    
+    if (isNaN(parsedId)) {
+      console.error('Invalid item ID:', itemId);
+      return Promise.reject(new Error('Invalid item ID'));
+    }
+    
+    console.log(`Attempting to delete item with ID: ${parsedId}`);
+    
+    return fetch(`${API_BASE_URL}/api/picklists/items/${parsedId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => {
+      if (response.status === 204) {
+        // Success with no content, return an empty object
+        return {};
+      }
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+      
+      // For other successful responses, parse JSON
+      return response.json();
+    });
+  },
+  
+  // Reorder pick list items
+  reorderItems: (listId, itemOrders) => {
+    // Validate inputs before sending
+    if (!listId || isNaN(parseInt(listId))) {
+      console.error('Invalid listId:', listId);
+      return Promise.reject(new Error('Invalid listId'));
+    }
+    
+    if (!Array.isArray(itemOrders) || itemOrders.length === 0) {
+      console.error('Invalid itemOrders:', itemOrders);
+      return Promise.reject(new Error('itemOrders must be a non-empty array'));
+    }
+    
+    // Filter out items with missing or invalid ids or display_orders
+    const validatedItemOrders = itemOrders.filter(item => 
+      item && 
+      item.item_id !== undefined && 
+      item.item_id !== null &&
+      !isNaN(parseInt(item.item_id)) &&
+      item.display_order !== undefined && 
+      item.display_order !== null &&
+      !isNaN(parseInt(item.display_order))
+    ).map(item => ({
+      item_id: parseInt(item.item_id),
+      display_order: parseInt(item.display_order)
+    }));
+    
+    if (validatedItemOrders.length === 0) {
+      console.error('No valid items to reorder');
+      return Promise.reject(new Error('No valid items to reorder'));
+    }
+    
+    console.log("Sending reorder request:", {
+      list_id: parseInt(listId),
+      item_orders: validatedItemOrders
+    });
+    
+    // Send the API request with validated data
+    return fetchApi('/api/picklists/items/reorder', {
+      method: 'PUT',
+      body: JSON.stringify({
+        list_id: parseInt(listId),
+        item_orders: validatedItemOrders
+      })
+    });
+  }
+};
 
 // Export the combined API service
 const apiService = {
@@ -498,7 +640,8 @@ const apiService = {
   agencies: agenciesApi,
   employees: employeesApi,
   mentalHealth: mentalHealthApi,
-  victimAdvocacy: victimAdvocacyApi
+  victimAdvocacy: victimAdvocacyApi,
+  pickLists: pickListsApi
 };
 
 export default apiService;

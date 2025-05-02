@@ -15,17 +15,20 @@ import {
   RadioGroup,
   FormControl,
   Select,
-  MenuItem
+  MenuItem,
+  Tabs,
+  Tab
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { peopleApi } from '../services/api';
+import { peopleApi, pickListsApi } from '../services/api';
 import { useCase } from '../context/CaseContext';
+import ConfirmationModal from './ConfirmationModal'; // Import the ConfirmationModal component
 
 const PersonBio = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentCase } = useCase();
-  
+
   // Get personId from location state or URL params
   const getPersonIdFromLocation = () => {
     // Check if we have personId in the location state
@@ -39,10 +42,20 @@ const PersonBio = () => {
   };
   
   const personId = getPersonIdFromLocation();
+
+  // Tab state & handler
+  const currentTab = 0; // we're on Personal Profile
+  const handleTabChange = (_event, newValue) => {
+    if (newValue === 1) {
+      // switch to the Cases view, carrying personId
+      navigate('/PersonCases', { state: { personId } });
+    }
+  };
   
   // Race options
-  const raceOptions = ['American Indian/Alaska Native', 'Asian', 'Black/African American', 'Hispanic/Latino', 'Native Hawaiian/Pacific Islander', 'White', 'Multi-racial', 'Other', 'Unknown'];
-  
+  const [raceOptions, setRaceOptions] = useState([]);
+  const [loadingPickLists, setLoadingPickLists] = useState(false);
+
   // Religion options
   const religionOptions = ['Agnostic', 'Atheist', 'Buddhist', 'Christian', 'Hindu', 'Jewish', 'Muslim', 'Other', 'Unknown'];
   
@@ -73,6 +86,67 @@ const PersonBio = () => {
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
   
+  // Add confirmation modal state
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [pendingChanges, setPendingChanges] = useState(null);
+  
+  useEffect(() => {
+    const fetchRacePickList = async () => {
+      try {
+        setLoadingPickLists(true);
+        
+        // First, find the People category
+        const categories = await pickListsApi.getAllCategories();
+        const peopleCategory = categories.find(c => c.category_name === 'People Tab');
+        
+        if (peopleCategory) {
+          // Get pick lists for this category
+          const pickLists = await pickListsApi.getPickListsByCategoryId(peopleCategory.category_id);
+          
+          // Find the Race pick list
+          const raceList = pickLists.find(list => list.list_name === 'Race');
+          
+          if (raceList) {
+            // Get the items for this pick list
+            const items = await pickListsApi.getItemsByListId(raceList.list_id);
+            setRaceOptions(items.map(item => item.value));
+          } else {
+            // Fallback to default options if Race pick list not found
+            setRaceOptions([
+              'American Indian/Alaska Native', 
+              'Asian', 
+              'Black/African American', 
+              'Hispanic/Latino', 
+              'Native Hawaiian/Pacific Islander', 
+              'White', 
+              'Multi-racial', 
+              'Other', 
+              'Unknown'
+            ]);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load race pick list:', err);
+        // Fallback to default options if API call fails
+        setRaceOptions([
+          'American Indian/Alaska Native', 
+          'Asian', 
+          'Black/African American', 
+          'Hispanic/Latino', 
+          'Native Hawaiian/Pacific Islander', 
+          'White', 
+          'Multi-racial', 
+          'Other', 
+          'Unknown'
+        ]);
+      } finally {
+        setLoadingPickLists(false);
+      }
+    };
+    
+    fetchRacePickList();
+  }, []);
+
   // Load person data when component mounts or personId/currentCase changes
   useEffect(() => {
     const fetchPersonData = async () => {
@@ -98,6 +172,37 @@ const PersonBio = () => {
         // Set original data for comparison when saving
         setOriginalData(personData);
         
+        // Fetch race information to map race_id to race name
+        let raceName = '';
+        if (personData.race_id) {
+          try {
+            // First, find the People category
+            const categories = await pickListsApi.getAllCategories();
+            const peopleCategory = categories.find(c => c.category_name === 'People Tab');
+            
+            if (peopleCategory) {
+              // Get pick lists for this category
+              const pickLists = await pickListsApi.getPickListsByCategoryId(peopleCategory.category_id);
+              
+              // Find the Race pick list
+              const raceList = pickLists.find(list => list.list_name === 'Race');
+              
+              if (raceList) {
+                // Get the items for this pick list
+                const items = await pickListsApi.getItemsByListId(raceList.list_id);
+                
+                // Find the race name by ID
+                const raceItem = items.find(item => item.item_id === personData.race_id);
+                if (raceItem) {
+                  raceName = raceItem.value;
+                }
+              }
+            }
+          } catch (err) {
+            console.error('Failed to map race ID to name:', err);
+          }
+        }
+        
         // Set form data
         setFormData({
           firstName: personData.first_name || '',
@@ -110,7 +215,7 @@ const PersonBio = () => {
           unknownDateOfBirth: !formattedDob,
           dateOfDeath: personData.date_of_death ? new Date(personData.date_of_death).toISOString().split('T')[0] : '',
           biologicalSex: personData.gender === 'M' ? 'Male' : personData.gender === 'F' ? 'Female' : '',
-          race: personData.race_id || '',
+          race: raceName, // Use the mapped race name instead of ID
           religion: personData.religion_id || '',
           language: personData.language_id || ''
         });
@@ -154,10 +259,33 @@ const PersonBio = () => {
     }));
   };
   
-  // Handle save
+  // Modified handleSave to show confirmation modal
   const handleSave = async () => {
     try {
-      setSaving(true);
+      // Get race_id from race selection
+      let raceId = null;
+      if (formData.race) {
+        try {
+          // Find the race ID by looking up the list items
+          const categories = await pickListsApi.getAllCategories();
+          const peopleCategory = categories.find(c => c.category_name === 'People Tab');
+          
+          if (peopleCategory) {
+            const pickLists = await pickListsApi.getPickListsByCategoryId(peopleCategory.category_id);
+            const raceList = pickLists.find(list => list.list_name === 'Race');
+            
+            if (raceList) {
+              const items = await pickListsApi.getItemsByListId(raceList.list_id);
+              const raceItem = items.find(item => item.value === formData.race);
+              if (raceItem) {
+                raceId = raceItem.item_id;
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Error getting race ID:', err);
+        }
+      }
       
       // Prepare person data for API
       const personData = {
@@ -168,11 +296,54 @@ const PersonBio = () => {
         suffix: formData.suffix,
         date_of_birth: formData.dateOfBirth || null,
         gender: formData.biologicalSex === 'Male' ? 'M' : 
-                formData.biologicalSex === 'Female' ? 'F' : null
+                formData.biologicalSex === 'Female' ? 'F' : null,
+        race_id: raceId // Use the ID rather than the string value
       };
       
+      // Check if any changes were made
+      const isDataChanged = 
+        originalData.first_name !== personData.first_name ||
+        originalData.middle_name !== personData.middle_name ||
+        originalData.last_name !== personData.last_name ||
+        originalData.suffix !== personData.suffix ||
+        originalData.date_of_birth !== personData.date_of_birth ||
+        originalData.gender !== personData.gender ||
+        originalData.race_id !== personData.race_id;
+      
+      if (isDataChanged) {
+        // Store pending changes and show confirmation modal
+        setPendingChanges(personData);
+        setConfirmModalOpen(true);
+      } else {
+        // No changes were made, just show a notification
+        setNotification({
+          show: true,
+          message: 'No changes were made to the person information',
+          type: 'info'
+        });
+        
+        setTimeout(() => {
+          setNotification({ show: false, message: '', type: 'success' });
+        }, 3000);
+      }
+    } catch (err) {
+      console.error('Error preparing data for save:', err);
+      setNotification({
+        show: true,
+        message: 'Error preparing data for save',
+        type: 'error'
+      });
+    }
+  };
+  
+  // New function to handle actual save after confirmation
+  const handleConfirmSave = async () => {
+    try {
+      setSaving(true);
+      setConfirmModalOpen(false);
+      
       // Update person in API
-      await peopleApi.updatePerson(personId, personData);
+      await peopleApi.updatePerson(personId, pendingChanges);
       
       // Show success notification
       setNotification({
@@ -184,7 +355,7 @@ const PersonBio = () => {
       // Update original data
       setOriginalData({
         ...originalData,
-        ...personData
+        ...pendingChanges
       });
       
       setTimeout(() => {
@@ -199,10 +370,17 @@ const PersonBio = () => {
       });
     } finally {
       setSaving(false);
+      setPendingChanges(null);
     }
   };
   
-  // Handle cancel
+  // Handle cancellation of modal
+  const handleCancelSave = () => {
+    setConfirmModalOpen(false);
+    setPendingChanges(null);
+  };
+  
+  // Handle cancel button
   const handleCancel = () => {
     navigate('/CasePeople');
   };
@@ -237,6 +415,13 @@ const PersonBio = () => {
   return (
     <Container maxWidth="md">
       <Paper elevation={3} sx={{ p: 4, my: 4 }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+          <Tabs value={currentTab} onChange={handleTabChange} aria-label="Person Profile Tabs">
+            <Tab label="Personal Profile" />
+            <Tab label="Cases" />
+          </Tabs>
+        </Box>
+
         <Typography variant="h5" gutterBottom align="left" sx={{ mb: 3 }}>
           PERSONAL PROFILE
         </Typography>
@@ -416,14 +601,24 @@ const PersonBio = () => {
               <Typography variant="body1">Race</Typography>
             </Grid>
             <Grid item xs={12} sm={9}>
-              <FormControl fullWidth>
+              <FormControl fullWidth sx={{ minWidth: 120 }}>
+                {/* Remove this InputLabel */}
                 <Select
                   name="race"
-                  value={formData.race}
+                  value={formData.race || ''}
                   onChange={handleChange}
                   displayEmpty
                 >
-                  <MenuItem value="">Select Race</MenuItem>
+                  <MenuItem value="">
+                    {loadingPickLists ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <CircularProgress size={20} sx={{ mr: 1 }} />
+                        Loading options...
+                      </Box>
+                    ) : (
+                      'Select Race'
+                    )}
+                  </MenuItem>
                   {raceOptions.map(option => (
                     <MenuItem key={option} value={option}>{option}</MenuItem>
                   ))}
@@ -493,6 +688,15 @@ const PersonBio = () => {
           </Box>
         </Box>
       </Paper>
+      
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        open={confirmModalOpen}
+        title="Update Person Information"
+        message={`You are attempting to change the information of a person already in NCATrak. This will change the person's information on all cases in NCATrak. Are you sure you want to do this?`}
+        onConfirm={handleConfirmSave}
+        onCancel={handleCancelSave}
+      />
     </Container>
   );
 };
