@@ -10,7 +10,6 @@ import {
   Box,
   Typography
 } from '@mui/material';
-import WarningIcon from '@mui/icons-material/Warning';
 
 const ConfirmationModal = ({ open, title, message, onConfirm, onCancel }) => {
   return (
@@ -22,7 +21,6 @@ const ConfirmationModal = ({ open, title, message, onConfirm, onCancel }) => {
     >
       <DialogTitle id="confirmation-dialog-title">
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <WarningIcon color="warning" sx={{ mr: 1 }} />
           <Typography variant="h6" component="div">
             {title}
           </Typography>
