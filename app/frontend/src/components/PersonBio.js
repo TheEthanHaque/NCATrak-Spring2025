@@ -13,7 +13,6 @@ import {
   TextField,
   Radio,
   RadioGroup,
-  InputLabel,
   FormControl,
   Select,
   MenuItem,
@@ -230,6 +229,34 @@ const PersonBio = () => {
     try {
       setSaving(true);
       
+      // Get race_id from race selection
+      let raceId = null;
+      if (formData.race) {
+        try {
+          // Find the race ID by looking up the list items
+          const categories = await fetch('http://localhost:5000/api/picklists/categories');
+          const categoriesData = await categories.json();
+          const peopleCategory = categoriesData.find(c => c.category_name === 'People Tab');
+          
+          if (peopleCategory) {
+            const pickListsResponse = await fetch(`http://localhost:5000/api/picklists/lists/category/${peopleCategory.category_id}`);
+            const pickListsData = await pickListsResponse.json();
+            const raceList = pickListsData.find(list => list.list_name === 'Race');
+            
+            if (raceList) {
+              const itemsResponse = await fetch(`http://localhost:5000/api/picklists/items/list/${raceList.list_id}`);
+              const itemsData = await itemsResponse.json();
+              const raceItem = itemsData.find(item => item.value === formData.race);
+              if (raceItem) {
+                raceId = raceItem.item_id;
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Error getting race ID:', err);
+        }
+      }
+      
       // Prepare person data for API
       const personData = {
         person_id: personId,
@@ -239,7 +266,8 @@ const PersonBio = () => {
         suffix: formData.suffix,
         date_of_birth: formData.dateOfBirth || null,
         gender: formData.biologicalSex === 'Male' ? 'M' : 
-                formData.biologicalSex === 'Female' ? 'F' : null
+                formData.biologicalSex === 'Female' ? 'F' : null,
+        race_id: raceId // Use the ID rather than the string value
       };
       
       // Update person in API
@@ -494,15 +522,13 @@ const PersonBio = () => {
               <Typography variant="body1">Race</Typography>
             </Grid>
             <Grid item xs={12} sm={9}>
-              <FormControl fullWidth>
-                <InputLabel id="race-select-label">Race</InputLabel>
+              <FormControl fullWidth sx={{ minWidth: 120 }}>
+                {/* Remove this InputLabel */}
                 <Select
-                  labelId="race-select-label"
                   name="race"
                   value={formData.race || ''}
                   onChange={handleChange}
                   displayEmpty
-                  label="Race"
                 >
                   <MenuItem value="">
                     {loadingPickLists ? (
